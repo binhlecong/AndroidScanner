@@ -1,6 +1,6 @@
-package org.jetbrains.plugins.template.services
+package com.github.binhlecong.androidscanner.services
 
-import org.jetbrains.plugins.template.MyBundle
+import com.github.binhlecong.androidscanner.MyBundle
 
 class MyApplicationService {
 
