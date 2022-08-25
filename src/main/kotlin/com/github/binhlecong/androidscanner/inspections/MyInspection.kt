@@ -1,17 +1,16 @@
 package com.github.binhlecong.androidscanner.inspections
 
+import com.github.binhlecong.androidscanner.utils.UastClassUtil
 import com.intellij.codeInspection.AbstractBaseUastLocalInspectionTool
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
-import org.jetbrains.uast.UField
 import org.jetbrains.uast.UMethod
 import org.jetbrains.uast.visitor.UastVisitor
 
-class MyInspection : AbstractBaseUastLocalInspectionTool(UField::class.java, UMethod::class.java) {
-
+class MyInspection : AbstractBaseUastLocalInspectionTool(UMethod::class.java) {
     private val tag = "AndroidScanner"
 
     override fun checkMethod(
@@ -19,11 +18,6 @@ class MyInspection : AbstractBaseUastLocalInspectionTool(UField::class.java, UMe
         manager: InspectionManager,
         isOnTheFly: Boolean,
     ): Array<ProblemDescriptor> {
-        // To reuse 9Fix rule set, we need:
-        // - method call expressions in each method of a class: yes
-        // - argument list of those methods call: yes
-        // - the class that the method call expressions belong to: no
-
         val issueList = arrayListOf<ProblemDescriptor>()
         method.accept(object : UastVisitor {
             // Required by interface
@@ -31,35 +25,36 @@ class MyInspection : AbstractBaseUastLocalInspectionTool(UField::class.java, UMe
                 return false
             }
 
-            // Visit all method call expressions in a method
             override fun visitCallExpression(node: UCallExpression): Boolean {
                 if (node.valueArgumentCount == 0)
                     return false
+                val sourcePsi = node.sourcePsi ?: return false
 
-                val isInResources = node.classReference
+                // TODO: get these value from xml file
+                val methodName = "getInstance"
+                val className = "java.security.MessageDigest"
                 val paramIndex = 0
-                if (node.methodName == "getInstance") {
-                    if (node.valueArgumentCount < paramIndex + 1)
-                        return false
+                val pattern = "(.*SHA1.*)"
 
-                    val param = node.getArgumentForParameter(paramIndex)!!.sourcePsi!!.text
-                    val pattern = "(.*SHA1.*)"
+                val nodeMethodName = node.methodName ?: return false
+                if (nodeMethodName == methodName &&
+                    node.valueArgumentCount > paramIndex &&
+                    UastClassUtil.isMethodInClass(manager, nodeMethodName, className)
+                ) {
+                    val param = node.getArgumentForParameter(paramIndex)?.sourcePsi?.text ?: return false
                     val reg = Regex(pattern)
                     if (param.matches(reg)) {
-                        val sourcePsi = node.sourcePsi
                         val description = "$tag SHA1 detected at: ${node.methodName}"
 
-                        if (sourcePsi != null) {
-                            issueList.add(
-                                manager.createProblemDescriptor(
-                                    sourcePsi,
-                                    description,
-                                    isOnTheFly,
-                                    emptyArray(),
-                                    ProblemHighlightType.WARNING,
-                                ),
-                            )
-                        }
+                        issueList.add(
+                            manager.createProblemDescriptor(
+                                sourcePsi,
+                                description,
+                                isOnTheFly,
+                                emptyArray(),
+                                ProblemHighlightType.WARNING,
+                            ),
+                        )
                     }
                 }
                 return false
