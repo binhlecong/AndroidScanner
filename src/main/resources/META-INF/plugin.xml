@@ -12,15 +12,15 @@
 <!--        <applicationService serviceImplementation="com.github.binhlecong.androidscanner.services.MyApplicationService"/>-->
 <!--        <projectService serviceImplementation="com.github.binhlecong.androidscanner.services.MyProjectService"/>-->
         <localInspection language="UAST"
-                         displayName="Binh find AES"
-                         groupName="Binh Security vulnerability"
+                         displayName="Method param inspection"
+                         groupName="AndroidScanner plugin"
                          enabledByDefault="true"
                          level="WARNING"
-                         implementationClass="com.github.binhlecong.androidscanner.inspections.MyInspection"/>
+                         implementationClass="com.github.binhlecong.androidscanner.inspections.MethodParamInspection"/>
     </extensions>
 
-<!--    <applicationListeners>-->
-<!--        <listener class="com.github.binhlecong.androidscanner.listeners.MyProjectManagerListener"-->
-<!--                  topic="com.intellij.openapi.project.ProjectManagerListener"/>-->
-<!--    </applicationListeners>-->
+    <applicationListeners>
+        <listener class="com.github.binhlecong.androidscanner.listeners.MyProjectManagerListener"
+                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
+    </applicationListeners>
 </idea-plugin>
