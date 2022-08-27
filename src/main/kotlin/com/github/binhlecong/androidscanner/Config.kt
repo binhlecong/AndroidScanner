@@ -21,11 +21,11 @@ object Config {
     const val FIELD_fixOld = 10
     const val FIELD_fixNew = 11
     const val FIELD_type = 12
-    const val TYPE_METHOD = "0"
-    const val TYPE_METHOD_PARAM = "1"
-    const val TYPE_CONSTRUCTOR = "2"
-    const val TYPE_CONSTRUCTOR_PARAM = "3"
-    const val TYPE_XML_ATTRIBUTE = "4"
+    const val TYPE_METHOD = "METHOD"
+    const val TYPE_METHOD_PARAM = "METHOD_PARAM"
+    const val TYPE_CONSTRUCTOR = "CONSTRUCTOR"
+    const val TYPE_CONSTRUCTOR_PARAM = "CONSTRUCTOR_PARAM"
+    const val TYPE_XML_ATTRIBUTE = "XMLATTRIBUTE"
     val FIELD_NAMES = arrayOf(
         "ID",
         "briefDescription",
