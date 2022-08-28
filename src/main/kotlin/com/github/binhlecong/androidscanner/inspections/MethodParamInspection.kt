@@ -51,35 +51,24 @@ class MethodParamInspection : AbstractBaseUastLocalInspectionTool(UMethod::class
                         if (argument.matches(regex)) {
                             val briefDescription = rule[Config.FIELD_BRIEF_DESCRIPTION]
                             val needFix = rule[Config.FIELD_NEED_FIX].trim() == "1"
-                            if (needFix) {
-                                val fixes = arrayOf(
-                                    MethodParamQuickFix(
-                                        rule[Config.FIELD_FIX_NAME],
-                                        paramIndex,
-                                        rule[Config.FIELD_FIX_NEW],
-                                    )
-                                )
+                            var fixes = emptyArray<MethodParamQuickFix>()
 
-                                issueList.add(
-                                    manager.createProblemDescriptor(
-                                        sourcePsi,
-                                        briefDescription,
-                                        isOnTheFly,
-                                        fixes,
-                                        ProblemHighlightType.WARNING,
-                                    ),
-                                )
-                            } else {
-                                issueList.add(
-                                    manager.createProblemDescriptor(
-                                        sourcePsi,
-                                        briefDescription,
-                                        isOnTheFly,
-                                        emptyArray(),
-                                        ProblemHighlightType.WARNING,
-                                    ),
+                            if (needFix) {
+                                fixes += MethodParamQuickFix(
+                                    rule[Config.FIELD_FIX_NAME],
+                                    paramIndex,
+                                    rule[Config.FIELD_FIX_NEW],
                                 )
                             }
+                            issueList.add(
+                                manager.createProblemDescriptor(
+                                    sourcePsi,
+                                    briefDescription,
+                                    isOnTheFly,
+                                    fixes,
+                                    ProblemHighlightType.WARNING,
+                                ),
+                            )
                         }
                     }
                 }
@@ -101,9 +90,9 @@ class MethodParamQuickFix(private val fixName: String, private val paramIndex: I
         try {
             val factory = JavaPsiFacade.getInstance(project).elementFactory
             val node = descriptor.psiElement as PsiMethodCallExpression
-            val param = node.argumentList.findElementAt(paramIndex)
-            val newUElement = factory.createExpressionFromText(newFix, null)
-            param?.replace(newUElement)
+            val param = node.argumentList.findElementAt(paramIndex + 1)
+            val newExpression = factory.createExpressionFromText(newFix, null)
+            param?.replace(newExpression)
         } catch (e: Exception) {
             LOG.error(e)
         }
