@@ -3,14 +3,16 @@ package com.github.binhlecong.androidscanner.inspections
 import com.github.binhlecong.androidscanner.Config
 import com.github.binhlecong.androidscanner.Helper
 import com.github.binhlecong.androidscanner.utils.UastClassUtil
-import com.intellij.codeInspection.AbstractBaseUastLocalInspectionTool
-import com.intellij.codeInspection.InspectionManager
-import com.intellij.codeInspection.ProblemDescriptor
-import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.codeInspection.*
+import com.intellij.openapi.project.Project
+import com.intellij.psi.JavaPsiFacade
+import com.intellij.psi.PsiMethodCallExpression
+import org.jetbrains.rpc.LOG
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UMethod
 import org.jetbrains.uast.visitor.UastVisitor
+
 
 class MethodParamInspection : AbstractBaseUastLocalInspectionTool(UMethod::class.java) {
     private val tag = "AndroidScanner"
@@ -50,13 +52,20 @@ class MethodParamInspection : AbstractBaseUastLocalInspectionTool(UMethod::class
                             val briefDescription = rule[Config.FIELD_BRIEF_DESCRIPTION]
                             val needFix = rule[Config.FIELD_NEED_FIX].trim() == "1"
                             if (needFix) {
+                                val fixes = arrayOf(
+                                    MethodParamQuickFix(
+                                        rule[Config.FIELD_FIX_NAME],
+                                        paramIndex,
+                                        rule[Config.FIELD_FIX_NEW],
+                                    )
+                                )
+
                                 issueList.add(
                                     manager.createProblemDescriptor(
                                         sourcePsi,
                                         briefDescription,
                                         isOnTheFly,
-                                        // TODO: add fix
-                                        emptyArray(),
+                                        fixes,
                                         ProblemHighlightType.WARNING,
                                     ),
                                 )
@@ -79,5 +88,24 @@ class MethodParamInspection : AbstractBaseUastLocalInspectionTool(UMethod::class
         })
 
         return issueList.toTypedArray()
+    }
+}
+
+class MethodParamQuickFix(private val fixName: String, private val paramIndex: Int, private val newFix: String) :
+    LocalQuickFix {
+    override fun getFamilyName(): String {
+        return fixName
+    }
+
+    override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+        try {
+            val factory = JavaPsiFacade.getInstance(project).elementFactory
+            val node = descriptor.psiElement as PsiMethodCallExpression
+            val param = node.argumentList.findElementAt(paramIndex)
+            val newUElement = factory.createExpressionFromText(newFix, null)
+            param?.replace(newUElement)
+        } catch (e: Exception) {
+            LOG.error(e)
+        }
     }
 }
