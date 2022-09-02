@@ -17,6 +17,13 @@
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="com.github.binhlecong.androidscanner.inspections.MethodParamInspection"/>
+
+        <localInspection language="UAST"
+                         displayName="Constructor inspection"
+                         groupName="AndroidScanner plugin"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="com.github.binhlecong.androidscanner.inspections.ConstructorInspection"/>
     </extensions>
 
     <applicationListeners>
