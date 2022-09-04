@@ -9,10 +9,10 @@
     <depends>com.intellij.properties</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-<!--        <applicationService serviceImplementation="com.github.binhlecong.androidscanner.services.MyApplicationService"/>-->
-<!--        <projectService serviceImplementation="com.github.binhlecong.androidscanner.services.MyProjectService"/>-->
+        <!--        <applicationService serviceImplementation="com.github.binhlecong.androidscanner.services.MyApplicationService"/>-->
+        <!--        <projectService serviceImplementation="com.github.binhlecong.androidscanner.services.MyProjectService"/>-->
         <localInspection language="UAST"
-                         displayName="Method param inspection"
+                         displayName="Method parameters inspection"
                          groupName="AndroidScanner plugin"
                          enabledByDefault="true"
                          level="WARNING"
@@ -24,6 +24,13 @@
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="com.github.binhlecong.androidscanner.inspections.ConstructorInspection"/>
+
+        <localInspection language="UAST"
+                         displayName="Constructor parameters inspection"
+                         groupName="AndroidScanner plugin"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="com.github.binhlecong.androidscanner.inspections.ConstructorParamInspection"/>
     </extensions>
 
     <applicationListeners>

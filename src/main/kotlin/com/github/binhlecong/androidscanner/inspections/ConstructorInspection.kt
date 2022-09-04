@@ -29,8 +29,9 @@ class ConstructorInspection : AbstractBaseUastLocalInspectionTool(UMethod::class
                 val sourcePsi = node.sourcePsi ?: return false
                 for (rule in rules) {
                     val className = rule[Config.FIELD_CLASS_NAME]
-                    val nodeMethodName = node.methodName
-                    if (className.split('.').last() == nodeMethodName) {
+                    //val nodeMethodName = node.methodName
+                    val nodeClassReference = node.classReference ?: continue
+                    if (className.split('.').last() == nodeClassReference.toString()) {
                         val briefDescription = rule[Config.FIELD_BRIEF_DESCRIPTION]
                         val needFix = rule[Config.FIELD_NEED_FIX].trim() == "1"
                         var fixes = emptyArray<ConstructorQuickFix>()
