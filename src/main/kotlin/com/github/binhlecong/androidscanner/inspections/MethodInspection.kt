@@ -36,18 +36,17 @@ class MethodInspection : AbstractBaseUastLocalInspectionTool(UMethod::class.java
                     if (node.valueArgumentCount == 0)
                         continue
 
-                    val methodName = " ";
-                    val className = "java.security.SecureRandom";
-                    val paramIndex = "0".toInt()
+                    val methodName = rule[Config.FIELD_METHOD_NAME]
+                    val className = rule[Config.FIELD_METHOD_NAME]
+                    val paramIndex = rule[Config.FIELD_METHOD_NAME]
 
                     val nodeMethodName = node.methodName ?: continue
                     val isInResources = UastClassUtil.isMethodInClass(manager, methodName, className)
-                    if (nodeMethodName == " " && isInResources){
+                    if (nodeMethodName == nodeMethodName && UastClassUtil.isMethodInClass(manager, methodName, className)){
                         val argument = node.getArgumentForParameter(paramIndex)?.sourcePsi?.text ?: continue
-                        val regex = Regex("(.*setSeed.*)")
-
+                        val regex = Regex(rule[Config.FIELD_PARAM_PATTERN])
                         if (argument.matches(regex)) {
-                            val briefDescription = "\"SecureRandom\" seeds should not be predictable"
+                            val briefDescription = rule[Config.FIELD_BRIEF_DESCRIPTION]
                             // val needFix = true
                             // var fixes = emptyArray<MethodParamQuickFix>()
 
