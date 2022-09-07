@@ -13,7 +13,7 @@ import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UMethod
 import org.jetbrains.uast.visitor.UastVisitor
 
-
+// TODO: https://plugins.jetbrains.com/docs/intellij/uast.html#uast-performance-hints
 class MethodParamInspection : AbstractBaseUastLocalInspectionTool(UMethod::class.java) {
     private val tag = "AndroidScanner"
     private val rules = Helper.loadRules(Config.PATH, Config.TYPE_METHOD_PARAM)
