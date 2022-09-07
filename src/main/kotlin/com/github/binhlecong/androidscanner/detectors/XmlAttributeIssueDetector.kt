@@ -1,43 +1,10 @@
-package com.github.binhlecong.androidscanner.inspections
+package com.github.binhlecong.androidscanner.detectors
 
-import com.android.tools.idea.lint.common.AndroidLintInspectionBase
-import com.android.tools.idea.lint.common.LintIdeIssueRegistry
 import com.android.tools.lint.detector.api.*
 import com.github.binhlecong.androidscanner.Config
 import com.github.binhlecong.androidscanner.Helper
 import org.w3c.dom.Attr
 import java.util.*
-
-val XmlAttributeIssue: Issue = Issue
-    .create(
-        id = "XmlResourceIssueEntry",
-        briefDescription = "",
-        explanation = "",
-        category = Category.CORRECTNESS,
-        priority = 0,
-        severity = Severity.WARNING,
-        androidSpecific = true,
-        implementation = Implementation(
-            XmlAttributeIssueDetector::class.java,
-            Scope.RESOURCE_FILE_SCOPE
-        )
-    )
-
-class XmlResourceInspection : AndroidLintInspectionBase("Xml Resource Inspection", XmlAttributeIssue) {
-
-    init {
-        val registry = LintIdeIssueRegistry()
-        val myIssue = registry.getIssue(XmlAttributeIssue.id)
-        if (myIssue == null) {
-            val list = registry.issues as MutableList<Issue>
-            list.add(XmlAttributeIssue)
-        }
-    }
-
-    override fun getShortName(): String {
-        return "XmlResourceInspection"
-    }
-}
 
 class XmlAttributeIssueDetector : Detector() {
     private val rules = Helper.loadRules(Config.PATH, Config.TYPE_XML_ATTRIBUTE)
@@ -96,5 +63,22 @@ class XmlAttributeIssueDetector : Detector() {
                 EnumSet.of(Scope.RESOURCE_FILE)
             )
         )
+    }
+
+    companion object {
+        val ISSUE = Issue
+            .create(
+                id = "XmlResourceIssueEntry",
+                briefDescription = "",
+                explanation = "",
+                category = Category.SECURITY,
+                priority = 0,
+                severity = Severity.WARNING,
+                androidSpecific = true,
+                implementation = Implementation(
+                    XmlAttributeIssueDetector::class.java,
+                    Scope.RESOURCE_FILE_SCOPE
+                )
+            )
     }
 }

@@ -5,7 +5,7 @@
     <vendor>binhlecong</vendor>
 
     <depends>com.intellij.modules.platform</depends>
-    <depends>com.intellij.modules.androidstudio</depends>
+    <!--    <depends>com.intellij.modules.androidstudio</depends>-->
     <depends>com.intellij.modules.java</depends>
     <depends>org.jetbrains.android</depends>
     <depends>org.jetbrains.kotlin</depends>
@@ -24,30 +24,30 @@
         <!--        <applicationService serviceImplementation="com.github.binhlecong.androidscanner.services.MyApplicationService"/>-->
         <projectService serviceImplementation="com.github.binhlecong.androidscanner.services.MyProjectService"/>
 
-        <globalInspection shortName="ConstructorInspection" displayName="Constructor inspection"
-                          enabledByDefault="true" level="WARNING"
-                          language="JAVA"
-                          implementationClass="com.github.binhlecong.androidscanner.inspections.ConstructorInspection"/>
+        <!--        <globalInspection shortName="ConstructorInspection" displayName="Constructor inspection"-->
+        <!--                          enabledByDefault="true" level="WARNING"-->
+        <!--                          language="JAVA"-->
+        <!--                          implementationClass="com.github.binhlecong.androidscanner.inspections.ConstructorInspection"/>-->
 
         <globalInspection shortName="ConstructorParamInspection" displayName="Constructor parameter inspection"
                           enabledByDefault="true" level="WARNING"
                           language="JAVA"
                           implementationClass="com.github.binhlecong.androidscanner.inspections.ConstructorParamInspection"/>
 
-        <globalInspection shortName="MethodInspection" displayName="Method inspection"
-                          enabledByDefault="true" level="WARNING"
-                          language="JAVA"
-                          implementationClass="com.github.binhlecong.androidscanner.inspections.MethodInspection"/>
+        <!--        <globalInspection shortName="MethodInspection" displayName="Method inspection"-->
+        <!--                          enabledByDefault="true" level="WARNING"-->
+        <!--                          language="JAVA"-->
+        <!--                          implementationClass="com.github.binhlecong.androidscanner.inspections.MethodInspection"/>-->
 
-        <globalInspection shortName="MethodParamInspection" displayName="Method parameter inspection"
-                          enabledByDefault="true" level="WARNING"
-                          language="JAVA"
-                          implementationClass="com.github.binhlecong.androidscanner.inspections.MethodParamInspection"/>
+        <!--        <globalInspection shortName="MethodParamInspection" displayName="Method parameter inspection"-->
+        <!--                          enabledByDefault="true" level="WARNING"-->
+        <!--                          language="JAVA"-->
+        <!--                          implementationClass="com.github.binhlecong.androidscanner.inspections.MethodParamInspection"/>-->
 
-        <globalInspection shortName="XmlResourceInspection" displayName="Xml resource inspection"
-                          enabledByDefault="true" level="WARNING"
-                          language="XML"
-                          implementationClass="com.github.binhlecong.androidscanner.inspections.XmlResourceInspection"/>
+<!--        <globalInspection shortName="XmlResourceInspection" displayName="Xml resource inspection"-->
+<!--                          enabledByDefault="true" level="WARNING"-->
+<!--                          language="XML"-->
+<!--                          implementationClass="com.github.binhlecong.androidscanner.inspections.XmlAttributeInspection"/>-->
     </extensions>
 
     <applicationListeners>
