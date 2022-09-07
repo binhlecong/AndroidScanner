@@ -20,7 +20,7 @@ val ConstructorIssue: Issue = Issue
         androidSpecific = true,
         implementation = Implementation(
             ConstructorIssueDetector::class.java,
-            EnumSet.of(Scope.JAVA_FILE),
+            Scope.JAVA_FILE_SCOPE,
         )
     )
 
@@ -40,7 +40,7 @@ class ConstructorInspection : AndroidLintInspectionBase("Constructor Inspection"
     }
 }
 
-class ConstructorIssueDetector : Detector(), Detector.UastScanner {
+class ConstructorIssueDetector : Detector() {
     private val rules = Helper.loadRules(Config.PATH, Config.TYPE_CONSTRUCTOR)
 
     override fun getApplicableConstructorTypes(): List<String> {

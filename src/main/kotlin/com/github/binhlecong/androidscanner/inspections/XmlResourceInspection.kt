@@ -19,7 +19,7 @@ val XmlAttributeIssue: Issue = Issue
         androidSpecific = true,
         implementation = Implementation(
             XmlAttributeIssueDetector::class.java,
-            EnumSet.of(Scope.RESOURCE_FILE)
+            Scope.RESOURCE_FILE_SCOPE
         )
     )
 
@@ -39,7 +39,7 @@ class XmlResourceInspection : AndroidLintInspectionBase("Xml Resource Inspection
     }
 }
 
-class XmlAttributeIssueDetector : Detector(), Detector.XmlScanner {
+class XmlAttributeIssueDetector : Detector() {
     private val rules = Helper.loadRules(Config.PATH, Config.TYPE_XML_ATTRIBUTE)
 
     override fun getApplicableAttributes(): Collection<String> {

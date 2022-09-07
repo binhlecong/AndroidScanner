@@ -20,7 +20,7 @@ val MethodParamIssue: Issue = Issue
         androidSpecific = true,
         implementation = Implementation(
             MethodParamIssueDetector::class.java,
-            EnumSet.of(Scope.JAVA_FILE),
+            Scope.JAVA_FILE_SCOPE,
         ),
     )
 
@@ -40,7 +40,7 @@ class MethodParamInspection : AndroidLintInspectionBase("Method Parameter Inspec
     }
 }
 
-class MethodParamIssueDetector : Detector(), Detector.UastScanner {
+class MethodParamIssueDetector : Detector() {
     private val rules = Helper.loadRules(Config.PATH, Config.TYPE_METHOD_PARAM)
 
     override fun getApplicableMethodNames(): List<String> {

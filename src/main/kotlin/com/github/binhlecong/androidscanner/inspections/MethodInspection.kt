@@ -20,7 +20,7 @@ val MethodIssue: Issue = Issue
         androidSpecific = true,
         implementation = Implementation(
             MethodIssueDetector::class.java,
-            EnumSet.of(Scope.JAVA_FILE),
+            Scope.JAVA_FILE_SCOPE,
         ),
     )
 
@@ -40,7 +40,7 @@ class MethodInspection : AndroidLintInspectionBase("Method Inspection", MethodIs
     }
 }
 
-class MethodIssueDetector : Detector(), Detector.UastScanner {
+class MethodIssueDetector : Detector() {
     private val rules = Helper.loadRules(Config.PATH, Config.TYPE_METHOD)
 
     override fun getApplicableMethodNames(): List<String> {

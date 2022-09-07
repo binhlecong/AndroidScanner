@@ -20,7 +20,7 @@ val ConstructorParamIssue: Issue = Issue
         androidSpecific = true,
         implementation = Implementation(
             ConstructorParamIssueDetector::class.java,
-            EnumSet.of(Scope.JAVA_FILE),
+            Scope.JAVA_FILE_SCOPE,
         ),
     )
 
@@ -41,7 +41,7 @@ class ConstructorParamInspection :
     }
 }
 
-class ConstructorParamIssueDetector : Detector(), Detector.UastScanner {
+class ConstructorParamIssueDetector : Detector() {
     private val rules = Helper.loadRules(Config.PATH, Config.TYPE_CONSTRUCTOR_PARAM)
 
     override fun getApplicableConstructorTypes(): List<String> {
