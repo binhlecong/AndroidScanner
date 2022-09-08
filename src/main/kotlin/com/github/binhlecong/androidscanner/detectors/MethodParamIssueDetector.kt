@@ -91,8 +91,8 @@ class MethodParamIssueDetector : Detector() {
         val ISSUE = Issue
             .create(
                 id = "MethodParamIssueEntry",
-                briefDescription = "",
-                explanation = "",
+                briefDescription = "empty",
+                explanation = "empty",
                 category = Category.SECURITY,
                 priority = 0,
                 severity = Severity.WARNING,

@@ -90,8 +90,8 @@ class ConstructorIssueDetector : Detector() {
         val ISSUE = Issue
             .create(
                 id = "ConstructorIssueEntry",
-                briefDescription = "",
-                explanation = "",
+                briefDescription = "empty",
+                explanation = "empty",
                 category = Category.SECURITY,
                 priority = 0,
                 severity = Severity.WARNING,

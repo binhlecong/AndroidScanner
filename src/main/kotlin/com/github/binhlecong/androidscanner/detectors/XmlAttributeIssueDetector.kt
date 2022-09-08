@@ -69,8 +69,8 @@ class XmlAttributeIssueDetector : Detector() {
         val ISSUE = Issue
             .create(
                 id = "XmlResourceIssueEntry",
-                briefDescription = "",
-                explanation = "",
+                briefDescription = "empty",
+                explanation = "empty",
                 category = Category.SECURITY,
                 priority = 0,
                 severity = Severity.WARNING,

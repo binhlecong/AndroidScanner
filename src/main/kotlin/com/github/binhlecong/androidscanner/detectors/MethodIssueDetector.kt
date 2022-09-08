@@ -71,8 +71,8 @@ class MethodIssueDetector : Detector() {
         val ISSUE = Issue
             .create(
                 id = "MethodIssueEntry",
-                briefDescription = "",
-                explanation = "",
+                briefDescription = "empty",
+                explanation = "empty",
                 category = Category.SECURITY,
                 priority = 0,
                 severity = Severity.WARNING,
