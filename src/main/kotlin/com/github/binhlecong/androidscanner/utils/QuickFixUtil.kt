@@ -26,13 +26,18 @@ class UastQuickFix(
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         try {
-            val node = descriptor.psiElement.toUElement()
-            val parentNode = node?.uastParent
-            val newSource = fixNew.replace(Config.templateString, oldText)
-            val newParentSource = "{ ${parentNode?.asSourceString()?.replace(fixOld.toRegex(), newSource) ?: ""} }"
+            val parentElement = descriptor.psiElement.toUElement()?.uastParent
+            val replacement = fixNew.replace(Config.templateString, oldText)
+
             val factory = JavaPsiFacade.getInstance(project).elementFactory
-            val newExpression = factory.createCodeBlockFromText(newParentSource, descriptor.psiElement.parent)
-            parentNode?.sourcePsiElement?.replace(newExpression)
+            val newSourceString = "{ ${parentElement?.asSourceString()?.replace(fixOld.toRegex(), replacement) ?: ""} }"
+
+            val newCodeBlock = factory.createCodeBlockFromText(newSourceString, descriptor.psiElement.parent)
+            val resultElement = parentElement?.sourcePsiElement?.replace(newCodeBlock)
+
+            // Delete the front and end curly braces
+            resultElement?.firstChild?.delete()
+            resultElement?.lastChild?.delete()
         } catch (e: Exception) {
             LOG.error(e)
         }
