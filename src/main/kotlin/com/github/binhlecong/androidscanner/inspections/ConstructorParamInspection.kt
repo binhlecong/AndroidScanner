@@ -2,6 +2,7 @@ package com.github.binhlecong.androidscanner.inspections
 
 import com.github.binhlecong.androidscanner.Config
 import com.github.binhlecong.androidscanner.Helper
+import com.github.binhlecong.androidscanner.utils.UastClassUtil
 import com.github.binhlecong.androidscanner.utils.UastQuickFix
 import com.intellij.codeInspection.AbstractBaseUastLocalInspectionTool
 import com.intellij.codeInspection.InspectionManager
@@ -52,10 +53,12 @@ class ConstructorParamInspection : AbstractBaseUastLocalInspectionTool(UMethod::
                             var fixes = emptyArray<UastQuickFix>()
 
                             if (needFix) {
+                                val paramText = UastClassUtil.getParamText(node, paramIndex)
                                 fixes += UastQuickFix(
                                     rule[Config.FIELD_FIX_NAME],
                                     rule[Config.FIELD_FIX_OLD],
                                     rule[Config.FIELD_FIX_NEW],
+                                    paramText
                                 )
                             }
                             issueList.add(

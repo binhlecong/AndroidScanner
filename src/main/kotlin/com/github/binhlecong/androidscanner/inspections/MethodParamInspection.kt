@@ -54,10 +54,12 @@ class MethodParamInspection : AbstractBaseUastLocalInspectionTool(UMethod::class
                             var fixes = emptyArray<UastQuickFix>()
 
                             if (needFix) {
+                                val paramText = UastClassUtil.getParamText(node, paramIndex)
                                 fixes += UastQuickFix(
                                     rule[Config.FIELD_FIX_NAME],
                                     rule[Config.FIELD_FIX_OLD],
                                     rule[Config.FIELD_FIX_NEW],
+                                    paramText,
                                 )
                             }
                             issueList.add(

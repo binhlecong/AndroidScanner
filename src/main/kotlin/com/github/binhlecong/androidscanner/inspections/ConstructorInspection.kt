@@ -2,6 +2,7 @@ package com.github.binhlecong.androidscanner.inspections
 
 import com.github.binhlecong.androidscanner.Config
 import com.github.binhlecong.androidscanner.Helper
+import com.github.binhlecong.androidscanner.utils.UastClassUtil
 import com.github.binhlecong.androidscanner.utils.UastQuickFix
 import com.intellij.codeInspection.AbstractBaseUastLocalInspectionTool
 import com.intellij.codeInspection.InspectionManager
@@ -30,6 +31,7 @@ class ConstructorInspection : AbstractBaseUastLocalInspectionTool(UMethod::class
 
             override fun visitCallExpression(node: UCallExpression): Boolean {
                 val sourcePsi = node.sourcePsi ?: return false
+                val varName = UastClassUtil.getVarNameFromDeclaration(node)
                 for (rule in rules) {
                     val className = rule[Config.FIELD_CLASS_NAME]
                     //val nodeMethodName = node.methodName
@@ -44,6 +46,7 @@ class ConstructorInspection : AbstractBaseUastLocalInspectionTool(UMethod::class
                                 rule[Config.FIELD_FIX_NAME],
                                 rule[Config.FIELD_FIX_OLD],
                                 rule[Config.FIELD_FIX_NEW],
+                                varName,
                             )
                         }
                         issueList.add(
