@@ -3,11 +3,11 @@ package com.github.binhlecong.androidscanner.inspections
 import com.github.binhlecong.androidscanner.Config
 import com.github.binhlecong.androidscanner.Helper
 import com.github.binhlecong.androidscanner.utils.UastClassUtil
-import com.intellij.codeInspection.*
-import com.intellij.openapi.project.Project
-import com.intellij.psi.JavaPsiFacade
-import com.intellij.psi.PsiMethodCallExpression
-import org.jetbrains.rpc.LOG
+import com.github.binhlecong.androidscanner.utils.UastQuickFix
+import com.intellij.codeInspection.AbstractBaseUastLocalInspectionTool
+import com.intellij.codeInspection.InspectionManager
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.codeInspection.ProblemHighlightType
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UMethod
@@ -51,12 +51,12 @@ class MethodParamInspection : AbstractBaseUastLocalInspectionTool(UMethod::class
                         if (argument.matches(regex)) {
                             val briefDescription = rule[Config.FIELD_BRIEF_DESCRIPTION]
                             val needFix = rule[Config.FIELD_NEED_FIX].trim() == "1"
-                            var fixes = emptyArray<MethodParamQuickFix>()
+                            var fixes = emptyArray<UastQuickFix>()
 
                             if (needFix) {
-                                fixes += MethodParamQuickFix(
+                                fixes += UastQuickFix(
                                     rule[Config.FIELD_FIX_NAME],
-                                    paramIndex,
+                                    rule[Config.FIELD_FIX_OLD],
                                     rule[Config.FIELD_FIX_NEW],
                                 )
                             }
@@ -77,24 +77,5 @@ class MethodParamInspection : AbstractBaseUastLocalInspectionTool(UMethod::class
         })
 
         return issueList.toTypedArray()
-    }
-}
-
-class MethodParamQuickFix(private val fixName: String, private val paramIndex: Int, private val newFix: String) :
-    LocalQuickFix {
-    override fun getFamilyName(): String {
-        return fixName
-    }
-
-    override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-        try {
-            val factory = JavaPsiFacade.getInstance(project).elementFactory
-            val node = descriptor.psiElement as PsiMethodCallExpression
-            val param = node.argumentList.findElementAt(paramIndex + 1)
-            val newExpression = factory.createExpressionFromText(newFix, null)
-            param?.replace(newExpression)
-        } catch (e: Exception) {
-            LOG.error(e)
-        }
     }
 }

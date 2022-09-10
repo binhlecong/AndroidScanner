@@ -2,8 +2,11 @@ package com.github.binhlecong.androidscanner.inspections
 
 import com.github.binhlecong.androidscanner.Config
 import com.github.binhlecong.androidscanner.Helper
-import com.intellij.codeInspection.*
-import com.intellij.openapi.project.Project
+import com.github.binhlecong.androidscanner.utils.UastQuickFix
+import com.intellij.codeInspection.AbstractBaseUastLocalInspectionTool
+import com.intellij.codeInspection.InspectionManager
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.codeInspection.ProblemHighlightType
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UMethod
@@ -46,12 +49,12 @@ class ConstructorParamInspection : AbstractBaseUastLocalInspectionTool(UMethod::
                         if (argument.matches(regex)) {
                             val briefDescription = rule[Config.FIELD_BRIEF_DESCRIPTION]
                             val needFix = rule[Config.FIELD_NEED_FIX].trim() == "1"
-                            var fixes = emptyArray<ConstructorParamQuickFix>()
+                            var fixes = emptyArray<UastQuickFix>()
 
                             if (needFix) {
-                                fixes += ConstructorParamQuickFix(
+                                fixes += UastQuickFix(
                                     rule[Config.FIELD_FIX_NAME],
-                                    paramIndex,
+                                    rule[Config.FIELD_FIX_OLD],
                                     rule[Config.FIELD_FIX_NEW],
                                 )
                             }
@@ -72,16 +75,5 @@ class ConstructorParamInspection : AbstractBaseUastLocalInspectionTool(UMethod::
         })
 
         return issueList.toTypedArray()
-    }
-}
-
-class ConstructorParamQuickFix(private val fixName: String, private val paramIndex: Int, private val newFix: String) :
-    LocalQuickFix {
-    override fun getFamilyName(): String {
-        return fixName
-    }
-
-    override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-        TODO("Not yet implemented")
     }
 }
