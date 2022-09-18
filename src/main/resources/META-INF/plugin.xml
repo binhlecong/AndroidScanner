@@ -9,28 +9,20 @@
     <depends>com.intellij.properties</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <!--        <applicationService serviceImplementation="com.github.binhlecong.androidscanner.services.MyApplicationService"/>-->
-        <!--        <projectService serviceImplementation="com.github.binhlecong.androidscanner.services.MyProjectService"/>-->
+<!--        <applicationService serviceImplementation="com.github.binhlecong.androidscanner.services.MyApplicationService"/>-->
+<!--        <projectService serviceImplementation="com.github.binhlecong.androidscanner.services.MyProjectService"/>-->
         <localInspection language="UAST"
-                         displayName="Method parameters inspection"
+                         displayName="Method param inspection"
                          groupName="AndroidScanner plugin"
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="com.github.binhlecong.androidscanner.inspections.MethodParamInspection"/>
-
         <localInspection language="UAST"
-                         displayName="Constructor inspection"
+                         displayName="Method inspection"
                          groupName="AndroidScanner plugin"
                          enabledByDefault="true"
                          level="WARNING"
-                         implementationClass="com.github.binhlecong.androidscanner.inspections.ConstructorInspection"/>
-
-        <localInspection language="UAST"
-                         displayName="Constructor parameters inspection"
-                         groupName="AndroidScanner plugin"
-                         enabledByDefault="true"
-                         level="WARNING"
-                         implementationClass="com.github.binhlecong.androidscanner.inspections.ConstructorParamInspection"/>
+                         implementationClass="com.github.binhlecong.androidscanner.inspections.MethodInspection"/>
     </extensions>
 
     <applicationListeners>
