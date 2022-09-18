@@ -15,7 +15,7 @@ import org.jetbrains.uast.visitor.UastVisitor
 
 class MethodInspection : AbstractBaseUastLocalInspectionTool(UMethod::class.java) {
     // private val tag = "AndroidScanner"
-    private val rules = Helper.loadRules(Config.PATH, Config.TYPE_METHOD_PARAM)
+    private val rules = Helper.loadRules(Config.PATH, Config.TYPE_METHOD)
 
     override fun checkMethod(
         method: UMethod,
@@ -35,7 +35,7 @@ class MethodInspection : AbstractBaseUastLocalInspectionTool(UMethod::class.java
                 val varName = UastClassUtil.getVarNameFromDeclaration(node)
                 for (rule in rules) {
                     val methodName = rule[Config.FIELD_METHOD_NAME]
-                    val className = rule[Config.FIELD_METHOD_NAME]
+                    val className = rule[Config.FIELD_CLASS_NAME]
 
                     val nodeMethodName = node.methodName ?: continue
                     val isInResources = UastClassUtil.isMethodInClass(manager, methodName, className)
