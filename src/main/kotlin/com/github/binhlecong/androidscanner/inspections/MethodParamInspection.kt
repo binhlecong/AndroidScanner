@@ -38,8 +38,8 @@ class MethodParamInspection : AbstractBaseUastLocalInspectionTool(UMethod::class
                         continue
 
                     val methodName = rule[Config.FIELD_METHOD_NAME]
-                    val className = rule[Config.FIELD_METHOD_NAME]
-                    val paramIndex = rule[Config.FIELD_METHOD_NAME]
+                    val className = rule[Config.FIELD_CLASS_NAME]
+                    val paramIndex = rule[Config.FIELD_PARAM_INDEX].toInt()
 
                     val nodeMethodName = node.methodName ?: continue
                     if (nodeMethodName == methodName &&

@@ -34,7 +34,7 @@ class ConstructorInspection : AbstractBaseUastLocalInspectionTool(UMethod::class
                 val varName = UastClassUtil.getVarNameFromDeclaration(node)
                 for (rule in rules) {
                     val className = rule[Config.FIELD_CLASS_NAME]
-                    //val nodeMethodName = node.methodName
+
                     val nodeClassReference = node.classReference ?: continue
                     if (className.split('.').last() == nodeClassReference.toString()) {
                         val briefDescription = rule[Config.FIELD_BRIEF_DESCRIPTION]
