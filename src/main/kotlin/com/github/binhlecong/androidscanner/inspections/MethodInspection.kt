@@ -8,22 +8,20 @@ import com.intellij.codeInspection.AbstractBaseUastLocalInspectionTool
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.psi.PsiFile
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
-import org.jetbrains.uast.UMethod
+import org.jetbrains.uast.UFile
+import org.jetbrains.uast.toUElement
 import org.jetbrains.uast.visitor.UastVisitor
 
-class MethodInspection : AbstractBaseUastLocalInspectionTool(UMethod::class.java) {
+class MethodInspection : AbstractBaseUastLocalInspectionTool(UFile::class.java) {
     private val rules = Helper.loadRules(Config.PATH, Config.TYPE_METHOD)
 
-    override fun checkMethod(
-        method: UMethod,
-        manager: InspectionManager,
-        isOnTheFly: Boolean
-    ): Array<ProblemDescriptor> {
+    override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor> {
         val issueList = arrayListOf<ProblemDescriptor>()
 
-        method.accept(object : UastVisitor {
+        file.toUElement(UFile::class.java)?.accept(object : UastVisitor {
             // Required by interface
             override fun visitElement(node: UElement): Boolean {
                 return false
