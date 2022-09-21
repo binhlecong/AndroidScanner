@@ -2,6 +2,7 @@ package com.github.binhlecong.androidscanner
 
 class Config {
     companion object {
+        const val TAG = "AndroidScanner"
         const val templateString = "\${oldText}"
         var PATH = ""
         const val FIELD_ID = 0

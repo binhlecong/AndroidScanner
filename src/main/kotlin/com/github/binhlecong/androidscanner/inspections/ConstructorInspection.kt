@@ -14,7 +14,6 @@ import org.jetbrains.uast.UMethod
 import org.jetbrains.uast.visitor.UastVisitor
 
 class ConstructorInspection : AbstractBaseUastLocalInspectionTool(UMethod::class.java) {
-    private val tag = "AndroidScanner"
     private val rules = Helper.loadRules(Config.PATH, Config.TYPE_CONSTRUCTOR)
 
     override fun checkMethod(
@@ -49,6 +48,7 @@ class ConstructorInspection : AbstractBaseUastLocalInspectionTool(UMethod::class
                                 varName,
                             )
                         }
+
                         issueList.add(
                             manager.createProblemDescriptor(
                                 sourcePsi,
