@@ -20,9 +20,10 @@ class ConstructorParamInspection : AbstractBaseUastLocalInspectionTool(UFile::cl
     private val rules = Helper.loadRules(Config.PATH, Config.TYPE_CONSTRUCTOR_PARAM)
 
     override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor> {
+        val uFile = file.toUElement(UFile::class.java) ?: return ProblemDescriptor.EMPTY_ARRAY
         val issueList = arrayListOf<ProblemDescriptor>()
 
-        file.toUElement(UFile::class.java)?.accept(object : UastVisitor {
+        uFile.accept(object : UastVisitor {
             // Required by interface
             override fun visitElement(node: UElement): Boolean {
                 return false

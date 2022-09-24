@@ -15,11 +15,7 @@ import com.intellij.psi.xml.XmlFile
 class XmlAttributeInspection : LocalInspectionTool() {
     private val rules = Helper.loadRules(Config.PATH, Config.TYPE_XML_ATTRIBUTE)
 
-    override fun checkFile(
-        file: PsiFile,
-        manager: InspectionManager,
-        isOnTheFly: Boolean,
-    ): Array<ProblemDescriptor> {
+    override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor> {
         if (file !is XmlFile) {
             return ProblemDescriptor.EMPTY_ARRAY
         }
