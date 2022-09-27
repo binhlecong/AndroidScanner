@@ -12,6 +12,7 @@ import com.intellij.psi.XmlRecursiveElementVisitor
 import com.intellij.psi.xml.XmlAttribute
 import com.intellij.psi.xml.XmlFile
 
+
 class XmlAttributeInspection : LocalInspectionTool() {
     private val rules = Helper.loadRules(Config.PATH, Config.TYPE_XML_ATTRIBUTE)
 

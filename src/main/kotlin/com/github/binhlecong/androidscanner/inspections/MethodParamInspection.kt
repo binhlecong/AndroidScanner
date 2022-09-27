@@ -40,9 +40,10 @@ class MethodParamInspection : AbstractBaseUastLocalInspectionTool(UFile::class.j
                     val paramIndex = rule[Config.FIELD_PARAM_INDEX].toInt()
 
                     val nodeMethodName = node.methodName ?: continue
+                    //val isInResource = UastClassUtil.isMethodInClass(manager, nodeMethodName, className)
                     if (nodeMethodName == methodName &&
-                        node.valueArgumentCount > paramIndex &&
-                        UastClassUtil.isMethodInClass(manager, nodeMethodName, className)
+                        node.valueArgumentCount > paramIndex /*&&
+                        isInResource*/
                     ) {
                         val argument = node.getArgumentForParameter(paramIndex)?.sourcePsi?.text ?: continue
                         val regex = Regex(rule[Config.FIELD_PARAM_PATTERN])
