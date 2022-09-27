@@ -19,10 +19,11 @@ import org.jetbrains.uast.visitor.UastVisitor
 class MethodParamInspection : AbstractBaseUastLocalInspectionTool(UFile::class.java) {
     private val rules = Helper.loadRules(Config.PATH, Config.TYPE_METHOD_PARAM)
 
-    override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor>? {
+    override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor> {
+        val uFile = file.toUElement(UFile::class.java) ?: return ProblemDescriptor.EMPTY_ARRAY
         val issueList = arrayListOf<ProblemDescriptor>()
 
-        file.toUElement(UFile::class.java)?.accept(object : UastVisitor {
+        uFile.accept(object : UastVisitor {
             // Required by interface
             override fun visitElement(node: UElement): Boolean {
                 return false
