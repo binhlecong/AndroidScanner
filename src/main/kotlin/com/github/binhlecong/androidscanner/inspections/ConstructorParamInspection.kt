@@ -38,9 +38,8 @@ class ConstructorParamInspection : AbstractBaseUastLocalInspectionTool(UFile::cl
                     val className = rule[Config.FIELD_CLASS_NAME]
                     val paramIndex = rule[Config.FIELD_PARAM_INDEX].toInt()
 
-                    //val nodeMethodName = node.methodName ?: continue
-                    val nodeClassReference = node.classReference ?: continue
-                    if (className.split('.').last() == nodeClassReference.toString() &&
+                    val nodeClassReference = node.classReference?.resolvedName ?: continue
+                    if (className.split('.').last() == nodeClassReference &&
                         node.valueArgumentCount > paramIndex
                     ) {
                         val argument = node.getArgumentForParameter(paramIndex)?.sourcePsi?.text ?: continue

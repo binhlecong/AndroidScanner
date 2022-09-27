@@ -15,6 +15,7 @@ import org.jetbrains.uast.UFile
 import org.jetbrains.uast.toUElement
 import org.jetbrains.uast.visitor.UastVisitor
 
+
 class MethodInspection : AbstractBaseUastLocalInspectionTool(UFile::class.java) {
     private val rules = Helper.loadRules(Config.PATH, Config.TYPE_METHOD)
 
@@ -36,8 +37,8 @@ class MethodInspection : AbstractBaseUastLocalInspectionTool(UFile::class.java) 
                     val className = rule[Config.FIELD_CLASS_NAME]
 
                     val nodeMethodName = node.methodName ?: continue
-                    val isInResources = UastClassUtil.isMethodInClass(manager, methodName, className)
-                    if (methodName == nodeMethodName && isInResources) {
+                    //val isInResources = UastClassUtil.isMethodInClass(manager, methodName, className)
+                    if (methodName == nodeMethodName /*&& isInResources*/) {
                         val briefDescription = rule[Config.FIELD_BRIEF_DESCRIPTION]
                         val needFix = rule[Config.FIELD_NEED_FIX].trim() == "1"
                         var fixes = emptyArray<UastQuickFix>()

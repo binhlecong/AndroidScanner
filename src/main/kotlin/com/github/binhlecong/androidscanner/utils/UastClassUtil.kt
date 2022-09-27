@@ -15,14 +15,15 @@ class UastClassUtil {
         }
 
         fun getVarNameFromDeclaration(node: UCallExpression): String {
-            for (element in node.uastParent!!.javaPsi!!.children) {
+            val uChildren = node.uastParent?.sourcePsi?.children ?: return "_"
+            for (element in uChildren) {
                 if (element.text.equals("=")) {
                     return element.prevSibling.text.ifBlank {
                         element.prevSibling.prevSibling.text
                     }
                 }
             }
-            return ""
+            return "_"
         }
 
         fun getParamText(node: UCallExpression, index: Int): String {
