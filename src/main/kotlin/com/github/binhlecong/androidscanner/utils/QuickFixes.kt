@@ -3,12 +3,10 @@ package com.github.binhlecong.androidscanner.utils
 import com.github.binhlecong.androidscanner.Config
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
-import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.xml.XmlAttribute
 import org.jetbrains.rpc.LOG
-import org.jetbrains.uast.sourcePsiElement
-import org.jetbrains.uast.toUElement
 
 class UastQuickFix(
     private val fixName: String,
@@ -26,21 +24,34 @@ class UastQuickFix(
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         try {
-            val parentElement = descriptor.psiElement.toUElement()?.uastParent
+            val parentElement = descriptor.psiElement.parent
+            val oldElementTextRange = parentElement?.textRange ?: return
+
+            val editor = FileEditorManager.getInstance(project).selectedTextEditor
+            val document = editor?.document ?: return
+
             val replacement = fixNew.replace(Config.templateString, oldText)
-
-            val factory = JavaPsiFacade.getInstance(project).elementFactory
-            val newSourceString = "{ ${parentElement?.asSourceString()?.replace(fixOld.toRegex(), replacement) ?: ""} }"
-
-            val newCodeBlock = factory.createCodeBlockFromText(newSourceString, descriptor.psiElement.parent)
-            val resultElement = parentElement?.sourcePsiElement?.replace(newCodeBlock)
-
-            // Delete the front and end curly braces
-            resultElement?.firstChild?.delete()
-            resultElement?.lastChild?.delete()
+            val newSourceString = parentElement.text.replace(fixOld.toRegex(), replacement)
+            document.replaceString(oldElementTextRange.startOffset, oldElementTextRange.endOffset, newSourceString)
         } catch (e: Exception) {
             LOG.error(e)
         }
+//        try {
+//            val parentElement = descriptor.psiElement.toUElement()?.uastParent
+//            val replacement = fixNew.replace(Config.templateString, oldText)
+//
+//            val factory = KtPsiFactory(project)
+//            val newSourceString = "{ ${parentElement?.asSourceString()?.replace(fixOld.toRegex(), replacement) ?: ""} }"
+//
+//            val newCodeBlock = factory.createBlock(newSourceString)
+//            val resultElement = parentElement?.sourcePsiElement?.replace(newCodeBlock)
+//
+//            // Delete the front and end curly braces
+//            resultElement?.firstChild?.delete()
+//            resultElement?.lastChild?.delete()
+//        } catch (e: Exception) {
+//            LOG.error(e)
+//        }
     }
 }
 
