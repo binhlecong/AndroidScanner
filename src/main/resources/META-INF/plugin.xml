@@ -43,6 +43,23 @@
                          implementationClass="com.github.binhlecong.androidscanner.inspections.XmlAttributeInspection"/>
     </extensions>
 
+    <actions>
+        <action id="org.intellij.sdk.action.RulesEditorAction"
+                class="com.github.binhlecong.androidscanner.actions.RuleEditorAction"
+                text="Rules Editor"
+                description="AndroidScanner: Click to edit inspection rules">
+            <add-to-group group-id="CodeMenu" anchor="first"/>
+            <keyboard-shortcut first-keystroke="control alt A" second-keystroke="9" keymap="$default"/>
+            <mouse-shortcut keystroke="control button3 doubleClick" keymap="$default"/>
+        </action>
+        <action id="com.github.binhlecong.androidscanner.actions.LibraryScanAction"
+                class="com.github.binhlecong.androidscanner.actions.LibraryScanAction"
+                text="SCA Inspection"
+                description="AndroidScanner: Inspection project library">
+            <add-to-group group-id="CodeMenu" anchor="first"/>
+        </action>
+    </actions>
+
     <applicationListeners>
         <listener class="com.github.binhlecong.androidscanner.listeners.MyProjectManagerListener"
                   topic="com.intellij.openapi.project.ProjectManagerListener"/>
