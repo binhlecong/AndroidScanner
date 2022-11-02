@@ -1,4 +1,4 @@
-package com.github.binhlecong.androidscanner.inspections
+package com.github.binhlecong.androidscanner.inspections.old
 
 import com.github.binhlecong.androidscanner.Config
 import com.github.binhlecong.androidscanner.Helper
@@ -16,15 +16,14 @@ import org.jetbrains.uast.toUElement
 import org.jetbrains.uast.visitor.UastVisitor
 
 
-class MethodInspection : AbstractBaseUastLocalInspectionTool(UFile::class.java) {
-    private val rules = Helper.loadRules(Config.PATH, Config.TYPE_METHOD)
+class ConstructorInspection : AbstractBaseUastLocalInspectionTool(UFile::class.java) {
+    private val rules = Helper.loadRules(Config.PATH, Config.TYPE_CONSTRUCTOR)
 
     override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor> {
         val uFile = file.toUElement(UFile::class.java) ?: return ProblemDescriptor.EMPTY_ARRAY
         val issueList = arrayListOf<ProblemDescriptor>()
 
         uFile.accept(object : UastVisitor {
-            // Required by interface
             override fun visitElement(node: UElement): Boolean {
                 return false
             }
@@ -33,12 +32,10 @@ class MethodInspection : AbstractBaseUastLocalInspectionTool(UFile::class.java) 
                 val sourcePsi = node.sourcePsi ?: return false
                 val varName = UastClassUtil.getVarNameFromDeclaration(node)
                 for (rule in rules) {
-                    val methodName = rule[Config.FIELD_METHOD_NAME]
                     val className = rule[Config.FIELD_CLASS_NAME]
 
-                    val nodeMethodName = node.methodName ?: continue
-                    //val isInResources = UastClassUtil.isMethodInClass(manager, methodName, className)
-                    if (methodName == nodeMethodName /*&& isInResources*/) {
+                    val nodeClassReference = node.classReference?.resolvedName ?: continue
+                    if (className.split('.').last() == nodeClassReference) {
                         val briefDescription = rule[Config.FIELD_BRIEF_DESCRIPTION]
                         val needFix = rule[Config.FIELD_NEED_FIX].trim() == "1"
                         var fixes = emptyArray<UastQuickFix>()

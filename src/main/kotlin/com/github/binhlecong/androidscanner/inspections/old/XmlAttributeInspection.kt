@@ -1,4 +1,4 @@
-package com.github.binhlecong.androidscanner.inspections
+package com.github.binhlecong.androidscanner.inspections.old
 
 import com.github.binhlecong.androidscanner.Config
 import com.github.binhlecong.androidscanner.Helper

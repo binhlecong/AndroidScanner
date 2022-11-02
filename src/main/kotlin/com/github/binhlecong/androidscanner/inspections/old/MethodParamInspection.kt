@@ -1,4 +1,4 @@
-package com.github.binhlecong.androidscanner.inspections
+package com.github.binhlecong.androidscanner.inspections.old
 
 import com.github.binhlecong.androidscanner.Config
 import com.github.binhlecong.androidscanner.Helper
@@ -9,15 +9,12 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
-import org.jetbrains.uast.UCallExpression
-import org.jetbrains.uast.UElement
-import org.jetbrains.uast.UFile
-import org.jetbrains.uast.toUElement
+import org.jetbrains.uast.*
 import org.jetbrains.uast.visitor.UastVisitor
 
 
-class ConstructorParamInspection : AbstractBaseUastLocalInspectionTool(UFile::class.java) {
-    private val rules = Helper.loadRules(Config.PATH, Config.TYPE_CONSTRUCTOR_PARAM)
+class MethodParamInspection : AbstractBaseUastLocalInspectionTool(UFile::class.java) {
+    private val rules = Helper.loadRules(Config.PATH, Config.TYPE_METHOD_PARAM)
 
     override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor> {
         val uFile = file.toUElement(UFile::class.java) ?: return ProblemDescriptor.EMPTY_ARRAY
@@ -35,12 +32,15 @@ class ConstructorParamInspection : AbstractBaseUastLocalInspectionTool(UFile::cl
                     if (node.valueArgumentCount == 0)
                         continue
 
+                    val methodName = rule[Config.FIELD_METHOD_NAME]
                     val className = rule[Config.FIELD_CLASS_NAME]
                     val paramIndex = rule[Config.FIELD_PARAM_INDEX].toInt()
 
-                    val nodeClassReference = node.classReference?.resolvedName ?: continue
-                    if (className.split('.').last() == nodeClassReference &&
-                        node.valueArgumentCount > paramIndex
+                    val nodeMethodName = node.methodName ?: continue
+                    //val isInResource = UastClassUtil.isMethodInClass(manager, nodeMethodName, className)
+                    if (nodeMethodName == methodName &&
+                        node.valueArgumentCount > paramIndex /*&&
+                        isInResource*/
                     ) {
                         val argument = node.getArgumentForParameter(paramIndex)?.sourcePsi?.text ?: continue
                         val regex = Regex(rule[Config.FIELD_PARAM_PATTERN])
@@ -55,7 +55,7 @@ class ConstructorParamInspection : AbstractBaseUastLocalInspectionTool(UFile::cl
                                     rule[Config.FIELD_FIX_NAME],
                                     rule[Config.FIELD_FIX_OLD],
                                     rule[Config.FIELD_FIX_NEW],
-                                    paramText
+                                    paramText,
                                 )
                             }
 
