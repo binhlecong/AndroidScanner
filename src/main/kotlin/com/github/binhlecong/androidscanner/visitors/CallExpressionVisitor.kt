@@ -1,56 +1,59 @@
 package com.github.binhlecong.androidscanner.visitors
 
+import com.github.binhlecong.androidscanner.rules.RulesManager
 import com.intellij.codeInspection.InspectionManager
-import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
-import com.intellij.codeInspection.ProblemHighlightType
-import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UExpression
-import org.jetbrains.uast.USimpleNameReferenceExpression
 import org.jetbrains.uast.visitor.UastVisitor
 
 class CallExpressionVisitor(
     private val manager: InspectionManager,
-    private val issueList: ArrayList<ProblemDescriptor>,
     private val isOnTheFly: Boolean,
+    private val issues: ArrayList<ProblemDescriptor>,
 ) : UastVisitor {
+
     override fun visitElement(node: UElement): Boolean {
         return false
     }
 
     override fun visitExpression(node: UExpression): Boolean {
-        if (node::class.simpleName?.contains("UCallExpression") ?: false) {
-            val sourcePsi = node.sourcePsi ?: return false
-            issueList.add(
-                manager.createProblemDescriptor(
-                    sourcePsi,
-                    "${node::class.simpleName}: ${node.asSourceString()}",
-                    isOnTheFly,
-                    LocalQuickFix.EMPTY_ARRAY,
-                    ProblemHighlightType.WARNING,
-                )
-            )
-            if (node is UCallExpression) {
-                val args = node.valueArguments
-                var i = 0;
-                for (arg in args) {
-                    if (arg is USimpleNameReferenceExpression) {
-                        val resolvedVar = arg.resolve()
-                        issueList.add(
-                            manager.createProblemDescriptor(
-                                resolvedVar ?: continue,
-                                "Traced ref $i ${resolvedVar}: ${node.asSourceString()}",
-                                isOnTheFly,
-                                LocalQuickFix.EMPTY_ARRAY,
-                                ProblemHighlightType.WARNING,
-                            )
-                        )
-                    }
-                    i += 1
-                }
-            }
+        val rules = RulesManager().getRules()
+        for (rule in rules) {
+
+//            if (node::class.simpleName?.contains("UCallExpression") == true) {
+//                val sourcePsi = node.sourcePsi ?: return false
+//                issues.add(
+//                    manager.createProblemDescriptor(
+//                        sourcePsi,
+//                        "${node::class.simpleName}: ${node.asSourceString()}",
+//                        isOnTheFly,
+//                        LocalQuickFix.EMPTY_ARRAY,
+//                        ProblemHighlightType.WARNING,
+//                    )
+//                )
+//                if (node is UCallExpression) {
+//                    val args = node.valueArguments
+//                    var i = 0;
+//                    for (arg in args) {
+//                        if (arg is USimpleNameReferenceExpression) {
+//                            val resolvedVar = arg.resolve()
+//                            issues.add(
+//                                manager.createProblemDescriptor(
+//                                    resolvedVar ?: continue,
+//                                    "Traced ref $i ${resolvedVar}: ${node.asSourceString()}",
+//                                    isOnTheFly,
+//                                    LocalQuickFix.EMPTY_ARRAY,
+//                                    ProblemHighlightType.WARNING,
+//                                )
+//                            )
+//                        }
+//                        i += 1
+//                    }
+//                }
+            //}
         }
+
         return false
     }
 //    override fun visitElement(node: UElement): Boolean {
