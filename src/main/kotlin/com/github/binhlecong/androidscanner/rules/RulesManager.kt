@@ -1,7 +1,7 @@
 package com.github.binhlecong.androidscanner.rules
 
 class RulesManager {
-    fun getRules(): Array<Rule> {
+    fun getUastRules(query: String): Array<UastRule> {
         return emptyArray()
     }
 }

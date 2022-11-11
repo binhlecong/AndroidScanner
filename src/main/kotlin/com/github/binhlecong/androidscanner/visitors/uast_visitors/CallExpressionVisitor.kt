@@ -1,8 +1,11 @@
-package com.github.binhlecong.androidscanner.visitors
+package com.github.binhlecong.androidscanner.visitors.uast_visitors
 
 import com.github.binhlecong.androidscanner.rules.RulesManager
 import com.intellij.codeInspection.InspectionManager
+import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.codeInspection.ProblemHighlightType
+import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UExpression
 import org.jetbrains.uast.visitor.UastVisitor
@@ -18,8 +21,25 @@ class CallExpressionVisitor(
     }
 
     override fun visitExpression(node: UExpression): Boolean {
-        val rules = RulesManager().getRules()
+        val sourcePsi = node.sourcePsi ?: return false
+        if (node !is UCallExpression) return false
+        val rules = RulesManager().getUastRules(node.asSourceString())
         for (rule in rules) {
+            val inspector = rule.inspector
+            if (inspector.isSecurityIssue(node.asSourceString())) {
+                issues.add(
+                    manager.createProblemDescriptor(
+                        sourcePsi,
+                        inspector.toString(),
+                        isOnTheFly,
+                        LocalQuickFix.EMPTY_ARRAY,
+                        ProblemHighlightType.WARNING,
+                    )
+                )
+            }
+        }
+        return false
+    }
 
 //            if (node::class.simpleName?.contains("UCallExpression") == true) {
 //                val sourcePsi = node.sourcePsi ?: return false
@@ -51,11 +71,8 @@ class CallExpressionVisitor(
 //                        i += 1
 //                    }
 //                }
-            //}
-        }
+    //}
 
-        return false
-    }
 //    override fun visitElement(node: UElement): Boolean {
 //        val sourcePsi = node.sourcePsi ?: return false
 //

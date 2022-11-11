@@ -1,12 +1,10 @@
 package com.github.binhlecong.androidscanner.inspections
 
-import com.github.binhlecong.androidscanner.rules.RulesManager
-import com.github.binhlecong.androidscanner.visitors.CallExpressionVisitor
+import com.github.binhlecong.androidscanner.visitors.uast_visitors.CallExpressionVisitor
 import com.intellij.codeInspection.AbstractBaseUastLocalInspectionTool
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.psi.PsiFile
-import org.jetbrains.kotlin.idea.formatter.rules
 import org.jetbrains.uast.UFile
 import org.jetbrains.uast.toUElement
 
