@@ -1,16 +1,15 @@
 package com.github.binhlecong.androidscanner.visitors.uast_visitors
 
 import com.github.binhlecong.androidscanner.rules.RulesManager
+import com.github.binhlecong.androidscanner.strategies.UastInspectionStrategy
 import com.intellij.codeInspection.InspectionManager
-import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
-import com.intellij.codeInspection.ProblemHighlightType
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UExpression
 import org.jetbrains.uast.visitor.UastVisitor
 
-class CallExpressionVisitor(
+class UCallExpressionVisitor(
     private val manager: InspectionManager,
     private val isOnTheFly: Boolean,
     private val issues: ArrayList<ProblemDescriptor>,
@@ -25,22 +24,24 @@ class CallExpressionVisitor(
         if (node !is UCallExpression) return false
         val rules = RulesManager().getUastRules(node.asSourceString())
         for (rule in rules) {
-            val inspector = rule.inspector
-            if (inspector.isSecurityIssue(node.asSourceString())) {
+            val inspector = rule.inspector as UastInspectionStrategy
+            val highlightType = rule.highlightType
+
+            if (inspector.isSecurityIssue(node)) {
                 issues.add(
                     manager.createProblemDescriptor(
                         sourcePsi,
                         inspector.toString(),
                         isOnTheFly,
-                        LocalQuickFix.EMPTY_ARRAY,
-                        ProblemHighlightType.WARNING,
+                        inspector.buildFixes(node),
+                        highlightType,
                     )
                 )
             }
         }
         return false
     }
-
+}
 //            if (node::class.simpleName?.contains("UCallExpression") == true) {
 //                val sourcePsi = node.sourcePsi ?: return false
 //                issues.add(
@@ -124,4 +125,3 @@ class CallExpressionVisitor(
 ////        )
 //        return false
 //    }
-}

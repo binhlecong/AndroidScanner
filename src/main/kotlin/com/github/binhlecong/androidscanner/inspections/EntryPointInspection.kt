@@ -1,6 +1,6 @@
 package com.github.binhlecong.androidscanner.inspections
 
-import com.github.binhlecong.androidscanner.visitors.uast_visitors.CallExpressionVisitor
+import com.github.binhlecong.androidscanner.visitors.uast_visitors.UCallExpressionVisitor
 import com.intellij.codeInspection.AbstractBaseUastLocalInspectionTool
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
@@ -18,7 +18,7 @@ class EntryPointInspection : AbstractBaseUastLocalInspectionTool(UFile::class.ja
     override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor> {
         val uFile = file.toUElement(UFile::class.java) ?: return ProblemDescriptor.EMPTY_ARRAY
         val issues = arrayListOf<ProblemDescriptor>()
-        uFile.accept(CallExpressionVisitor(manager, isOnTheFly, issues))
+        uFile.accept(UCallExpressionVisitor(manager, isOnTheFly, issues))
         return issues.toTypedArray()
     }
 }
