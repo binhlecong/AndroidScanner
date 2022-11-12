@@ -11,7 +11,7 @@ class CallNameInspectionStrategy(private val callPattern: String) : UastInspecti
         val sourceString = node.asSourceString()
         // ex: MessageDigest.getInstance(x)
         val callName = sourceString.split('(').first()
-        if (callName == callPattern)
+        if (callName.contains(callPattern))
             return true
         return false
     }
@@ -29,13 +29,12 @@ class ArgumentInspectionStrategy(
     private val callPattern: String,
     private val argIndex: Int,
     private val argPattern: String,
-) :
-    UastInspectionStrategy {
+) : UastInspectionStrategy {
     override fun isSecurityIssue(node: UCallExpression): Boolean {
         val sourceString = node.asSourceString()
         // ex: MessageDigest.getInstance(x)
         val callName = sourceString.split('(').first()
-        if (callName == callPattern && node.valueArgumentCount > argIndex) {
+        if (callName.contains(callPattern) && node.valueArgumentCount > argIndex) {
             val argument = node.getArgumentForParameter(argIndex)?.sourcePsi?.text
             if (argument == argPattern)
                 return true
