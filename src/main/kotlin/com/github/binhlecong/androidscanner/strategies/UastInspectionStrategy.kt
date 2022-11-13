@@ -4,14 +4,18 @@ import com.intellij.codeInspection.LocalQuickFix
 import org.jetbrains.uast.UCallExpression
 
 
-interface UastInspectionStrategy : InspectionStrategy<UCallExpression>
+interface UastInspectionStrategy : InspectionStrategy<UCallExpression> {
+    fun extractFunctionName(str: String): String {
+        return str.split(' ').last().split('(').first()
+    }
+}
 
 class CallNameInspectionStrategy(private val callPattern: String) : UastInspectionStrategy {
     override fun isSecurityIssue(node: UCallExpression): Boolean {
         val sourceString = node.asSourceString()
-        // ex: MessageDigest.getInstance(x)
-        val callName = sourceString.split('(').first()
-        if (callName.contains(callPattern))
+        // ex: new MessageDigest.getInstance(x)
+        val callName = extractFunctionName(sourceString)
+        if (callName == callPattern)
             return true
         return false
     }
@@ -33,8 +37,8 @@ class ArgumentInspectionStrategy(
     override fun isSecurityIssue(node: UCallExpression): Boolean {
         val sourceString = node.asSourceString()
         // ex: MessageDigest.getInstance(x)
-        val callName = sourceString.split('(').first()
-        if (callName.contains(callPattern) && node.valueArgumentCount > argIndex) {
+        val callName = extractFunctionName(sourceString)
+        if (callName == callPattern && node.valueArgumentCount > argIndex) {
             val argument = node.getArgumentForParameter(argIndex)?.sourcePsi?.text
             if (argument == argPattern)
                 return true

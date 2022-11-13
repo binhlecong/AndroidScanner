@@ -17,7 +17,7 @@ class RulesManager {
             UastRule(
                 "MessageDigest",
                 "SHA-1 and Message-Digest hash algorithms should not be used in secure contexts",
-                ArgumentInspectionStrategy("MessageDigest.getInstance", 0, "SHA1"),
+                ArgumentInspectionStrategy("MessageDigest.getInstance", 0, "\"SHA1\""),
                 ProblemHighlightType.WARNING,
             )
         )
