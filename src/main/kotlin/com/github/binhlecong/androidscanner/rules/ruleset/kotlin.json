@@ -1,0 +1,43 @@
+[
+  {
+    "id": "CipherGetInstance",
+    "brief_description": "Default ECB mode should not be used",
+    "inspector": {
+      "element_type": "JavaUCallExpression",
+      "strategy": "ARGUMENT",
+      "call_pattern": "Cipher.getInstance",
+      "arg_index": 0,
+      "arg_pattern": "(.*AES[^\\/].*)"
+    },
+    "fixes": [
+      {
+        "name": "Improve security by using AES/GCM/NoPadding",
+        "old": "(AES)",
+        "new": "AES/GCM/NoPadding"
+      }
+    ],
+    "highlight_type": "WARNING"
+  },
+  {
+    "id": "PredictableRandom",
+    "brief_description": "Predictable pseudorandom number generator",
+    "inspector": {
+      "element_type": "JavaConstructorUCallExpression",
+      "strategy": "CALL_NAME",
+      "call_pattern": "Random"
+    },
+    "highlight_type": "WARNING"
+  },
+  {
+    "id": "MessageDigest",
+    "brief_description": "SHA-1 and Message-Digest hash algorithms should not be used in secure contexts",
+    "inspector": {
+      "element_type": "JavaUCallExpression",
+      "strategy": "ARGUMENT",
+      "call_pattern": "MessageDigest.getInstance",
+      "arg_index": 0,
+      "arg_pattern": "\"SHA1\""
+    },
+    "highlight_type": "WARNING"
+  }
+]
