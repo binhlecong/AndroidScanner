@@ -1,7 +1,7 @@
 package com.github.binhlecong.androidscanner.rules
 
-import com.github.binhlecong.androidscanner.strategies.JavaInspectionStrategy
-import com.github.binhlecong.androidscanner.strategies.KotlinInspectionStrategy
+import com.github.binhlecong.androidscanner.inspection_strategies.JavaInspectionStrategy
+import com.github.binhlecong.androidscanner.inspection_strategies.KotlinInspectionStrategy
 import com.intellij.codeInspection.ProblemHighlightType
 
 class RulesManager {

@@ -1,9 +1,9 @@
 package com.github.binhlecong.androidscanner.rules
 
-import com.github.binhlecong.androidscanner.strategies.GradleInspectionStrategy
-import com.github.binhlecong.androidscanner.strategies.JavaInspectionStrategy
-import com.github.binhlecong.androidscanner.strategies.KotlinInspectionStrategy
-import com.github.binhlecong.androidscanner.strategies.XmlInspectionStrategy
+import com.github.binhlecong.androidscanner.inspection_strategies.GradleInspectionStrategy
+import com.github.binhlecong.androidscanner.inspection_strategies.JavaInspectionStrategy
+import com.github.binhlecong.androidscanner.inspection_strategies.KotlinInspectionStrategy
+import com.github.binhlecong.androidscanner.inspection_strategies.XmlInspectionStrategy
 import com.intellij.codeInspection.ProblemHighlightType
 
 interface Rule<T> {

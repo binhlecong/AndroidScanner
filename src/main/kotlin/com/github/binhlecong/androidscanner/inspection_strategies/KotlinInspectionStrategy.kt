@@ -1,9 +1,10 @@
-package com.github.binhlecong.androidscanner.strategies
+package com.github.binhlecong.androidscanner.inspection_strategies
 
 import com.intellij.codeInspection.LocalQuickFix
 import org.jetbrains.uast.UExpression
 
-class JavaInspectionStrategy(private val pattern: String, private val groupPatterns: Array<String?>) :
+
+class KotlinInspectionStrategy(private val pattern: String, private val groupPatterns: Array<String?>) :
     InspectionStrategy<UExpression> {
     override fun isSecurityIssue(node: UExpression): Boolean {
         val sourceString = node.asSourceString()

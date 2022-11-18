@@ -9,12 +9,10 @@ import com.intellij.psi.PsiFile
 import org.jetbrains.uast.UFile
 import org.jetbrains.uast.toUElement
 
-// TODO: change to pure local inspection to support other file types
-class EntryPointInspection : AbstractBaseUastLocalInspectionTool(UFile::class.java) {
+class UastInspection : AbstractBaseUastLocalInspectionTool(UFile::class.java) {
     override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor> {
         val uFile = file.toUElement(UFile::class.java) ?: return ProblemDescriptor.EMPTY_ARRAY
         val issues = arrayListOf<ProblemDescriptor>()
-        // todo: switch xml, gradle
         when (file::class.simpleName) {
             "PsiJavaFileImpl" -> uFile.accept(JavaExpressionVisitor(manager, isOnTheFly, issues))
             "KtFile" -> uFile.accept(KotlinExpressionVisitor(manager, isOnTheFly, issues))
