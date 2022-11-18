@@ -1,8 +1,7 @@
 package com.github.binhlecong.androidscanner.rules
 
 import com.github.binhlecong.androidscanner.inspection_strategies.GradleInspectionStrategy
-import com.github.binhlecong.androidscanner.inspection_strategies.JavaInspectionStrategy
-import com.github.binhlecong.androidscanner.inspection_strategies.KotlinInspectionStrategy
+import com.github.binhlecong.androidscanner.inspection_strategies.UastInspectionStrategy
 import com.github.binhlecong.androidscanner.inspection_strategies.XmlInspectionStrategy
 import com.intellij.codeInspection.ProblemHighlightType
 
@@ -16,16 +15,16 @@ interface Rule<T> {
 data class JavaRule(
     override val id: String,
     override val briefDescription: String,
-    override val inspector: JavaInspectionStrategy,
+    override val inspector: UastInspectionStrategy,
     override val highlightType: ProblemHighlightType,
-) : Rule<JavaInspectionStrategy>
+) : Rule<UastInspectionStrategy>
 
 data class KotlinRule(
     override val id: String,
     override val briefDescription: String,
-    override val inspector: KotlinInspectionStrategy,
+    override val inspector: UastInspectionStrategy,
     override val highlightType: ProblemHighlightType,
-) : Rule<KotlinInspectionStrategy>
+) : Rule<UastInspectionStrategy>
 
 data class XmlRule(
     override val id: String,

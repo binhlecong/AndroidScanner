@@ -1,7 +1,6 @@
 package com.github.binhlecong.androidscanner.rules
 
-import com.github.binhlecong.androidscanner.inspection_strategies.JavaInspectionStrategy
-import com.github.binhlecong.androidscanner.inspection_strategies.KotlinInspectionStrategy
+import com.github.binhlecong.androidscanner.inspection_strategies.UastInspectionStrategy
 import com.intellij.codeInspection.ProblemHighlightType
 
 class RulesManager {
@@ -11,13 +10,13 @@ class RulesManager {
             JavaRule(
                 "PredictableRandom",
                 "Predictable pseudorandom number generator",
-                JavaInspectionStrategy("new Random()", emptyArray()),
+                UastInspectionStrategy("new Random()", emptyArray()),
                 ProblemHighlightType.WARNING,
             ),
             JavaRule(
                 "MessageDigest",
                 "SHA-1 and Message-Digest hash algorithms should not be used in secure contexts",
-                JavaInspectionStrategy("MessageDigest.getInstance\\((.*?)\\)", arrayOf("\"SHA1\"")),
+                UastInspectionStrategy("MessageDigest.getInstance\\((.*?)\\)", arrayOf("\"SHA1\"")),
                 ProblemHighlightType.WARNING,
             )
         )
@@ -29,13 +28,13 @@ class RulesManager {
             KotlinRule(
                 "PredictableRandom",
                 "Predictable pseudorandom number generator",
-                KotlinInspectionStrategy("Random", emptyArray()),
+                UastInspectionStrategy("Random", emptyArray()),
                 ProblemHighlightType.WARNING,
             ),
             KotlinRule(
                 "MessageDigest",
                 "SHA-1 and Message-Digest hash algorithms should not be used in secure contexts",
-                KotlinInspectionStrategy("MessageDigest.getInstance\\((.*?)\\)", arrayOf("\"SHA1\"")),
+                UastInspectionStrategy("MessageDigest.getInstance\\((.*?)\\)", arrayOf("\"SHA1\"")),
                 ProblemHighlightType.WARNING,
             )
         )
