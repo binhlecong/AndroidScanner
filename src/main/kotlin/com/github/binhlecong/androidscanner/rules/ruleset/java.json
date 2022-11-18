@@ -39,5 +39,15 @@
       "arg_pattern": "\"SHA1\""
     },
     "highlight_type": "WARNING"
+  },
+  {
+    "id": "MessageDigest",
+    "brief_description": "SHA-1 and Message-Digest hash algorithms should not be used in secure contexts",
+    "inspector": {
+      "pattern": "MessageDigest.getInstance()",
+      "arg_index": 0,
+      "arg_pattern": "\"SHA1\""
+    },
+    "highlight_type": "WARNING"
   }
 ]

@@ -1,15 +1,13 @@
 package com.github.binhlecong.androidscanner.visitors.uast_visitors
 
 import com.github.binhlecong.androidscanner.rules.RulesManager
-import com.github.binhlecong.androidscanner.strategies.UastInspectionStrategy
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
-import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UExpression
 import org.jetbrains.uast.visitor.UastVisitor
 
-class UCallExpressionVisitor(
+class JavaExpressionVisitor(
     private val manager: InspectionManager,
     private val isOnTheFly: Boolean,
     private val issues: ArrayList<ProblemDescriptor>,
@@ -21,10 +19,9 @@ class UCallExpressionVisitor(
 
     override fun visitExpression(node: UExpression): Boolean {
         val sourcePsi = node.sourcePsi ?: return false
-        if (node !is UCallExpression) return false
-        val rules = RulesManager().getUastRules(node.asSourceString())
+        val rules = RulesManager().getJavaRules()
         for (rule in rules) {
-            val inspector = rule.inspector as UastInspectionStrategy
+            val inspector = rule.inspector
             val highlightType = rule.highlightType
 
             if (inspector.isSecurityIssue(node)) {
@@ -72,7 +69,7 @@ class UCallExpressionVisitor(
 //                        i += 1
 //                    }
 //                }
-    //}
+//}
 
 //    override fun visitElement(node: UElement): Boolean {
 //        val sourcePsi = node.sourcePsi ?: return false
