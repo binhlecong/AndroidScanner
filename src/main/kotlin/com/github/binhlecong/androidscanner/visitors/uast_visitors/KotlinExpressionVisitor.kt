@@ -19,6 +19,15 @@ class KotlinExpressionVisitor(
 
     override fun visitExpression(node: UExpression): Boolean {
         val sourcePsi = node.sourcePsi ?: return false
+
+        val exprClass = node::class.simpleName
+        if (exprClass == "KotlinUBlockExpression" ||
+            exprClass == "KotlinUTryExpression" ||
+            exprClass == "KotlinUQualifiedReferenceExpression"
+        ) {
+            return false
+        }
+
         val rules = RulesManager().getKotlinRules()
         for (rule in rules) {
             val inspector = rule.inspector
@@ -28,7 +37,7 @@ class KotlinExpressionVisitor(
                 issues.add(
                     manager.createProblemDescriptor(
                         sourcePsi,
-                        inspector.toString(),
+                        node::class.simpleName + '-' + rule.briefDescription,
                         isOnTheFly,
                         inspector.buildFixes(node),
                         highlightType,

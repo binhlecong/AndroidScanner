@@ -19,6 +19,15 @@ class JavaExpressionVisitor(
 
     override fun visitExpression(node: UExpression): Boolean {
         val sourcePsi = node.sourcePsi ?: return false
+
+        val exprClass = node::class.simpleName
+        if (exprClass == "JavaUCodeBlockExpression" ||
+            exprClass == "JavaUTryExpression" ||
+            exprClass == "JavaUCompositeQualifiedExpression"
+        ) {
+            return false
+        }
+
         val rules = RulesManager().getJavaRules()
         for (rule in rules) {
             val inspector = rule.inspector
@@ -28,7 +37,7 @@ class JavaExpressionVisitor(
                 issues.add(
                     manager.createProblemDescriptor(
                         sourcePsi,
-                        inspector.toString(),
+                        node::class.simpleName + '-' + rule.briefDescription,
                         isOnTheFly,
                         inspector.buildFixes(node),
                         highlightType,

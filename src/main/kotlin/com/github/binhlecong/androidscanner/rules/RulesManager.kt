@@ -6,36 +6,36 @@ import com.intellij.codeInspection.ProblemHighlightType
 
 class RulesManager {
     fun getJavaRules(): Array<JavaRule> {
-        // fixme: just a demo
+        // todo: parse rule from json
         return arrayOf(
             JavaRule(
                 "PredictableRandom",
                 "Predictable pseudorandom number generator",
-                JavaInspectionStrategy("Random"),
+                JavaInspectionStrategy("new Random()", emptyArray()),
                 ProblemHighlightType.WARNING,
             ),
             JavaRule(
                 "MessageDigest",
                 "SHA-1 and Message-Digest hash algorithms should not be used in secure contexts",
-                JavaInspectionStrategy("MessageDigest.getInstance"),
+                JavaInspectionStrategy("MessageDigest.getInstance\\((.*?)\\)", arrayOf("\"SHA1\"")),
                 ProblemHighlightType.WARNING,
             )
         )
     }
 
     fun getKotlinRules(): Array<KotlinRule> {
-        // fixme: just a demo
+        // todo: parse rule from json
         return arrayOf(
             KotlinRule(
                 "PredictableRandom",
                 "Predictable pseudorandom number generator",
-                KotlinInspectionStrategy("Random"),
+                KotlinInspectionStrategy("Random", emptyArray()),
                 ProblemHighlightType.WARNING,
             ),
             KotlinRule(
                 "MessageDigest",
                 "SHA-1 and Message-Digest hash algorithms should not be used in secure contexts",
-                KotlinInspectionStrategy("MessageDigest.getInstance"),
+                KotlinInspectionStrategy("MessageDigest.getInstance\\((.*?)\\)", arrayOf("\"SHA1\"")),
                 ProblemHighlightType.WARNING,
             )
         )
