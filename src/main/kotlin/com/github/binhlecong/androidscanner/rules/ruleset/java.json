@@ -6,6 +6,17 @@
       "pattern": "Cipher.getInstance\\((.*?)\\)",
       "group_patterns": [
         "(.*AES[^\\/].*)"
+      ],
+      "fixes": [
+        {
+          "name": "add name",
+          "patterns": [
+            "(.*AES[^\\/].*)"
+          ],
+          "strings": [
+            "AES/GCM/NoPadding"
+          ]
+        }
       ]
     },
     "highlight_type": "WARNING"
@@ -14,7 +25,19 @@
     "id": "PredictableRandom",
     "brief_description": "Predictable pseudorandom number generator",
     "inspector": {
-      "pattern": "new Random()"
+      "pattern": "new Random()",
+      "group_patterns": [],
+      "fixes": [
+        {
+          "name": "add name",
+          "patterns": [
+            "Random"
+          ],
+          "strings": [
+            "SecureRandom"
+          ]
+        }
+      ]
     },
     "highlight_type": "WARNING"
   },
@@ -25,6 +48,17 @@
       "pattern": "MessageDigest.getInstance\\((.*?)\\)",
       "group_patterns": [
         "\"SHA1\""
+      ],
+      "fixes": [
+        {
+          "name": "add name",
+          "patterns": [
+            "SHA1"
+          ],
+          "strings": [
+            "SHA256"
+          ]
+        }
       ]
     },
     "highlight_type": "WARNING"
