@@ -1,10 +1,11 @@
 package com.github.binhlecong.androidscanner.inspection_strategies
 
-import com.intellij.codeInspection.LocalQuickFix
 import org.jetbrains.uast.UExpression
 
-class UastInspectionStrategy(private val pattern: String, private val groupPatterns: Array<String?>) :
-    InspectionStrategy<UExpression> {
+class UastInspectionStrategy(
+    private val pattern: String,
+    private val groupPatterns: Array<String?>,
+) : InspectionStrategy<UExpression> {
     override fun isSecurityIssue(node: UExpression): Boolean {
         val sourceString = node.asSourceString()
         val match = Regex(pattern).find(sourceString) ?: return false
@@ -23,9 +24,5 @@ class UastInspectionStrategy(private val pattern: String, private val groupPatte
             }
         }
         return true
-    }
-
-    override fun buildFixes(node: UExpression): Array<LocalQuickFix> {
-        return LocalQuickFix.EMPTY_ARRAY
     }
 }

@@ -39,7 +39,7 @@ class JavaExpressionVisitor(
                         sourcePsi,
                         node::class.simpleName + '-' + rule.briefDescription,
                         isOnTheFly,
-                        inspector.buildFixes(node),
+                        rule.fixes,
                         highlightType,
                     )
                 )

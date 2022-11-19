@@ -39,7 +39,7 @@ class KotlinExpressionVisitor(
                         sourcePsi,
                         node::class.simpleName + '-' + rule.briefDescription,
                         isOnTheFly,
-                        inspector.buildFixes(node),
+                        rule.fixes,
                         highlightType,
                     )
                 )
@@ -48,86 +48,3 @@ class KotlinExpressionVisitor(
         return false
     }
 }
-//            if (node::class.simpleName?.contains("UCallExpression") == true) {
-//                val sourcePsi = node.sourcePsi ?: return false
-//                issues.add(
-//                    manager.createProblemDescriptor(
-//                        sourcePsi,
-//                        "${node::class.simpleName}: ${node.asSourceString()}",
-//                        isOnTheFly,
-//                        LocalQuickFix.EMPTY_ARRAY,
-//                        ProblemHighlightType.WARNING,
-//                    )
-//                )
-//                if (node is UCallExpression) {
-//                    val args = node.valueArguments
-//                    var i = 0;
-//                    for (arg in args) {
-//                        if (arg is USimpleNameReferenceExpression) {
-//                            val resolvedVar = arg.resolve()
-//                            issues.add(
-//                                manager.createProblemDescriptor(
-//                                    resolvedVar ?: continue,
-//                                    "Traced ref $i ${resolvedVar}: ${node.asSourceString()}",
-//                                    isOnTheFly,
-//                                    LocalQuickFix.EMPTY_ARRAY,
-//                                    ProblemHighlightType.WARNING,
-//                                )
-//                            )
-//                        }
-//                        i += 1
-//                    }
-//                }
-//}
-
-//    override fun visitElement(node: UElement): Boolean {
-//        val sourcePsi = node.sourcePsi ?: return false
-//
-//        if (node::class.simpleName?.contains("USimpleNameReferenceExpression") ?: false) {
-//            val refDeclaration = node.tryResolve()
-//            if (refDeclaration != null) {
-//                issueList.add(
-//                    manager.createProblemDescriptor(
-//                        refDeclaration,
-//                        "${refDeclaration::class.simpleName}: ${refDeclaration.text}",
-//                        isOnTheFly,
-//                        LocalQuickFix.EMPTY_ARRAY,
-//                        ProblemHighlightType.WARNING,
-//                    )
-//                )
-//            }
-//        }
-//        if (node::class.simpleName?.contains("UCallExpression") ?: false) {
-//            issueList.add(
-//                manager.createProblemDescriptor(
-//                    sourcePsi,
-//                    "${node::class.simpleName}: ${node.asSourceString()}",
-//                    isOnTheFly,
-//                    LocalQuickFix.EMPTY_ARRAY,
-//                    ProblemHighlightType.WARNING,
-//                )
-//            )
-//        }
-//        if (node::class.simpleName?.contains("ULiteralExpression") ?: false) {
-//            issueList.add(
-//                manager.createProblemDescriptor(
-//                    sourcePsi,
-//                    "${node::class.simpleName}: ${node.asSourceString()}",
-//                    isOnTheFly,
-//                    LocalQuickFix.EMPTY_ARRAY,
-//                    ProblemHighlightType.WARNING,
-//                )
-//            )
-//        }
-//        // todo: use this to check expr class name
-////        issueList.add(
-////            manager.createProblemDescriptor(
-////                sourcePsi,
-////                "${node::class.simpleName}: ${node.asSourceString()}",
-////                isOnTheFly,
-////                LocalQuickFix.EMPTY_ARRAY,
-////                ProblemHighlightType.WARNING,
-////            )
-////        )
-//        return false
-//    }

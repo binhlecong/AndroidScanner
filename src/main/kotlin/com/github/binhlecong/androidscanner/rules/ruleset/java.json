@@ -9,7 +9,7 @@
       ],
       "fixes": [
         {
-          "name": "add name",
+          "name": "Improve security by using AES/GCM/NoPadding",
           "patterns": [
             "(.*AES[^\\/].*)"
           ],
@@ -29,7 +29,7 @@
       "group_patterns": [],
       "fixes": [
         {
-          "name": "add name",
+          "name": "Use SecureRandom",
           "patterns": [
             "Random"
           ],
@@ -51,7 +51,7 @@
       ],
       "fixes": [
         {
-          "name": "add name",
+          "name": "Improve security by using SHA256",
           "patterns": [
             "SHA1"
           ],
