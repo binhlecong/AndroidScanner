@@ -12,11 +12,16 @@ import java.net.URL
 internal class MyProjectManagerListener : ProjectManagerListener {
     override fun projectOpened(project: Project) {
         projectInstance = project
-        Config.PATH = projectInstance!!.basePath.toString() + "/Rules.xml"
-        val rulesFile = File(Config.PATH)
-        if (!rulesFile.exists()) {
-            val inputStream: InputStream = URL(Config.RULES_URL).openStream()
-            IOUtils.copy(inputStream, rulesFile.outputStream())
+        Config.PATH = projectInstance!!.basePath.toString() + "/security-rules"
+        val directory = File(Config.PATH)
+        val canMkdir = directory.mkdirs()
+        if (!canMkdir) return
+        for (fileName in Config.RULES_FILES) {
+            val rulesFile = File(Config.PATH + "/" + fileName)
+            if (!rulesFile.exists()) {
+                val inputStream: InputStream = URL(Config.RULES_URL + "/" + fileName).openStream()
+                IOUtils.copy(inputStream, rulesFile.outputStream())
+            }
         }
         project.getService(MyProjectService::class.java)
     }
