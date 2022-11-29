@@ -28,23 +28,7 @@ class JavaExpressionVisitor(
             return false
         }
 
-        val rules = RulesManager().getJavaRules()
-        for (rule in rules) {
-            val inspector = rule.inspector
-            val highlightType = rule.highlightType
 
-            if (inspector.isSecurityIssue(node)) {
-                issues.add(
-                    manager.createProblemDescriptor(
-                        sourcePsi,
-                        node::class.simpleName + '-' + rule.briefDescription,
-                        isOnTheFly,
-                        rule.fixes,
-                        highlightType,
-                    )
-                )
-            }
-        }
         return false
     }
 }
