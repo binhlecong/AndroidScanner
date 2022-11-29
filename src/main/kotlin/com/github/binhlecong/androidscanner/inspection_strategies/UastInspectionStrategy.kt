@@ -1,10 +1,13 @@
 package com.github.binhlecong.androidscanner.inspection_strategies
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import org.jetbrains.uast.UExpression
 
+@Serializable
 class UastInspectionStrategy(
     private val pattern: String,
-    private val groupPatterns: Array<String?>,
+    @SerialName("group_patterns") private val groupPatterns: List<String?>,
 ) : InspectionStrategy<UExpression> {
     override fun isSecurityIssue(node: UExpression): Boolean {
         val sourceString = node.asSourceString()

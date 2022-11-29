@@ -4,13 +4,16 @@ import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import org.jetbrains.rpc.LOG
 import kotlin.math.min
 
+@Serializable
 class ReplaceStrategy(
-    private val fixName: String,
-    private val patterns: Array<String>,
-    private val strings: Array<String>,
+    @SerialName("name") private val fixName: String,
+    private val patterns: List<String>,
+    private val strings: List<String>,
 ) : LocalQuickFix {
 
     override fun getFamilyName(): String {
