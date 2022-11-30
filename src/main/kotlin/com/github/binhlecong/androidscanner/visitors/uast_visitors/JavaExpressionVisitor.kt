@@ -29,7 +29,7 @@ class JavaExpressionVisitor(
             return false
         }
 
-        val rules = RulesManager().getJavaRules()
+        val rules = RulesManager.getJavaRules()
         for (rule in rules) {
             val inspector = rule.inspector
             val highlightType = rule.highlightType

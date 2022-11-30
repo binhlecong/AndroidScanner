@@ -26,6 +26,7 @@ class UastInspectionStrategy(
                 return false
             }
         }
+
         return true
     }
 }
