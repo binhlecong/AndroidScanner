@@ -3,6 +3,7 @@ package com.github.binhlecong.androidscanner.visitors.uast_visitors
 import com.github.binhlecong.androidscanner.rules.RulesManager
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.codeInspection.ProblemHighlightType
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UExpression
 import org.jetbrains.uast.visitor.UastVisitor
@@ -37,10 +38,10 @@ class JavaExpressionVisitor(
                 issues.add(
                     manager.createProblemDescriptor(
                         sourcePsi,
-                        node::class.simpleName + '-' + rule.briefDescription,
+                        node::class.simpleName + ": " + rule.briefDescription,
                         isOnTheFly,
-                        rule.fixes,
-                        highlightType,
+                        rule.fixes.toTypedArray(),
+                        ProblemHighlightType.WARNING,
                     )
                 )
             }
