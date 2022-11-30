@@ -38,7 +38,7 @@ class KotlinExpressionVisitor(
                 issues.add(
                     manager.createProblemDescriptor(
                         sourcePsi,
-                        node::class.simpleName + '-' + rule.briefDescription,
+                        node::class.simpleName + ": " + rule.briefDescription,
                         isOnTheFly,
                         rule.fixes.toTypedArray(),
                         ProblemHighlightType.WARNING,

@@ -24,12 +24,13 @@ data class JavaRule(
     @SerialName("highlight_type") override val highlightType: String,
 ) : Rule<UastInspectionStrategy>
 
+@Serializable
 data class KotlinRule(
     override val id: String,
-    override val briefDescription: String,
+    @SerialName("brief_description") override val briefDescription: String,
     override val inspector: UastInspectionStrategy,
     override val fixes: List<ReplaceStrategy>,
-    override val highlightType: String,
+    @SerialName("highlight_type") override val highlightType: String,
 ) : Rule<UastInspectionStrategy>
 
 data class XmlRule(
@@ -50,3 +51,6 @@ data class GradleRule(
 
 @Serializable
 data class JavaRuleList(val rules: List<JavaRule>)
+
+@Serializable
+data class KotlinRuleList(val rules: List<KotlinRule>)

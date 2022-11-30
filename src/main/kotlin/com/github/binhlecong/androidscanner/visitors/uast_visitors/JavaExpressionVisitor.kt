@@ -38,7 +38,7 @@ class JavaExpressionVisitor(
                 issues.add(
                     manager.createProblemDescriptor(
                         sourcePsi,
-                        "HCMUS: " + rule.briefDescription,
+                        node::class.simpleName + ": " + rule.briefDescription,
                         isOnTheFly,
                         rule.fixes.toTypedArray(),
                         ProblemHighlightType.WARNING,

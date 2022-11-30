@@ -15,7 +15,11 @@ class RulesManager {
     }
 
     fun getKotlinRules(): Array<KotlinRule> {
-        // todo: parse rule from json
-        return emptyArray()
+        val inputStream = File(Config.PATH + "/kotlin.json").inputStream()
+        val inputString = inputStream.reader().use { it.readText() }
+        inputString.trim()
+
+        val data = Json.decodeFromString(KotlinRuleList.serializer(), inputString.trimIndent().trim())
+        return data.rules.toTypedArray()
     }
 }
