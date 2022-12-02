@@ -13,7 +13,7 @@ class RuleEditorAction : AnAction() {
      * @param event Event received when the associated menu item is chosen.
      */
     override fun actionPerformed(event: AnActionEvent) {
-        RuleEditorForm().show()
+        RulesManagerForm().show()
     }
 
     /**
