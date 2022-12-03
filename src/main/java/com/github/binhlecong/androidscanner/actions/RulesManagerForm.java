@@ -1,5 +1,6 @@
 package com.github.binhlecong.androidscanner.actions;
 
+import com.github.binhlecong.androidscanner.Config;
 import com.github.binhlecong.androidscanner.inspection_strategies.UastInspectionStrategy;
 import com.github.binhlecong.androidscanner.rules.Rule;
 import com.github.binhlecong.androidscanner.rules.RulesManager;
@@ -13,7 +14,7 @@ import javax.swing.table.TableColumnModel;
 
 // https://plugins.jetbrains.com/docs/intellij/dialog-wrapper.html#example
 public class RulesManagerForm extends DialogWrapper {
-    private JComboBox selectLangDropdown;
+    private JComboBox<String> selectLangDropdown;
     private JLabel selectLangLabel;
     private JScrollPane rulesScrollView;
     private JScrollPane inspectorScrollView;
@@ -21,11 +22,13 @@ public class RulesManagerForm extends DialogWrapper {
     private JButton addRuleButton;
     private JPanel rootPanel;
 
+    final private String[] mLanguageOptions = Config.Companion.getRULES_FILES();
+
     public RulesManagerForm(@Nullable Project project) {
         super(project);
         setTitle("Rules Manager");
         init();
-        populateTable();
+        populateDialog();
     }
 
     @Override
@@ -39,8 +42,37 @@ public class RulesManagerForm extends DialogWrapper {
         super.doOKAction();
     }
 
-    private void populateTable() {
-        Rule<UastInspectionStrategy>[] rules = RulesManager.INSTANCE.getJavaRules();
+    private void populateDialog() {
+        populateDropdownList();
+        populateTable(mLanguageOptions[0]);
+    }
+
+    private void populateDropdownList() {
+        for (String option : mLanguageOptions) {
+            selectLangDropdown.addItem(option);
+        }
+        selectLangDropdown.setSelectedIndex(0);
+        selectLangDropdown.addActionListener(event -> {
+            JComboBox<String> cb = (JComboBox<String>) event.getSource();
+            String selectedItem = (String) cb.getSelectedItem();
+            populateTable(selectedItem);
+        });
+    }
+
+    private void populateTable(String language) {
+        Rule<UastInspectionStrategy>[] rules;
+        switch (language) {
+            case "java.json":
+                rules = RulesManager.INSTANCE.getJavaRules();
+                break;
+            case "kotlin.json":
+                rules = RulesManager.INSTANCE.getKotlinRules();
+                break;
+            default:
+                rules = RulesManager.INSTANCE.getJavaRules();
+                break;
+        }
+
         Object[][] data = new Object[rules.length][];
         for (int i = 0; i < rules.length; i++) {
             data[i] = getRowData(rules[i]);
