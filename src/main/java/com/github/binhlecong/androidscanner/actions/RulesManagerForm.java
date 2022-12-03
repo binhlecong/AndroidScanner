@@ -9,7 +9,9 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 
+// https://plugins.jetbrains.com/docs/intellij/dialog-wrapper.html#example
 public class RulesManagerForm extends DialogWrapper {
     private JComboBox selectLangDropdown;
     private JLabel selectLangLabel;
@@ -19,25 +21,11 @@ public class RulesManagerForm extends DialogWrapper {
     private JButton addRuleButton;
     private JPanel rootPanel;
 
-    public RulesManagerForm() {
-        super(true);
+    public RulesManagerForm(@Nullable Project project) {
+        super(project);
         setTitle("Rules Manager");
+        init();
         populateTable();
-    }
-
-    private void populateTable() {
-        Rule<UastInspectionStrategy>[] rules = RulesManager.INSTANCE.getJavaRules();
-        Object[][] data = new Object[rules.length][];
-        for (int i = 0; i < rules.length; i++) {
-            data[i] = getRowData(rules[i]);
-        }
-        rulesTable.setModel(new DefaultTableModel(
-                data, new Object[]{"ID", "Brief description", "Inspection", "Fixes", "Highlight type", "Enabled"}
-        ));
-    }
-
-    private Object[] getRowData(Rule<UastInspectionStrategy> rule) {
-        return new Object[]{rule.getId(), rule.getBriefDescription(), "...", "...", rule.getHighlightType(), true};
     }
 
     @Override
@@ -49,5 +37,28 @@ public class RulesManagerForm extends DialogWrapper {
     protected void doOKAction() {
         // todo: save rules
         super.doOKAction();
+    }
+
+    private void populateTable() {
+        Rule<UastInspectionStrategy>[] rules = RulesManager.INSTANCE.getJavaRules();
+        Object[][] data = new Object[rules.length][];
+        for (int i = 0; i < rules.length; i++) {
+            data[i] = getRowData(rules[i]);
+        }
+        rulesTable.setModel(new DefaultTableModel(
+                data, new Object[]{"ID", "Brief description", "Inspection", "Fixes", "Highlight type", "Enabled"}
+        ));
+
+        TableColumnModel columnsModel = rulesTable.getColumnModel();
+        columnsModel.getColumn(0).setMinWidth(200);
+        columnsModel.getColumn(1).setMinWidth(400);
+        columnsModel.getColumn(2).setMaxWidth(100);
+        columnsModel.getColumn(3).setMaxWidth(100);
+        columnsModel.getColumn(4).setMaxWidth(120);
+        columnsModel.getColumn(5).setMaxWidth(100);
+    }
+
+    private Object[] getRowData(Rule<UastInspectionStrategy> rule) {
+        return new Object[]{rule.getId(), rule.getBriefDescription(), "...", "...", rule.getHighlightType(), true};
     }
 }

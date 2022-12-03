@@ -33,7 +33,7 @@
           <component id="2847" class="javax.swing.JTable" binding="rulesTable">
             <constraints/>
             <properties>
-              <preferredScrollableViewportSize width="800" height="200"/>
+              <preferredScrollableViewportSize width="1200" height="200"/>
             </properties>
           </component>
         </children>
