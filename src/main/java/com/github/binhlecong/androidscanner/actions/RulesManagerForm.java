@@ -11,6 +11,9 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 // https://plugins.jetbrains.com/docs/intellij/dialog-wrapper.html#example
 public class RulesManagerForm extends DialogWrapper {
@@ -21,6 +24,7 @@ public class RulesManagerForm extends DialogWrapper {
     private JTable rulesTable;
     private JButton addRuleButton;
     private JPanel rootPanel;
+    private JPanel editorContainer;
 
     final private String[] mLanguageOptions = Config.Companion.getRULES_FILES();
 
@@ -44,7 +48,7 @@ public class RulesManagerForm extends DialogWrapper {
 
     private void populateDialog() {
         populateDropdownList();
-        populateTable(mLanguageOptions[0]);
+        populateTable();
     }
 
     private void populateDropdownList() {
@@ -55,11 +59,39 @@ public class RulesManagerForm extends DialogWrapper {
         selectLangDropdown.addActionListener(event -> {
             JComboBox<String> cb = (JComboBox<String>) event.getSource();
             String selectedItem = (String) cb.getSelectedItem();
-            populateTable(selectedItem);
+            loadDataToRulesTable(selectedItem);
         });
     }
 
-    private void populateTable(String language) {
+    private void populateTable() {
+        loadDataToRulesTable(mLanguageOptions[0]);
+
+        TableColumnModel columnsModel = rulesTable.getColumnModel();
+        columnsModel.getColumn(0).setMinWidth(200);
+        columnsModel.getColumn(1).setMinWidth(400);
+        columnsModel.getColumn(2).setMaxWidth(100);
+        columnsModel.getColumn(3).setMaxWidth(100);
+        columnsModel.getColumn(4).setMaxWidth(120);
+        columnsModel.getColumn(5).setMaxWidth(100);
+
+        rulesTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent event) {
+                int row = rulesTable.rowAtPoint(event.getPoint());
+                int col = rulesTable.columnAtPoint(event.getPoint());
+                if (row < 0 || col < 0) return;
+                if (col == 2) {
+                    InspectionEditorForm inspectionEditorForm = new InspectionEditorForm();
+                    populateEditor(inspectionEditorForm);
+                } else if (col == 3) {
+                    FixesEditorForm fixesEditorForm = new FixesEditorForm();
+                    populateEditor(fixesEditorForm);
+                }
+            }
+        });
+    }
+
+    private void loadDataToRulesTable(String language) {
         Rule<UastInspectionStrategy>[] rules;
         switch (language) {
             case "java.json":
@@ -80,14 +112,14 @@ public class RulesManagerForm extends DialogWrapper {
         rulesTable.setModel(new DefaultTableModel(
                 data, new Object[]{"ID", "Brief description", "Inspection", "Fixes", "Highlight type", "Enabled"}
         ));
+    }
 
-        TableColumnModel columnsModel = rulesTable.getColumnModel();
-        columnsModel.getColumn(0).setMinWidth(200);
-        columnsModel.getColumn(1).setMinWidth(400);
-        columnsModel.getColumn(2).setMaxWidth(100);
-        columnsModel.getColumn(3).setMaxWidth(100);
-        columnsModel.getColumn(4).setMaxWidth(120);
-        columnsModel.getColumn(5).setMaxWidth(100);
+    private void populateEditor(Component component) {
+        editorContainer.setLayout(new java.awt.BorderLayout());
+        editorContainer.removeAll();
+        editorContainer.add(component);
+        editorContainer.validate();
+        editorContainer.repaint();
     }
 
     private Object[] getRowData(Rule<UastInspectionStrategy> rule) {

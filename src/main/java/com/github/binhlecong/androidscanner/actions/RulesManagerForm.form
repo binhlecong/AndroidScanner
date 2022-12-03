@@ -40,11 +40,20 @@
       </scrollpane>
       <scrollpane id="1aad9" binding="inspectorScrollView">
         <constraints>
-          <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="1200" height="200"/>
+          </grid>
         </constraints>
         <properties/>
         <border type="none"/>
-        <children/>
+        <children>
+          <grid id="d3545" binding="editorContainer" layout-manager="BorderLayout" hgap="0" vgap="0">
+            <constraints/>
+            <properties/>
+            <border type="none"/>
+            <children/>
+          </grid>
+        </children>
       </scrollpane>
       <component id="49e99" class="javax.swing.JButton" binding="addRuleButton">
         <constraints>
