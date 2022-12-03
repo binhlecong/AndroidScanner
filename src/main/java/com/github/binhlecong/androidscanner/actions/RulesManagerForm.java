@@ -81,11 +81,13 @@ public class RulesManagerForm extends DialogWrapper {
                 int col = rulesTable.columnAtPoint(event.getPoint());
                 if (row < 0 || col < 0) return;
                 if (col == 2) {
-                    InspectionEditorForm inspectionEditorForm = new InspectionEditorForm();
+                    JPanel inspectionEditorForm = new InspectionEditorForm().getRootPanel();
                     populateEditor(inspectionEditorForm);
                 } else if (col == 3) {
-                    FixesEditorForm fixesEditorForm = new FixesEditorForm();
+                    JPanel fixesEditorForm = new FixesEditorForm().getRootPanel();
                     populateEditor(fixesEditorForm);
+                } else {
+                    populateEditor(null);
                 }
             }
         });
@@ -117,7 +119,9 @@ public class RulesManagerForm extends DialogWrapper {
     private void populateEditor(Component component) {
         editorContainer.setLayout(new java.awt.BorderLayout());
         editorContainer.removeAll();
-        editorContainer.add(component);
+        if (component != null) {
+            editorContainer.add(component);
+        }
         editorContainer.validate();
         editorContainer.repaint();
     }
