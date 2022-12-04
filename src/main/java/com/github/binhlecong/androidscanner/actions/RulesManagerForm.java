@@ -48,7 +48,7 @@ public class RulesManagerForm extends DialogWrapper {
 
     private void populateDialog() {
         populateDropdownList();
-        populateTable();
+        populateTable(mLanguageOptions[0]);
     }
 
     private void populateDropdownList() {
@@ -59,12 +59,31 @@ public class RulesManagerForm extends DialogWrapper {
         selectLangDropdown.addActionListener(event -> {
             JComboBox<String> cb = (JComboBox<String>) event.getSource();
             String selectedItem = (String) cb.getSelectedItem();
-            loadDataToRulesTable(selectedItem);
+            populateTable(selectedItem);
         });
     }
 
-    private void populateTable() {
-        loadDataToRulesTable(mLanguageOptions[0]);
+    private void populateTable(String language) {
+        Rule<UastInspectionStrategy>[] rules;
+        switch (language) {
+            case "java.json":
+                rules = RulesManager.INSTANCE.getJavaRules();
+                break;
+            case "kotlin.json":
+                rules = RulesManager.INSTANCE.getKotlinRules();
+                break;
+            default:
+                rules = RulesManager.INSTANCE.getJavaRules();
+                break;
+        }
+
+        Object[][] data = new Object[rules.length][];
+        for (int i = 0; i < rules.length; i++) {
+            data[i] = getRowData(rules[i]);
+        }
+        rulesTable.setModel(new DefaultTableModel(
+                data, new Object[]{"ID", "Brief description", "Inspection", "Fixes", "Highlight type", "Enabled"}
+        ));
 
         TableColumnModel columnsModel = rulesTable.getColumnModel();
         columnsModel.getColumn(0).setMinWidth(200);
@@ -91,29 +110,6 @@ public class RulesManagerForm extends DialogWrapper {
                 }
             }
         });
-    }
-
-    private void loadDataToRulesTable(String language) {
-        Rule<UastInspectionStrategy>[] rules;
-        switch (language) {
-            case "java.json":
-                rules = RulesManager.INSTANCE.getJavaRules();
-                break;
-            case "kotlin.json":
-                rules = RulesManager.INSTANCE.getKotlinRules();
-                break;
-            default:
-                rules = RulesManager.INSTANCE.getJavaRules();
-                break;
-        }
-
-        Object[][] data = new Object[rules.length][];
-        for (int i = 0; i < rules.length; i++) {
-            data[i] = getRowData(rules[i]);
-        }
-        rulesTable.setModel(new DefaultTableModel(
-                data, new Object[]{"ID", "Brief description", "Inspection", "Fixes", "Highlight type", "Enabled"}
-        ));
     }
 
     private void populateEditor(Component component) {
