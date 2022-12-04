@@ -103,7 +103,7 @@ public class RulesManagerForm extends DialogWrapper {
                     JPanel inspectionEditorForm = new InspectionEditorForm().getRootPanel();
                     populateEditor(inspectionEditorForm);
                 } else if (col == 3) {
-                    JPanel fixesEditorForm = new FixesEditorForm().getRootPanel();
+                    JPanel fixesEditorForm = new FixesEditorForm(rules[row].getFixes()).getRootPanel();
                     populateEditor(fixesEditorForm);
                 } else {
                     populateEditor(null);
