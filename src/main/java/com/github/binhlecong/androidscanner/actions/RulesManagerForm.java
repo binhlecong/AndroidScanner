@@ -20,11 +20,10 @@ public class RulesManagerForm extends DialogWrapper {
     private JComboBox<String> selectLangDropdown;
     private JLabel selectLangLabel;
     private JScrollPane rulesScrollView;
-    private JScrollPane inspectorScrollView;
     private JTable rulesTable;
     private JButton addRuleButton;
     private JPanel rootPanel;
-    private JPanel editorContainer;
+    private JPanel editorPanel;
 
     final private String[] mLanguageOptions = Config.Companion.getRULES_FILES();
 
@@ -113,13 +112,13 @@ public class RulesManagerForm extends DialogWrapper {
     }
 
     private void populateEditor(Component component) {
-        editorContainer.setLayout(new java.awt.BorderLayout());
-        editorContainer.removeAll();
+        editorPanel.setLayout(new java.awt.BorderLayout());
+        editorPanel.removeAll();
         if (component != null) {
-            editorContainer.add(component);
+            editorPanel.add(component);
         }
-        editorContainer.validate();
-        editorContainer.repaint();
+        editorPanel.validate();
+        editorPanel.repaint();
     }
 
     private Object[] getRowData(Rule<UastInspectionStrategy> rule) {
