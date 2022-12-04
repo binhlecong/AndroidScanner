@@ -100,7 +100,7 @@ public class RulesManagerForm extends DialogWrapper {
                 int col = rulesTable.columnAtPoint(event.getPoint());
                 if (row < 0 || col < 0) return;
                 if (col == 2) {
-                    JPanel inspectionEditorForm = new InspectionEditorForm().getRootPanel();
+                    JPanel inspectionEditorForm = new InspectionEditorForm(rules[row].getInspector()).getRootPanel();
                     populateEditor(inspectionEditorForm);
                 } else if (col == 3) {
                     JPanel fixesEditorForm = new FixesEditorForm(rules[row].getFixes()).getRootPanel();

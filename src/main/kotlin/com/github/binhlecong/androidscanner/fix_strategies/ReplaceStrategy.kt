@@ -11,9 +11,9 @@ import kotlin.math.min
 
 @Serializable
 class ReplaceStrategy(
-    @SerialName("name") private val fixName: String,
-    private val patterns: List<String>,
-    private val strings: List<String>,
+    @SerialName("name") val fixName: String,
+    val patterns: List<String>,
+    val strings: List<String>,
 ) : LocalQuickFix {
 
     override fun getFamilyName(): String {

@@ -19,7 +19,7 @@ public class FixesEditorForm extends JPanel {
         populateUI(fixes);
     }
 
-    public void populateUI(List<ReplaceStrategy> fixes){
+    private void populateUI(List<ReplaceStrategy> fixes){
         int n = fixes.size();
         Object[][] data = new Object[n][];
         for (int i = 0; i < n; i++) {
@@ -31,7 +31,7 @@ public class FixesEditorForm extends JPanel {
     }
 
     private Object[] getRowData(ReplaceStrategy fix) {
-        return new Object[]{fix.getName(),  "....."};
+        return new Object[]{fix.getFixName(),  "....."};
     }
 
     public JPanel getRootPanel() {
