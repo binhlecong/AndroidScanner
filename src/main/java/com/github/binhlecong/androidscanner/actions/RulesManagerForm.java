@@ -82,7 +82,16 @@ public class RulesManagerForm extends DialogWrapper {
         }
         rulesTable.setModel(new DefaultTableModel(
                 data, new Object[]{"ID", "Brief description", "Inspection", "Fixes", "Highlight type", "Enabled"}
-        ));
+        ) {
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                // Display the "Enable" column as checkbox
+                if (columnIndex == 5) {
+                    return Boolean.class;
+                }
+                return super.getColumnClass(columnIndex);
+            }
+        });
 
         TableColumnModel columnsModel = rulesTable.getColumnModel();
         columnsModel.getColumn(0).setMinWidth(150);
