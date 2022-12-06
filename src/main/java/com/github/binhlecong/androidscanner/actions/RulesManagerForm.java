@@ -85,11 +85,11 @@ public class RulesManagerForm extends DialogWrapper {
         ));
 
         TableColumnModel columnsModel = rulesTable.getColumnModel();
-        columnsModel.getColumn(0).setMinWidth(200);
+        columnsModel.getColumn(0).setMinWidth(150);
         columnsModel.getColumn(1).setMinWidth(400);
         columnsModel.getColumn(2).setMaxWidth(100);
         columnsModel.getColumn(3).setMaxWidth(100);
-        columnsModel.getColumn(4).setMaxWidth(120);
+        columnsModel.getColumn(4).setMinWidth(100);
         columnsModel.getColumn(5).setMaxWidth(100);
 
         rulesTable.addMouseListener(new MouseAdapter() {
