@@ -4,22 +4,29 @@ import com.github.binhlecong.androidscanner.Config
 import kotlinx.serialization.json.Json
 import java.io.File
 
-class RulesManager {
-    fun getJavaRules(): Array<JavaRule> {
-        val inputStream = File(Config.PATH + "/java.json").inputStream()
-        val inputString = inputStream.reader().use { it.readText() }
-        inputString.trim()
+object RulesManager {
+    private var javaRules: Array<JavaRule>? = null
+    private var kotlinRules: Array<KotlinRule>? = null
 
-        val data = Json.decodeFromString(JavaRuleList.serializer(), inputString.trimIndent().trim())
-        return data.rules.toTypedArray()
+    fun getJavaRules(): Array<JavaRule> {
+        if (javaRules == null) {
+            val inputStream = File(Config.PATH + "/java.json").inputStream()
+            val inputString = inputStream.reader().use { it.readText() }
+
+            val data = Json.decodeFromString(JavaRuleList.serializer(), inputString.trimIndent().trim())
+            javaRules = data.rules.toTypedArray()
+        }
+        return javaRules ?: emptyArray()
     }
 
     fun getKotlinRules(): Array<KotlinRule> {
-        val inputStream = File(Config.PATH + "/kotlin.json").inputStream()
-        val inputString = inputStream.reader().use { it.readText() }
-        inputString.trim()
+        if (kotlinRules == null) {
+            val inputStream = File(Config.PATH + "/kotlin.json").inputStream()
+            val inputString = inputStream.reader().use { it.readText() }
 
-        val data = Json.decodeFromString(KotlinRuleList.serializer(), inputString.trimIndent().trim())
-        return data.rules.toTypedArray()
+            val data = Json.decodeFromString(KotlinRuleList.serializer(), inputString.trimIndent().trim())
+            return data.rules.toTypedArray()
+        }
+        return kotlinRules ?: emptyArray()
     }
 }
