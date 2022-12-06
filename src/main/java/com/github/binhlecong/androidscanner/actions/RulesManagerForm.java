@@ -122,6 +122,7 @@ public class RulesManagerForm extends DialogWrapper {
     }
 
     private Object[] getRowData(Rule<UastInspectionStrategy> rule) {
+        // todo: add "enable" field and show it as checkbox
         return new Object[]{rule.getId(), rule.getBriefDescription(), "...", "...", rule.getHighlightType(), true};
     }
 }

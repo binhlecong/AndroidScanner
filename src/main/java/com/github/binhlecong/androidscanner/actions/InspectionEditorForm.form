@@ -52,7 +52,7 @@
               <component id="e6129" class="javax.swing.JTable" binding="patternsTable">
                 <constraints/>
                 <properties>
-                  <preferredScrollableViewportSize width="800" height="100"/>
+                  <preferredScrollableViewportSize width="800" height="200"/>
                 </properties>
               </component>
             </children>
