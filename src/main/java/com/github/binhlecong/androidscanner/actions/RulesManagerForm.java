@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -97,7 +98,8 @@ public class RulesManagerForm extends DialogWrapper {
         for (int i = 0; i < mRules.length; i++) {
             data[i] = getRowData(mRules[i]);
         }
-        rulesTable.setModel(new DefaultTableModel(
+
+        TableModel tableModel = new DefaultTableModel(
                 data, new Object[]{"ID", "Brief description", "Inspection", "Fixes", "Highlight type", "Enabled"}
         ) {
             @Override
@@ -108,7 +110,9 @@ public class RulesManagerForm extends DialogWrapper {
                 }
                 return super.getColumnClass(columnIndex);
             }
-        });
+        };
+        tableModel.addTableModelListener(new CustomTableModelListener(mRules));
+        rulesTable.setModel(tableModel);
 
         TableColumnModel columnsModel = rulesTable.getColumnModel();
         columnsModel.getColumn(0).setMinWidth(150);
@@ -148,6 +152,6 @@ public class RulesManagerForm extends DialogWrapper {
     }
 
     private Object[] getRowData(Rule<UastInspectionStrategy> rule) {
-        return new Object[]{rule.getId(), rule.getBriefDescription(), "...", "...", rule.getHighlightType(), true};
+        return new Object[]{rule.getId(), rule.getBriefDescription(), "...", "...", rule.getHighlightType(), rule.getEnabled()};
     }
 }

@@ -62,7 +62,8 @@
           ]
         }
       ],
-      "highlight_type": "WARNING"
+      "highlight_type": "WARNING",
+      "enabled": true
     }
   ]
 }

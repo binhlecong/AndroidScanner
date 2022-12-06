@@ -45,7 +45,7 @@ object RulesManager {
 
     fun saveKotlinRules(rules: Array<KotlinRule>) {
         val jsonString = Json.encodeToString(KotlinRuleList.serializer(), KotlinRuleList(rules.toList()))
-        val outputStream = File(Config.PATH + "/java.json").outputStream()
+        val outputStream = File(Config.PATH + "/kotlin.json").outputStream()
         outputStream.write(jsonString.toByteArray())
     }
 
