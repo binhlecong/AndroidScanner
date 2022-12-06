@@ -2,6 +2,8 @@ package com.github.binhlecong.androidscanner.actions;
 
 import com.github.binhlecong.androidscanner.Config;
 import com.github.binhlecong.androidscanner.inspection_strategies.UastInspectionStrategy;
+import com.github.binhlecong.androidscanner.rules.JavaRule;
+import com.github.binhlecong.androidscanner.rules.KotlinRule;
 import com.github.binhlecong.androidscanner.rules.Rule;
 import com.github.binhlecong.androidscanner.rules.RulesManager;
 import com.intellij.openapi.project.Project;
@@ -26,6 +28,8 @@ public class RulesManagerForm extends DialogWrapper {
     private JPanel editorPanel;
 
     final private String[] mLanguageOptions = Config.Companion.getRULES_FILES();
+    private String mLanguageSelected = mLanguageOptions[0];
+    private Rule<UastInspectionStrategy>[] mRules = null;
 
     public RulesManagerForm(@Nullable Project project) {
         super(project);
@@ -41,13 +45,24 @@ public class RulesManagerForm extends DialogWrapper {
 
     @Override
     protected void doOKAction() {
-        // todo: save rules
+        // Get current state of all tables
+        // Call rules manager to save rules
+        switch (mLanguageSelected) {
+            case "java.json":
+                RulesManager.INSTANCE.saveJavaRules((JavaRule[]) mRules);
+                break;
+            case "kotlin.json":
+                RulesManager.INSTANCE.saveKotlinRules((KotlinRule[]) mRules);
+                break;
+            default:
+                break;
+        }
         super.doOKAction();
     }
 
     private void populateDialog() {
         populateDropdownList();
-        populateTable(mLanguageOptions[0]);
+        populateTable(mLanguageSelected);
     }
 
     private void populateDropdownList() {
@@ -57,28 +72,30 @@ public class RulesManagerForm extends DialogWrapper {
         selectLangDropdown.setSelectedIndex(0);
         selectLangDropdown.addActionListener(event -> {
             JComboBox<String> cb = (JComboBox<String>) event.getSource();
-            String selectedItem = (String) cb.getSelectedItem();
-            populateTable(selectedItem);
+            mLanguageSelected = (String) cb.getSelectedItem();
+            populateTable(mLanguageSelected);
         });
     }
 
     private void populateTable(String language) {
-        Rule<UastInspectionStrategy>[] rules;
-        switch (language) {
-            case "java.json":
-                rules = RulesManager.INSTANCE.getJavaRules();
-                break;
-            case "kotlin.json":
-                rules = RulesManager.INSTANCE.getKotlinRules();
-                break;
-            default:
-                rules = RulesManager.INSTANCE.getJavaRules();
-                break;
+        if (language == null) {
+            mRules = RulesManager.INSTANCE.cloneJavaRules();
+        } else {
+            switch (language) {
+                case "java.json":
+                    mRules = RulesManager.INSTANCE.cloneJavaRules();
+                    break;
+                case "kotlin.json":
+                    mRules = RulesManager.INSTANCE.cloneKotlinRules();
+                    break;
+                default:
+                    mRules = RulesManager.INSTANCE.cloneJavaRules();
+                    break;
+            }
         }
-
-        Object[][] data = new Object[rules.length][];
-        for (int i = 0; i < rules.length; i++) {
-            data[i] = getRowData(rules[i]);
+        Object[][] data = new Object[mRules.length][];
+        for (int i = 0; i < mRules.length; i++) {
+            data[i] = getRowData(mRules[i]);
         }
         rulesTable.setModel(new DefaultTableModel(
                 data, new Object[]{"ID", "Brief description", "Inspection", "Fixes", "Highlight type", "Enabled"}
@@ -108,10 +125,10 @@ public class RulesManagerForm extends DialogWrapper {
                 int col = rulesTable.columnAtPoint(event.getPoint());
                 if (row < 0 || col < 0) return;
                 if (col == 2) {
-                    JPanel inspectionEditorForm = new InspectionEditorForm(rules[row].getInspector()).getRootPanel();
+                    JPanel inspectionEditorForm = new InspectionEditorForm(mRules[row].getInspector()).getRootPanel();
                     populateEditor(inspectionEditorForm);
                 } else if (col == 3) {
-                    JPanel fixesEditorForm = new FixesEditorForm(rules[row].getFixes()).getRootPanel();
+                    JPanel fixesEditorForm = new FixesEditorForm(mRules[row].getFixes()).getRootPanel();
                     populateEditor(fixesEditorForm);
                 } else {
                     populateEditor(null);
@@ -131,7 +148,6 @@ public class RulesManagerForm extends DialogWrapper {
     }
 
     private Object[] getRowData(Rule<UastInspectionStrategy> rule) {
-        // todo: add "enable" field and show it as checkbox
         return new Object[]{rule.getId(), rule.getBriefDescription(), "...", "...", rule.getHighlightType(), true};
     }
 }
