@@ -2,6 +2,7 @@ package com.github.binhlecong.androidscanner.actions;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import java.util.List;
 
 public class FindReplaceForm extends JPanel {
@@ -20,9 +21,11 @@ public class FindReplaceForm extends JPanel {
         for (int i = 0; i < n; i++) {
             data[i] = new Object[]{finds.get(i), replaces.get(i)};
         }
-        findNReplaceTable.setModel(new DefaultTableModel(
+        TableModel tableModel = new DefaultTableModel(
                 data, new Object[]{"Find", "Replace"}
-        ));
+        );
+        tableModel.addTableModelListener(new FindNReplaceTableModelListener(finds, replaces));
+        findNReplaceTable.setModel(tableModel);
     }
 
     public JPanel getRootPanel() {
