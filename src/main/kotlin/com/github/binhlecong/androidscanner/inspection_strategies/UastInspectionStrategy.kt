@@ -6,8 +6,8 @@ import org.jetbrains.uast.UExpression
 
 @Serializable
 class UastInspectionStrategy(
-    val pattern: String,
-    @SerialName("group_patterns") val groupPatterns: List<String?>,
+    var pattern: String,
+    @SerialName("group_patterns") var groupPatterns: List<String?>,
 ) : InspectionStrategy<UExpression> {
     override fun isSecurityIssue(node: UExpression): Boolean {
         val sourceString = node.asSourceString()

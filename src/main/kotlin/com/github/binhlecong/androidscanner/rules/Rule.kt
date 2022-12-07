@@ -8,45 +8,50 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 interface Rule<T> {
-    val id: String
-    val briefDescription: String
-    val inspector: T
-    val fixes: List<ReplaceStrategy>
-    val highlightType: String
+    var id: String
+    var briefDescription: String
+    var inspector: T
+    var fixes: List<ReplaceStrategy>
+    var highlightType: String
+    var enabled: Boolean
 }
 
 @Serializable
 data class JavaRule(
-    override val id: String,
-    @SerialName("brief_description") override val briefDescription: String,
-    override val inspector: UastInspectionStrategy,
-    override val fixes: List<ReplaceStrategy>,
-    @SerialName("highlight_type") override val highlightType: String,
+    override var id: String,
+    @SerialName("brief_description") override var briefDescription: String,
+    override var inspector: UastInspectionStrategy,
+    override var fixes: List<ReplaceStrategy>,
+    @SerialName("highlight_type") override var highlightType: String,
+    override var enabled: Boolean,
 ) : Rule<UastInspectionStrategy>
 
 @Serializable
 data class KotlinRule(
-    override val id: String,
-    @SerialName("brief_description") override val briefDescription: String,
-    override val inspector: UastInspectionStrategy,
-    override val fixes: List<ReplaceStrategy>,
-    @SerialName("highlight_type") override val highlightType: String,
+    override var id: String,
+    @SerialName("brief_description") override var briefDescription: String,
+    override var inspector: UastInspectionStrategy,
+    override var fixes: List<ReplaceStrategy>,
+    @SerialName("highlight_type") override var highlightType: String,
+    override var enabled: Boolean,
 ) : Rule<UastInspectionStrategy>
 
 data class XmlRule(
-    override val id: String,
-    override val briefDescription: String,
-    override val inspector: XmlInspectionStrategy,
-    override val fixes: List<ReplaceStrategy>,
-    override val highlightType: String,
+    override var id: String,
+    override var briefDescription: String,
+    override var inspector: XmlInspectionStrategy,
+    override var fixes: List<ReplaceStrategy>,
+    override var highlightType: String,
+    override var enabled: Boolean,
 ) : Rule<XmlInspectionStrategy>
 
 data class GradleRule(
-    override val id: String,
-    override val briefDescription: String,
-    override val inspector: GradleInspectionStrategy,
-    override val fixes: List<ReplaceStrategy>,
-    override val highlightType: String,
+    override var id: String,
+    override var briefDescription: String,
+    override var inspector: GradleInspectionStrategy,
+    override var fixes: List<ReplaceStrategy>,
+    override var highlightType: String,
+    override var enabled: Boolean,
 ) : Rule<GradleInspectionStrategy>
 
 @Serializable

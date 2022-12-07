@@ -3,7 +3,10 @@ package com.github.binhlecong.androidscanner.actions;
 import com.github.binhlecong.androidscanner.inspection_strategies.UastInspectionStrategy;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import java.util.List;
 
 public class InspectionEditorForm extends JPanel {
@@ -14,23 +17,48 @@ public class InspectionEditorForm extends JPanel {
     private JScrollPane patternsScrollView;
     private JFormattedTextField patternTextField;
 
+    private UastInspectionStrategy mInspectionStrategy = null;
+
     public InspectionEditorForm(UastInspectionStrategy inspection) {
         super();
-        populateUI(inspection);
+        mInspectionStrategy = inspection;
+        populateUI();
     }
 
-    private void populateUI(UastInspectionStrategy inspection) {
-        patternTextField.setText(inspection.getPattern());
+    private void populateUI() {
+        patternTextField.setText(mInspectionStrategy.getPattern());
+        patternTextField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent documentEvent) {
+                update(documentEvent);
+            }
 
-        List<String> groupPatterns = inspection.getGroupPatterns();
+            @Override
+            public void removeUpdate(DocumentEvent documentEvent) {
+                update(documentEvent);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent documentEvent) {
+                update(documentEvent);
+            }
+
+            void update(DocumentEvent event) {
+                mInspectionStrategy.setPattern(patternTextField.getText());
+            }
+        });
+
+        List<String> groupPatterns = mInspectionStrategy.getGroupPatterns();
         int n = groupPatterns.size();
         Object[][] data = new Object[n][];
         for (int i = 0; i < n; i++) {
             data[i] = new Object[]{groupPatterns.get(i)};
         }
-        patternsTable.setModel(new DefaultTableModel(
-                data, new Object[]{"Group patterns",}
-        ));
+        TableModel tableModel = new DefaultTableModel(
+                data, new Object[]{"Group patterns"}
+        );
+        tableModel.addTableModelListener(new GroupPatternsTableModelListener(mInspectionStrategy));
+        patternsTable.setModel(tableModel);
     }
 
     public JPanel getRootPanel() {

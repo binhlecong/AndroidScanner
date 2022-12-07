@@ -120,7 +120,7 @@ class JavaExpressionVisitor(
 //                )
 //            )
 //        }
-//        // todo: use this to check expr class name
+//
 ////        issueList.add(
 ////            manager.createProblemDescriptor(
 ////                sourcePsi,
