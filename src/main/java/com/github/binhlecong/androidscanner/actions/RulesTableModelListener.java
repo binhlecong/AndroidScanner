@@ -30,7 +30,7 @@ class RulesTableModelListener implements TableModelListener {
             case 1:
                 mRules[row].setBriefDescription((String) data);
                 break;
-            // todo: Save inspection and fixes details
+            // Changes in 'Inspection' and 'Fixes' column is handle elsewhere
             case 4:
                 mRules[row].setHighlightType((String) data);
                 break;
