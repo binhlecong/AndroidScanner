@@ -111,7 +111,7 @@ public class RulesManagerForm extends DialogWrapper {
                 return super.getColumnClass(columnIndex);
             }
         };
-        tableModel.addTableModelListener(new CustomTableModelListener(mRules));
+        tableModel.addTableModelListener(new RulesTableModelListener(mRules));
         rulesTable.setModel(tableModel);
 
         TableColumnModel columnsModel = rulesTable.getColumnModel();

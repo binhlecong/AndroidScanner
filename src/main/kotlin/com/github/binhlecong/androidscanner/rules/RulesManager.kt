@@ -23,6 +23,7 @@ object RulesManager {
         val jsonString = Json.encodeToString(JavaRuleList.serializer(), JavaRuleList(rules.toList()))
         val outputStream = File(Config.PATH + "/java.json").outputStream()
         outputStream.write(jsonString.toByteArray())
+        // Todo: apply changes
     }
 
     fun cloneJavaRules(): Array<JavaRule> {
@@ -47,6 +48,7 @@ object RulesManager {
         val jsonString = Json.encodeToString(KotlinRuleList.serializer(), KotlinRuleList(rules.toList()))
         val outputStream = File(Config.PATH + "/kotlin.json").outputStream()
         outputStream.write(jsonString.toByteArray())
+        // Todo: apply changes
     }
 
     fun cloneKotlinRules(): Array<KotlinRule> {

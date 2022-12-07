@@ -7,10 +7,10 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
-class CustomTableModelListener implements TableModelListener {
+class RulesTableModelListener implements TableModelListener {
     private Rule<UastInspectionStrategy>[] mRules = null;
 
-    CustomTableModelListener(Rule<UastInspectionStrategy>[] rules) {
+    RulesTableModelListener(Rule<UastInspectionStrategy>[] rules) {
         mRules = rules;
     }
 
