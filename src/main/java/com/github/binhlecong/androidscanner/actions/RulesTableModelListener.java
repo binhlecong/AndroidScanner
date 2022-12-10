@@ -1,16 +1,16 @@
 package com.github.binhlecong.androidscanner.actions;
 
-import com.github.binhlecong.androidscanner.inspection_strategies.UastInspectionStrategy;
-import com.github.binhlecong.androidscanner.rules.Rule;
+import com.github.binhlecong.androidscanner.rules.UastRule;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
+import java.util.ArrayList;
 
 class RulesTableModelListener implements TableModelListener {
-    private final Rule<UastInspectionStrategy>[] mRules;
+    private final ArrayList<UastRule> mRules;
 
-    RulesTableModelListener(Rule<UastInspectionStrategy>[] rules) {
+    RulesTableModelListener(ArrayList<UastRule> rules) {
         mRules = rules;
     }
 
@@ -28,17 +28,17 @@ class RulesTableModelListener implements TableModelListener {
         Object data = model.getValueAt(row, column);
         switch (column) {
             case 0:
-                mRules[row].setId((String) data);
+                mRules.get(row).setId((String) data);
                 break;
             case 1:
-                mRules[row].setBriefDescription((String) data);
+                mRules.get(row).setBriefDescription((String) data);
                 break;
             // Changes in 'Inspection' and 'Fixes' column is handle elsewhere
             case 4:
-                mRules[row].setHighlightType((String) data);
+                mRules.get(row).setHighlightType((String) data);
                 break;
             case 5:
-                mRules[row].setEnabled((boolean) data);
+                mRules.get(row).setEnabled((boolean) data);
                 break;
             default:
                 break;

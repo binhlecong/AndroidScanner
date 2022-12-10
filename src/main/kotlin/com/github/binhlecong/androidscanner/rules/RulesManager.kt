@@ -5,56 +5,56 @@ import kotlinx.serialization.json.Json
 import java.io.File
 
 object RulesManager {
-    private var javaRules: Array<JavaRule>? = null
-    private var kotlinRules: Array<KotlinRule>? = null
+    private var JavaRules: Array<UastRule>? = null
+    private var KotlinRules: Array<UastRule>? = null
 
-    fun getJavaRules(): Array<JavaRule> {
-        if (javaRules == null) {
+    fun getJavaRules(): Array<UastRule> {
+        if (JavaRules == null) {
             val inputStream = File(Config.PATH + "/java.json").inputStream()
             val inputString = inputStream.reader().use { it.readText() }
 
-            val data = Json.decodeFromString(JavaRuleList.serializer(), inputString.trimIndent().trim())
-            javaRules = data.rules.toTypedArray()
+            val data = Json.decodeFromString(UastRuleList.serializer(), inputString.trimIndent().trim())
+            JavaRules = data.rules.toTypedArray()
         }
-        return javaRules ?: emptyArray()
+        return JavaRules ?: emptyArray()
     }
 
-    fun saveJavaRules(rules: Array<JavaRule>) {
-        val jsonString = Json.encodeToString(JavaRuleList.serializer(), JavaRuleList(rules.toList()))
+    fun saveJavaRules(rules: ArrayList<UastRule>) {
+        val jsonString = Json.encodeToString(UastRuleList.serializer(), UastRuleList(rules))
         val outputStream = File(Config.PATH + "/java.json").outputStream()
         outputStream.write(jsonString.toByteArray())
         // Todo: apply changes
     }
 
-    fun cloneJavaRules(): Array<JavaRule> {
+    fun cloneJavaRules(): ArrayList<UastRule> {
         val inputStream = File(Config.PATH + "/java.json").inputStream()
         val inputString = inputStream.reader().use { it.readText() }
-        val data = Json.decodeFromString(JavaRuleList.serializer(), inputString.trimIndent().trim())
-        return data.rules.toTypedArray()
+        val data = Json.decodeFromString(UastRuleList.serializer(), inputString.trimIndent().trim())
+        return ArrayList(data.rules)
     }
 
-    fun getKotlinRules(): Array<KotlinRule> {
-        if (kotlinRules == null) {
+    fun getKotlinRules(): Array<UastRule> {
+        if (KotlinRules == null) {
             val inputStream = File(Config.PATH + "/kotlin.json").inputStream()
             val inputString = inputStream.reader().use { it.readText() }
 
-            val data = Json.decodeFromString(KotlinRuleList.serializer(), inputString.trimIndent().trim())
-            return data.rules.toTypedArray()
+            val data = Json.decodeFromString(UastRuleList.serializer(), inputString.trimIndent().trim())
+            KotlinRules = data.rules.toTypedArray()
         }
-        return kotlinRules ?: emptyArray()
+        return KotlinRules ?: emptyArray()
     }
 
-    fun saveKotlinRules(rules: Array<KotlinRule>) {
-        val jsonString = Json.encodeToString(KotlinRuleList.serializer(), KotlinRuleList(rules.toList()))
+    fun saveKotlinRules(rules: ArrayList<UastRule>) {
+        val jsonString = Json.encodeToString(UastRuleList.serializer(), UastRuleList(rules))
         val outputStream = File(Config.PATH + "/kotlin.json").outputStream()
         outputStream.write(jsonString.toByteArray())
         // Todo: apply changes
     }
 
-    fun cloneKotlinRules(): Array<KotlinRule> {
+    fun cloneKotlinRules(): ArrayList<UastRule> {
         val inputStream = File(Config.PATH + "/kotlin.json").inputStream()
         val inputString = inputStream.reader().use { it.readText() }
-        val data = Json.decodeFromString(KotlinRuleList.serializer(), inputString.trimIndent().trim())
-        return data.rules.toTypedArray()
+        val data = Json.decodeFromString(UastRuleList.serializer(), inputString.trimIndent().trim())
+        return ArrayList(data.rules)
     }
 }

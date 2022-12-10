@@ -28,7 +28,7 @@ public class FixesEditorForm extends JPanel {
             data[i] = getRowData(fixes.get(i));
         }
         TableModel tableModel = new DefaultTableModel(
-                data, new Object[]{"Fix name", "Find and Replace"}
+                data, new Object[]{"Fix name*", "Find and Replace*"}
         ){
             @Override
             public boolean isCellEditable(int row, int column) {
