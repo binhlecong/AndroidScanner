@@ -19,11 +19,13 @@ public class FixesEditorForm extends JPanel {
     private JScrollPane fixesScrollView;
     private JPanel findNReplacePanel;
     private JButton addLintFixButton;
+    private JButton deleteLintFixButton;
 
     public FixesEditorForm(List<ReplaceStrategy> fixes) {
         super();
         populateUI(fixes);
         populateAddButton(fixes);
+        populateDeleteButton(fixes);
     }
 
     private void populateUI(List<ReplaceStrategy> fixes) {
@@ -76,6 +78,26 @@ public class FixesEditorForm extends JPanel {
 
                 tableModel.insertRow(tableModel.getRowCount(), getRowData(newReplaceStrategy));
                 fixesTable.changeSelection(tableModel.getRowCount() - 1, 0, false, false);
+            }
+        });
+    }
+
+    private void populateDeleteButton(List<ReplaceStrategy> fixes) {
+        deleteLintFixButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                DefaultTableModel tableModel = (DefaultTableModel) fixesTable.getModel();
+                if (tableModel == null) {
+                    return;
+                }
+
+                int row = fixesTable.getSelectedRow();
+                if (row == -1) {
+                    return;
+                }
+
+                fixes.remove(row);
+                tableModel.removeRow(row);
             }
         });
     }

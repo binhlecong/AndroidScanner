@@ -12,6 +12,7 @@ public class FindReplaceForm extends JPanel {
     private JPanel rootPanel;
     private JScrollPane findNReplaceScrollView;
     private JButton addFindReplaceButton;
+    private JButton deleteFindReplaceButton;
 
     public FindReplaceForm(List<String> finds, List<String> replaces) {
         super();
@@ -46,6 +47,27 @@ public class FindReplaceForm extends JPanel {
 
                 tableModel.insertRow(tableModel.getRowCount(), new Object[]{"", ""});
                 findNReplaceTable.changeSelection(tableModel.getRowCount() - 1, 0, false, false);
+            }
+        });
+    }
+
+    private void populateDeleteButton(List<String> finds, List<String> replaces) {
+        deleteFindReplaceButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                DefaultTableModel tableModel = (DefaultTableModel) findNReplaceTable.getModel();
+                if (tableModel == null) {
+                    return;
+                }
+
+                int row = findNReplaceTable.getSelectedRow();
+                if (row == -1) {
+                    return;
+                }
+
+                finds.remove(row);
+                replaces.remove(row);
+                tableModel.removeRow(row);
             }
         });
     }

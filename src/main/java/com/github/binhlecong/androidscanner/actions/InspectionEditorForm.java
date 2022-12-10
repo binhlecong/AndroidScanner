@@ -19,6 +19,7 @@ public class InspectionEditorForm extends JPanel {
     private JScrollPane patternsScrollView;
     private JFormattedTextField patternTextField;
     private JButton addPatternButton;
+    private JButton deleteArgumentPatternsButton;
 
     private UastInspectionStrategy mInspectionStrategy = null;
 
@@ -27,6 +28,7 @@ public class InspectionEditorForm extends JPanel {
         mInspectionStrategy = inspection;
         populateUI();
         populateAddButton();
+        populateDeleteButton();
     }
 
     private void populateUI() {
@@ -74,12 +76,30 @@ public class InspectionEditorForm extends JPanel {
                     return;
                 }
 
-                List<String> patterns = mInspectionStrategy.getGroupPatterns();
-                patterns.add("");
-                mInspectionStrategy.setGroupPatterns(patterns);
+                mInspectionStrategy.getGroupPatterns().add("");
 
                 tableModel.insertRow(tableModel.getRowCount(), new Object[]{""});
                 patternsTable.changeSelection(tableModel.getRowCount() - 1, 0, false, false);
+            }
+        });
+    }
+
+    private void populateDeleteButton() {
+        deleteArgumentPatternsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                DefaultTableModel tableModel = (DefaultTableModel) patternsTable.getModel();
+                if (tableModel == null) {
+                    return;
+                }
+
+                int row = patternsTable.getSelectedRow();
+                if (row == -1) {
+                    return;
+                }
+
+                mInspectionStrategy.getGroupPatterns().remove(row);
+                tableModel.removeRow(row);
             }
         });
     }
