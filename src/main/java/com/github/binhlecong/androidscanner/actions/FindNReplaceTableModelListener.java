@@ -6,8 +6,8 @@ import javax.swing.table.TableModel;
 import java.util.List;
 
 public class FindNReplaceTableModelListener implements TableModelListener {
-    private List<String> mFinds;
-    private List<String> mReplaces;
+    private final List<String> mFinds;
+    private final List<String> mReplaces;
 
     public FindNReplaceTableModelListener(List<String> finds, List<String> replaces) {
         mFinds = finds;

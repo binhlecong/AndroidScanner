@@ -8,7 +8,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
 class RulesTableModelListener implements TableModelListener {
-    private Rule<UastInspectionStrategy>[] mRules = null;
+    private final Rule<UastInspectionStrategy>[] mRules;
 
     RulesTableModelListener(Rule<UastInspectionStrategy>[] rules) {
         mRules = rules;

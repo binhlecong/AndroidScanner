@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GroupPatternsTableModelListener implements TableModelListener {
-    private UastInspectionStrategy mInspectionStrategy;
-    private List<String> mGroupPatterns;
+    private final UastInspectionStrategy mInspectionStrategy;
+    private final List<String> mGroupPatterns;
 
     GroupPatternsTableModelListener(UastInspectionStrategy inspectionStrategy) {
         mInspectionStrategy = inspectionStrategy;

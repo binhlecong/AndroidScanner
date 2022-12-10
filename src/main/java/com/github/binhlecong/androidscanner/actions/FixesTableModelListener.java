@@ -8,7 +8,7 @@ import javax.swing.table.TableModel;
 import java.util.List;
 
 public class FixesTableModelListener implements TableModelListener {
-    private List<ReplaceStrategy> mFixes;
+    private final List<ReplaceStrategy> mFixes;
 
     public FixesTableModelListener(List<ReplaceStrategy> fixes) {
         mFixes = fixes;
