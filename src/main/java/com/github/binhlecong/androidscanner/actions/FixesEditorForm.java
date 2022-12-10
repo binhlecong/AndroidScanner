@@ -4,6 +4,7 @@ import com.github.binhlecong.androidscanner.fix_strategies.ReplaceStrategy;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -26,9 +27,11 @@ public class FixesEditorForm extends JPanel {
         for (int i = 0; i < n; i++) {
             data[i] = getRowData(fixes.get(i));
         }
-        fixesTable.setModel(new DefaultTableModel(
+        TableModel tableModel = new DefaultTableModel(
                 data, new Object[]{"Fix name", "Find and Replace"}
-        ));
+        );
+        tableModel.addTableModelListener(new FixesTableModelListener(fixes));
+        fixesTable.setModel(tableModel);
 
         fixesTable.addMouseListener(new MouseAdapter() {
             @Override
