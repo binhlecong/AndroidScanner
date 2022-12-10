@@ -29,7 +29,12 @@ public class FixesEditorForm extends JPanel {
         }
         TableModel tableModel = new DefaultTableModel(
                 data, new Object[]{"Fix name", "Find and Replace"}
-        );
+        ){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column != 1;
+            }
+        };
         tableModel.addTableModelListener(new FixesTableModelListener(fixes));
         fixesTable.setModel(tableModel);
 

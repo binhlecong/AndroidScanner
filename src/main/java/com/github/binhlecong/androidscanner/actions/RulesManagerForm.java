@@ -77,7 +77,8 @@ public class RulesManagerForm extends DialogWrapper {
                 if (tableModel == null) {
                     return;
                 }
-                tableModel.insertRow(tableModel.getRowCount(), new Object[]{"ID", "Description", "...", "...", "Warning", true});
+                Object[] newRowData = new Object[]{"", "", "...", "...", "", true};
+                tableModel.insertRow(tableModel.getRowCount(), newRowData);
                 rulesTable.changeSelection(tableModel.getRowCount() - 1, 0, false, false);
             }
         });
@@ -126,6 +127,11 @@ public class RulesManagerForm extends DialogWrapper {
                     return Boolean.class;
                 }
                 return super.getColumnClass(columnIndex);
+            }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column != 2 && column != 3;
             }
         };
         tableModel.addTableModelListener(new RulesTableModelListener(mRules));
