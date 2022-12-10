@@ -15,6 +15,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -64,6 +66,21 @@ public class RulesManagerForm extends DialogWrapper {
     private void populateDialog() {
         populateDropdownList();
         populateTable(mLanguageSelected);
+        populateAddButton();
+    }
+
+    private void populateAddButton() {
+        addRuleButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                DefaultTableModel tableModel = (DefaultTableModel) rulesTable.getModel();
+                if (tableModel == null) {
+                    return;
+                }
+                tableModel.insertRow(tableModel.getRowCount(), new Object[]{"ID", "Description", "...", "...", "Warning", true});
+                rulesTable.changeSelection(tableModel.getRowCount() - 1, 0, false, false);
+            }
+        });
     }
 
     private void populateDropdownList() {
