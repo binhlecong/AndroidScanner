@@ -29,6 +29,7 @@ public class RulesManagerForm extends DialogWrapper {
     private JButton addRuleButton;
     private JPanel rootPanel;
     private JPanel editorPanel;
+    private JButton deleteRuleButton;
 
     final private String[] mLanguageOptions = Config.Companion.getRULES_FILES();
     private String mLanguageSelected = mLanguageOptions[0];
@@ -66,6 +67,27 @@ public class RulesManagerForm extends DialogWrapper {
         populateDropdownList();
         populateTable(mLanguageSelected);
         populateAddButton();
+        populateDeleteButton();
+    }
+
+    private void populateDeleteButton() {
+        deleteRuleButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                DefaultTableModel tableModel = (DefaultTableModel) rulesTable.getModel();
+                if (tableModel == null) {
+                    return;
+                }
+
+                int row = rulesTable.getSelectedRow();
+                if (row == -1) {
+                    return;
+                }
+
+                mRules.remove(row);
+                tableModel.removeRow(row);
+            }
+        });
     }
 
     private void populateAddButton() {
