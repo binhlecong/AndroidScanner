@@ -6,8 +6,11 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FixesEditorForm extends JPanel {
@@ -15,10 +18,14 @@ public class FixesEditorForm extends JPanel {
     private JTable fixesTable;
     private JScrollPane fixesScrollView;
     private JPanel findNReplacePanel;
+    private JButton addLintFixButton;
+    private JButton deleteLintFixButton;
 
     public FixesEditorForm(List<ReplaceStrategy> fixes) {
         super();
         populateUI(fixes);
+        populateAddButton(fixes);
+        populateDeleteButton(fixes);
     }
 
     private void populateUI(List<ReplaceStrategy> fixes) {
@@ -28,8 +35,13 @@ public class FixesEditorForm extends JPanel {
             data[i] = getRowData(fixes.get(i));
         }
         TableModel tableModel = new DefaultTableModel(
-                data, new Object[]{"Fix name", "Find and Replace"}
-        );
+                data, new Object[]{"Fix name*", "Find and Replace*"}
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column != 1;
+            }
+        };
         tableModel.addTableModelListener(new FixesTableModelListener(fixes));
         fixesTable.setModel(tableModel);
 
@@ -45,6 +57,47 @@ public class FixesEditorForm extends JPanel {
                 } else {
                     populateEditor(null);
                 }
+            }
+        });
+    }
+
+    private void populateAddButton(List<ReplaceStrategy> fixes) {
+        addLintFixButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                DefaultTableModel tableModel = (DefaultTableModel) fixesTable.getModel();
+                if (tableModel == null) {
+                    return;
+                }
+
+                ReplaceStrategy newReplaceStrategy = new ReplaceStrategy(
+                        "",
+                        new ArrayList<>(0),
+                        new ArrayList<>(0));
+                fixes.add(newReplaceStrategy);
+
+                tableModel.insertRow(tableModel.getRowCount(), getRowData(newReplaceStrategy));
+                fixesTable.changeSelection(tableModel.getRowCount() - 1, 0, false, false);
+            }
+        });
+    }
+
+    private void populateDeleteButton(List<ReplaceStrategy> fixes) {
+        deleteLintFixButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                DefaultTableModel tableModel = (DefaultTableModel) fixesTable.getModel();
+                if (tableModel == null) {
+                    return;
+                }
+
+                int row = fixesTable.getSelectedRow();
+                if (row == -1) {
+                    return;
+                }
+
+                fixes.remove(row);
+                tableModel.removeRow(row);
             }
         });
     }

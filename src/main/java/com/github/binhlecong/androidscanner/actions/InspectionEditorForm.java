@@ -7,6 +7,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 
 public class InspectionEditorForm extends JPanel {
@@ -16,6 +18,8 @@ public class InspectionEditorForm extends JPanel {
     private JPanel scrollViewPanel;
     private JScrollPane patternsScrollView;
     private JFormattedTextField patternTextField;
+    private JButton addPatternButton;
+    private JButton deleteArgumentPatternsButton;
 
     private UastInspectionStrategy mInspectionStrategy = null;
 
@@ -23,6 +27,8 @@ public class InspectionEditorForm extends JPanel {
         super();
         mInspectionStrategy = inspection;
         populateUI();
+        populateAddButton();
+        populateDeleteButton();
     }
 
     private void populateUI() {
@@ -59,6 +65,43 @@ public class InspectionEditorForm extends JPanel {
         );
         tableModel.addTableModelListener(new GroupPatternsTableModelListener(mInspectionStrategy));
         patternsTable.setModel(tableModel);
+    }
+
+    private void populateAddButton() {
+        addPatternButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                DefaultTableModel tableModel = (DefaultTableModel) patternsTable.getModel();
+                if (tableModel == null) {
+                    return;
+                }
+
+                mInspectionStrategy.getGroupPatterns().add("");
+
+                tableModel.insertRow(tableModel.getRowCount(), new Object[]{""});
+                patternsTable.changeSelection(tableModel.getRowCount() - 1, 0, false, false);
+            }
+        });
+    }
+
+    private void populateDeleteButton() {
+        deleteArgumentPatternsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                DefaultTableModel tableModel = (DefaultTableModel) patternsTable.getModel();
+                if (tableModel == null) {
+                    return;
+                }
+
+                int row = patternsTable.getSelectedRow();
+                if (row == -1) {
+                    return;
+                }
+
+                mInspectionStrategy.getGroupPatterns().remove(row);
+                tableModel.removeRow(row);
+            }
+        });
     }
 
     public JPanel getRootPanel() {

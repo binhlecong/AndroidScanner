@@ -5,16 +5,12 @@ import com.github.binhlecong.androidscanner.inspection_strategies.UastInspection
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GroupPatternsTableModelListener implements TableModelListener {
-    private UastInspectionStrategy mInspectionStrategy;
-    private List<String> mGroupPatterns;
+    private final UastInspectionStrategy mInspectionStrategy;
 
     GroupPatternsTableModelListener(UastInspectionStrategy inspectionStrategy) {
         mInspectionStrategy = inspectionStrategy;
-        mGroupPatterns = new ArrayList<>(mInspectionStrategy.getGroupPatterns());
     }
 
     @Override
@@ -24,9 +20,11 @@ public class GroupPatternsTableModelListener implements TableModelListener {
         }
         int row = event.getFirstRow();
         int column = event.getColumn();
+        if (row == -1 || column == -1) {
+            return;
+        }
         TableModel model = (TableModel) event.getSource();
         Object data = model.getValueAt(row, column);
-        mGroupPatterns.set(row, (String) data);
-        mInspectionStrategy.setGroupPatterns(mGroupPatterns);
+        mInspectionStrategy.getGroupPatterns().set(row, (String) data);
     }
 }
