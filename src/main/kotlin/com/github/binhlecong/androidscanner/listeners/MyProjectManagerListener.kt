@@ -12,16 +12,17 @@ import java.net.URL
 
 internal class MyProjectManagerListener : ProjectManagerListener {
     override fun projectOpened(project: Project) {
-        val isOkExitCode = AllowInspectionDialog(project).showAndGet();
-        if (!isOkExitCode){
-            return
-        }
-
         projectInstance = project
         Config.PATH = projectInstance!!.basePath.toString() + "/security-rules"
         val directory = File(Config.PATH)
         val canMkdir = directory.mkdirs()
         if (!canMkdir) return
+
+        val isOkExitCode = AllowInspectionDialog(project).showAndGet();
+        if (!isOkExitCode){
+            return
+        }
+
         for (fileName in Config.RULES_FILES) {
             val rulesFile = File(Config.PATH + "/" + fileName)
             if (!rulesFile.exists()) {
