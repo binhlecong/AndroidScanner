@@ -44,6 +44,6 @@ class Config {
         const val ACTION_SIZE_WIDTH = 1000
         const val ACTION_SIZE_HEIGHT = 500
         const val RULES_URL = "https://raw.githubusercontent.com/binhlecong/rules_storage/main"
-        val RULES_FILES = arrayOf("java.json", "kotlin.json")
+        val RULES_FILES = arrayOf("java.json", "kotlin.json", "xml.json")
     }
 }

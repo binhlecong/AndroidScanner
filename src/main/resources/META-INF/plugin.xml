@@ -48,6 +48,13 @@
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="com.github.binhlecong.androidscanner.inspections.UastInspection"/>
+
+        <localInspection language="XML"
+                         displayName="XML inspection"
+                         groupName="AndroidScanner plugin"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="com.github.binhlecong.androidscanner.inspections.XmlInspection"/>
     </extensions>
 
     <actions>
