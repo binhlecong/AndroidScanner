@@ -64,8 +64,8 @@ object RulesManager {
             val inputStream = File(Config.PATH + "/xml.json").inputStream()
             val inputString = inputStream.reader().use { it.readText() }
 
-            val data = Json.decodeFromString(UastRuleList.serializer(), inputString.trimIndent().trim())
-            KotlinRules = data.rules.toTypedArray()
+            val data = Json.decodeFromString(XmlRuleList.serializer(), inputString.trimIndent().trim())
+            XmlRules = data.rules.toTypedArray()
         }
         return XmlRules ?: emptyArray()
     }

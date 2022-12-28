@@ -1,13 +1,14 @@
 package com.github.binhlecong.androidscanner.inspections
 
 import com.github.binhlecong.androidscanner.rules.RulesManager
-import com.intellij.codeInspection.*
+import com.intellij.codeInspection.InspectionManager
+import com.intellij.codeInspection.LocalInspectionTool
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
 import com.intellij.psi.XmlRecursiveElementVisitor
 import com.intellij.psi.xml.XmlAttribute
-import com.intellij.psi.xml.XmlElement
 import com.intellij.psi.xml.XmlFile
-import com.intellij.psi.xml.XmlTag
 
 class XmlInspection : LocalInspectionTool() {
     override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor> {
@@ -19,7 +20,6 @@ class XmlInspection : LocalInspectionTool() {
         val rules = RulesManager.getXmlRules()
         file.accept(object : XmlRecursiveElementVisitor(true) {
             override fun visitXmlAttribute(attribute: XmlAttribute?) {
-
                 for (rule in rules) {
                     val inspector = rule.inspector
                     val highlightType = rule.highlightType
