@@ -1,6 +1,7 @@
 package com.github.binhlecong.androidscanner.listeners
 
 import com.github.binhlecong.androidscanner.Config
+import com.github.binhlecong.androidscanner.actions.AllowInspectionDialog
 import com.github.binhlecong.androidscanner.services.MyProjectService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManagerListener
@@ -11,6 +12,11 @@ import java.net.URL
 
 internal class MyProjectManagerListener : ProjectManagerListener {
     override fun projectOpened(project: Project) {
+        val isOkExitCode = AllowInspectionDialog(project).showAndGet();
+        if (!isOkExitCode){
+            return
+        }
+
         projectInstance = project
         Config.PATH = projectInstance!!.basePath.toString() + "/security-rules"
         val directory = File(Config.PATH)
