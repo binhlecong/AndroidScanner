@@ -25,14 +25,18 @@ data class UastRule(
     override var enabled: Boolean,
 ) : Rule<UastInspectionStrategy>
 
+@Serializable
 data class XmlRule(
     override var id: String,
-    override var briefDescription: String,
+    @SerialName("brief_description") override var briefDescription: String,
     override var inspector: XmlInspectionStrategy,
     override var fixes: List<ReplaceStrategy>,
-    override var highlightType: String,
+    @SerialName("highlight_type") override var highlightType: String,
     override var enabled: Boolean,
 ) : Rule<XmlInspectionStrategy>
 
 @Serializable
 data class UastRuleList(val rules: List<UastRule>)
+
+@Serializable
+data class XmlRuleList(val rules: List<XmlRule>)

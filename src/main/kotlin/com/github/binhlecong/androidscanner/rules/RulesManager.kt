@@ -7,6 +7,7 @@ import java.io.File
 object RulesManager {
     private var JavaRules: Array<UastRule>? = null
     private var KotlinRules: Array<UastRule>? = null
+    private var XmlRules: Array<XmlRule>? = null
 
     fun getJavaRules(): Array<UastRule> {
         if (JavaRules == null) {
@@ -55,6 +56,31 @@ object RulesManager {
         val inputStream = File(Config.PATH + "/kotlin.json").inputStream()
         val inputString = inputStream.reader().use { it.readText() }
         val data = Json.decodeFromString(UastRuleList.serializer(), inputString.trimIndent().trim())
+        return ArrayList(data.rules)
+    }
+
+    fun getXmlRules(): Array<XmlRule> {
+        if (XmlRules == null) {
+            val inputStream = File(Config.PATH + "/xml.json").inputStream()
+            val inputString = inputStream.reader().use { it.readText() }
+
+            val data = Json.decodeFromString(UastRuleList.serializer(), inputString.trimIndent().trim())
+            KotlinRules = data.rules.toTypedArray()
+        }
+        return XmlRules ?: emptyArray()
+    }
+
+    fun saveXmlRules(rules: ArrayList<XmlRule>) {
+        val jsonString = Json.encodeToString(XmlRuleList.serializer(), XmlRuleList(rules))
+        val outputStream = File(Config.PATH + "/xml.json").outputStream()
+        outputStream.write(jsonString.toByteArray())
+        // Todo: apply changes
+    }
+
+    fun cloneXmlRules(): ArrayList<XmlRule> {
+        val inputStream = File(Config.PATH + "/xml.json").inputStream()
+        val inputString = inputStream.reader().use { it.readText() }
+        val data = Json.decodeFromString(XmlRuleList.serializer(), inputString.trimIndent().trim())
         return ArrayList(data.rules)
     }
 }

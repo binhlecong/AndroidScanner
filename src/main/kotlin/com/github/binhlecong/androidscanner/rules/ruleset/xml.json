@@ -1,0 +1,105 @@
+{
+  "rules": [
+    {
+      "id": "DebugFeaturesActivated",
+      "brief_description": "In the application manifest element of an android application, setting debuggable property to true could introduce a security risk.",
+      "inspector": {
+        "pattern": "android:debuggable=\"true\"" ,
+        "group_patterns": []
+      },
+      "fixes": [
+        {
+          "name": "In AndroidManifest.xml the android debuggable property is set to false",
+          "patterns": [
+            "(true)"
+          ],
+          "strings": [
+            "false"
+          ]
+        },
+        {
+          "name": "Avoid hardcoding the debug mode in the manifest because the build tool will add the property automatically and assign the correct value depending on the build type.",
+          "patterns": [
+            "(true)"
+          ],
+          "strings": [
+            ""
+          ]
+        }
+      ],
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "DangerousAndroidPermissions",
+      "brief_description": "Permissions that can have a large impact on user privacy should be requested only if they are really necessary to implement critical features of an application.",
+      "inspector": {
+        "pattern": "android:name=\"android.permission.",
+        "group_patterns": []
+      },
+      "fixes": [],
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "ApplicationBackup",
+      "brief_description": "Enabling Android backup exposes your application to disclosure of sensitive data and lead to corruption of local data when restore is performed from an untrusted source",
+      "inspector": {
+        "pattern": "android:allowBackup=\"true\"",
+        "group_patterns": []
+      },
+      "fixes": [
+        {
+          "name": "Disable application backup",
+          "patterns": [
+            "(true)"
+          ],
+          "strings": [
+            "false"
+          ]
+        }
+      ],
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "ClearTextProtocols",
+      "brief_description": "Clear-text protocols (ftp, telnet, non-secure http) lack encryption of transported data, as well as the capability to build an authenticated connection",
+      "inspector": {
+        "pattern": "android:usesCleartextTraffic=\"true\"",
+        "group_patterns": []
+      },
+      "fixes": [
+        {
+          "name": "Disable all clear-text traffic",
+          "patterns": [
+            "(true)"
+          ],
+          "strings": [
+            "false"
+          ]
+        }
+      ],
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "CustomPermissionsNamespace",
+      "brief_description": "Defining a custom permission in the android.permission namespace may result in an conflict if a newer version of Android adds a permission with the same name",
+      "inspector": {
+        "pattern": "android:name=\"android.permission.(.*?)\"",
+        "group_patterns": [
+          "(MYPERMISSION)"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Use a namespace specific to the application for custom permissions",
+          "patterns": [
+            "(android.permission)"
+          ],
+          "strings": [
+            "com.example.app"
+          ]
+        }
+      ],
+      "highlight_type": "WARNING"
+    }
+  ]
+}
