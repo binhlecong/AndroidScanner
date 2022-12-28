@@ -8,6 +8,7 @@ import com.github.binhlecong.androidscanner.rules.UastRule;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import org.jetbrains.annotations.Nullable;
+import com.github.binhlecong.androidscanner.actions.RuleDetailFormDialog;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -28,7 +29,6 @@ public class RulesManagerForm extends DialogWrapper {
     private JTable rulesTable;
     private JButton addRuleButton;
     private JPanel rootPanel;
-    private JPanel editorPanel;
     private JButton deleteRuleButton;
 
     final private String[] mLanguageOptions = Config.Companion.getRULES_FILES();
@@ -94,10 +94,10 @@ public class RulesManagerForm extends DialogWrapper {
         addRuleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
-                DefaultTableModel tableModel = (DefaultTableModel) rulesTable.getModel();
+                /*DefaultTableModel tableModel = (DefaultTableModel) rulesTable.getModel();
                 if (tableModel == null) {
                     return;
-                }
+                }*/
 
                 UastRule newRule = new UastRule(
                         "",
@@ -106,7 +106,7 @@ public class RulesManagerForm extends DialogWrapper {
                         new ArrayList<ReplaceStrategy>(),
                         "WARNING",
                         true);
-                mRules.add(newRule);
+                /*mRules.add(newRule);
 
                 Object[] newRowData = getRowData(newRule);
                 tableModel.insertRow(tableModel.getRowCount(), newRowData);
@@ -115,7 +115,14 @@ public class RulesManagerForm extends DialogWrapper {
                 JPanel inspectionEditorForm = new InspectionEditorForm(
                         new UastInspectionStrategy("", new ArrayList<String>())
                 ).getRootPanel();
-                populateEditor(inspectionEditorForm);
+                populateEditor(inspectionEditorForm);*/
+                /* RuleDetailFormDialog ruleDetailDialog = new RuleDetailFormDialog(new javax.swing.JFrame(),true, newRule, mRules);
+                ruleDetailDialog.showAndGet(); */
+                /* RuleDetailEditorForm ruleDetailEditorForm = new RuleDetailEditorForm(new javax.swing.JFrame(),true, newRule, mRules);
+                ruleDetailEditorForm.setVisible(true); */
+                Hello dialog = new Hello(mRules, rulesTable);
+                dialog.setLocationRelativeTo(new javax.swing.JFrame());
+                dialog.setVisible(true);
             }
         });
     }
@@ -154,12 +161,12 @@ public class RulesManagerForm extends DialogWrapper {
         }
 
         TableModel tableModel = new DefaultTableModel(
-                data, new Object[]{"ID*", "Brief description*", "Inspection*", "Fixes", "Highlight type", "Enabled"}
+                data, new Object[]{"ID*", "Brief description*", "Highlight type", "Enabled"}
         ) {
             @Override
             public Class<?> getColumnClass(int columnIndex) {
                 // Display the "Enable" column as checkbox
-                if (columnIndex == 5) {
+                if (columnIndex == 3) {
                     return Boolean.class;
                 }
                 return super.getColumnClass(columnIndex);
@@ -167,7 +174,7 @@ public class RulesManagerForm extends DialogWrapper {
 
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column != 2 && column != 3;
+                return column == 0;
             }
         };
         tableModel.addTableModelListener(new RulesTableModelListener(mRules));
@@ -178,8 +185,7 @@ public class RulesManagerForm extends DialogWrapper {
         columnsModel.getColumn(1).setMinWidth(400);
         columnsModel.getColumn(2).setMaxWidth(100);
         columnsModel.getColumn(3).setMaxWidth(100);
-        columnsModel.getColumn(4).setMinWidth(100);
-        columnsModel.getColumn(5).setMaxWidth(100);
+        // columnsModel.getColumn(4).setMaxWidth(100);
 
         rulesTable.addMouseListener(new MouseAdapter() {
             @Override
@@ -187,30 +193,18 @@ public class RulesManagerForm extends DialogWrapper {
                 int row = rulesTable.rowAtPoint(event.getPoint());
                 int col = rulesTable.columnAtPoint(event.getPoint());
                 if (row < 0 || col < 0) return;
-                if (col == 2) {
-                    JPanel inspectionEditorForm = new InspectionEditorForm(mRules.get(row).getInspector()).getRootPanel();
-                    populateEditor(inspectionEditorForm);
-                } else if (col == 3) {
-                    JPanel fixesEditorForm = new FixesEditorForm(mRules.get(row).getFixes()).getRootPanel();
-                    populateEditor(fixesEditorForm);
-                } else {
-                    populateEditor(null);
+                 if (col >= 0 && col <= 3) {
+                     Hello dialog = new Hello(mRules.get(row), mRules, rulesTable);
+                     dialog.setLocationRelativeTo(new javax.swing.JFrame());
+                     dialog.setVisible(true);
                 }
             }
         });
     }
 
-    private void populateEditor(Component component) {
-        editorPanel.setLayout(new java.awt.BorderLayout());
-        editorPanel.removeAll();
-        if (component != null) {
-            editorPanel.add(component);
-        }
-        editorPanel.validate();
-        editorPanel.repaint();
-    }
+
 
     private Object[] getRowData(UastRule rule) {
-        return new Object[]{rule.getId(), rule.getBriefDescription(), "...", "...", rule.getHighlightType(), rule.getEnabled()};
+        return new Object[]{rule.getId(), rule.getBriefDescription(), rule.getHighlightType(), rule.getEnabled()};
     }
 }

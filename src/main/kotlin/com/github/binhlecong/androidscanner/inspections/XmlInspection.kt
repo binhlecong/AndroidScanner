@@ -1,11 +1,13 @@
 package com.github.binhlecong.androidscanner.inspections
 
-import com.github.binhlecong.androidscanner.visitors.xml_visitor.XmlAttributeVisitor
-import com.intellij.codeInspection.InspectionManager
-import com.intellij.codeInspection.LocalInspectionTool
-import com.intellij.codeInspection.ProblemDescriptor
+import com.github.binhlecong.androidscanner.rules.RulesManager
+import com.intellij.codeInspection.*
 import com.intellij.psi.PsiFile
+import com.intellij.psi.XmlRecursiveElementVisitor
+import com.intellij.psi.xml.XmlAttribute
+import com.intellij.psi.xml.XmlElement
 import com.intellij.psi.xml.XmlFile
+import com.intellij.psi.xml.XmlTag
 
 class XmlInspection : LocalInspectionTool() {
     override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor> {
@@ -13,28 +15,28 @@ class XmlInspection : LocalInspectionTool() {
             return ProblemDescriptor.EMPTY_ARRAY
         }
         val issues = arrayListOf<ProblemDescriptor>()
-        file.accept(XmlAttributeVisitor(manager, isOnTheFly, issues))
-        return issues.toTypedArray()
 
-//        file.accept(object : XmlRecursiveElementVisitor(true) {
-//            override fun visitXmlAttribute(attribute: XmlAttribute?) {
-//                for (rule in rules) {
-//                    val inspector = rule.inspector
-//                    val highlightType = rule.highlightType
-//
-//                    if (inspector.isSecurityIssue(attribute ?: continue)) {
-//                        issues.add(
-//                            manager.createProblemDescriptor(
-//                                attribute,
-//                                attribute::class.simpleName + ": " + rule.briefDescription,
-//                                isOnTheFly,
-//                                rule.fixes.toTypedArray(),
-//                                ProblemHighlightType.WARNING,
-//                            )
-//                        )
-//                    }
-//                }
-//            }
+        val rules = RulesManager.getXmlRules()
+        file.accept(object : XmlRecursiveElementVisitor(true) {
+            override fun visitXmlAttribute(attribute: XmlAttribute?) {
+
+                for (rule in rules) {
+                    val inspector = rule.inspector
+                    val highlightType = rule.highlightType
+
+                    if (inspector.isSecurityIssue(attribute ?: continue)) {
+                        issues.add(
+                            manager.createProblemDescriptor(
+                                attribute,
+                                attribute::class.simpleName + ": " + rule.briefDescription,
+                                isOnTheFly,
+                                rule.fixes.toTypedArray(),
+                                ProblemHighlightType.WARNING,
+                            )
+                        )
+                    }
+                }
+            }
 
 //            override fun visitXmlTag(tag: XmlTag?) {
 //                issues.add(
@@ -59,6 +61,8 @@ class XmlInspection : LocalInspectionTool() {
 //                    )
 //                )
 //            }
-//        })
+        })
+
+        return issues.toTypedArray()
     }
 }
