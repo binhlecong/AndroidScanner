@@ -35,8 +35,11 @@ public class RulesManagerForm extends DialogWrapper {
     private String mLanguageSelected = mLanguageOptions[0];
     private ArrayList<UastRule> mRules = null;
 
+    final private Project mProject;
+
     public RulesManagerForm(@Nullable Project project) {
         super(project);
+        mProject = project;
         setTitle("Rules Manager");
         init();
         populateDialog();
@@ -60,6 +63,7 @@ public class RulesManagerForm extends DialogWrapper {
             default:
                 break;
         }
+        RulesManager.INSTANCE.updateRules(mLanguageSelected, mProject);
         super.doOKAction();
     }
 

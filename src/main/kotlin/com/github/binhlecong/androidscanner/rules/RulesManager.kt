@@ -1,6 +1,8 @@
 package com.github.binhlecong.androidscanner.rules
 
 import com.github.binhlecong.androidscanner.Config
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
+import com.intellij.openapi.project.Project
 import kotlinx.serialization.json.Json
 import java.io.File
 
@@ -82,5 +84,32 @@ object RulesManager {
         val inputString = inputStream.reader().use { it.readText() }
         val data = Json.decodeFromString(XmlRuleList.serializer(), inputString.trimIndent().trim())
         return ArrayList(data.rules)
+    }
+
+    fun updateRules(ruleFileName: String, project: Project): Boolean {
+        try {
+            val inputStream = File(Config.PATH + "/$ruleFileName").inputStream()
+            val inputString = inputStream.reader().use { it.readText() }
+            when (ruleFileName) {
+                "java.json" -> {
+                    val data = Json.decodeFromString(UastRuleList.serializer(), inputString.trimIndent().trim())
+                    JavaRules = data.rules.toTypedArray()
+                }
+
+                "kotlin.json" -> {
+                    val data = Json.decodeFromString(UastRuleList.serializer(), inputString.trimIndent().trim())
+                    KotlinRules = data.rules.toTypedArray()
+                }
+
+                "xml.json" -> {
+                    val data = Json.decodeFromString(XmlRuleList.serializer(), inputString.trimIndent().trim())
+                    XmlRules = data.rules.toTypedArray()
+                }
+            }
+            DaemonCodeAnalyzer.getInstance(project).restart()
+        } catch (e: Exception) {
+            return false
+        }
+        return true
     }
 }
