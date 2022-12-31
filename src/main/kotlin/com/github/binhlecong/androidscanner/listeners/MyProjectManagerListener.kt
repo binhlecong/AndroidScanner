@@ -1,6 +1,7 @@
 package com.github.binhlecong.androidscanner.listeners
 
 import com.github.binhlecong.androidscanner.Config
+import com.github.binhlecong.androidscanner.actions.AllowInspectionDialog
 import com.github.binhlecong.androidscanner.services.MyProjectService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManagerListener
@@ -16,6 +17,12 @@ internal class MyProjectManagerListener : ProjectManagerListener {
         val directory = File(Config.PATH)
         val canMkdir = directory.mkdirs()
         if (!canMkdir) return
+
+        val isOkExitCode = AllowInspectionDialog(project).showAndGet();
+        if (!isOkExitCode){
+            return
+        }
+
         for (fileName in Config.RULES_FILES) {
             val rulesFile = File(Config.PATH + "/" + fileName)
             if (!rulesFile.exists()) {
