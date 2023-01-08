@@ -1,15 +1,13 @@
 package com.github.binhlecong.androidscanner.inspection_strategies
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.github.binhlecong.androidscanner.rules.Inspection
 import org.jetbrains.uast.UExpression
 
-@Serializable
-class UastInspectionStrategy(
-    var pattern: String,
-    @SerialName("group_patterns") var groupPatterns: List<String?>,
-) : InspectionStrategy<UExpression> {
-    override fun isSecurityIssue(node: UExpression): Boolean {
+object UastInspectionStrategy : InspectionStrategy<UExpression> {
+    override fun isSecurityIssue(node: UExpression, inspection: Inspection): Boolean {
+        val pattern = inspection.pattern
+        val groupPatterns = inspection.groupPatterns
+
         val sourceString = node.asSourceString()
         val match = Regex(pattern).find(sourceString) ?: return false
 

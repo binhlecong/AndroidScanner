@@ -1,10 +1,10 @@
 package com.github.binhlecong.androidscanner.actions;
 
-import com.github.binhlecong.androidscanner.Config;
 import com.github.binhlecong.androidscanner.fix_strategies.ReplaceStrategy;
-import com.github.binhlecong.androidscanner.inspection_strategies.UastInspectionStrategy;
+import com.github.binhlecong.androidscanner.rules.Inspection;
+import com.github.binhlecong.androidscanner.rules.Rule;
+import com.github.binhlecong.androidscanner.rules.RuleFile;
 import com.github.binhlecong.androidscanner.rules.RulesManager;
-import com.github.binhlecong.androidscanner.rules.UastRule;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import org.jetbrains.annotations.Nullable;
@@ -31,9 +31,8 @@ public class RulesManagerForm extends DialogWrapper {
     private JPanel editorPanel;
     private JButton deleteRuleButton;
 
-    final private String[] mLanguageOptions = Config.Companion.getRULES_FILES();
-    private String mLanguageSelected = mLanguageOptions[0];
-    private ArrayList<UastRule> mRules = null;
+    private RuleFile mLanguageSelected = RuleFile.JAVA;
+    private ArrayList<Rule> mRules = null;
 
     final private Project mProject;
 
@@ -52,13 +51,15 @@ public class RulesManagerForm extends DialogWrapper {
 
     @Override
     protected void doOKAction() {
-        // Decide whether to save rules to java.json or kotlin.json
         switch (mLanguageSelected) {
-            case "java.json":
+            case JAVA:
                 RulesManager.INSTANCE.saveJavaRules(mRules);
                 break;
-            case "kotlin.json":
+            case KOTLIN:
                 RulesManager.INSTANCE.saveKotlinRules(mRules);
+                break;
+            case XML:
+                RulesManager.INSTANCE.saveXmlRules(mRules);
                 break;
             default:
                 break;
@@ -75,80 +76,74 @@ public class RulesManagerForm extends DialogWrapper {
     }
 
     private void populateDeleteButton() {
-        deleteRuleButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                DefaultTableModel tableModel = (DefaultTableModel) rulesTable.getModel();
-                if (tableModel == null) {
-                    return;
-                }
-
-                int row = rulesTable.getSelectedRow();
-                if (row == -1) {
-                    return;
-                }
-
-                mRules.remove(row);
-                tableModel.removeRow(row);
+        deleteRuleButton.addActionListener(actionEvent -> {
+            DefaultTableModel tableModel = (DefaultTableModel) rulesTable.getModel();
+            if (tableModel == null) {
+                return;
             }
+
+            int row = rulesTable.getSelectedRow();
+            if (row == -1) {
+                return;
+            }
+
+            mRules.remove(row);
+            tableModel.removeRow(row);
         });
     }
 
     private void populateAddButton() {
-        addRuleButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                DefaultTableModel tableModel = (DefaultTableModel) rulesTable.getModel();
-                if (tableModel == null) {
-                    return;
-                }
-
-                UastRule newRule = new UastRule(
-                        "",
-                        "",
-                        new UastInspectionStrategy("", new ArrayList<String>(0)),
-                        new ArrayList<ReplaceStrategy>(),
-                        "WARNING",
-                        true);
-                mRules.add(newRule);
-
-                Object[] newRowData = getRowData(newRule);
-                tableModel.insertRow(tableModel.getRowCount(), newRowData);
-                rulesTable.changeSelection(tableModel.getRowCount() - 1, 0, false, false);
-
-                JPanel inspectionEditorForm = new InspectionEditorForm(
-                        new UastInspectionStrategy("", new ArrayList<String>())
-                ).getRootPanel();
-                populateEditor(inspectionEditorForm);
+        addRuleButton.addActionListener(event -> {
+            DefaultTableModel tableModel = (DefaultTableModel) rulesTable.getModel();
+            if (tableModel == null) {
+                return;
             }
+
+            Rule newRule = new Rule(
+                    "",
+                    "",
+                    new Inspection("", new ArrayList<String>(0)),
+                    new ArrayList<ReplaceStrategy>(),
+                    "WARNING",
+                    true);
+            mRules.add(newRule);
+
+            Object[] newRowData = getRowData(newRule);
+            tableModel.insertRow(tableModel.getRowCount(), newRowData);
+            rulesTable.changeSelection(tableModel.getRowCount() - 1, 0, false, false);
+
+            JPanel inspectionEditorForm = new InspectionEditorForm(
+                    new Inspection("", new ArrayList<String>())
+            ).getRootPanel();
+            populateEditor(inspectionEditorForm);
         });
     }
 
     private void populateDropdownList() {
-        for (String option : mLanguageOptions) {
-            selectLangDropdown.addItem(option);
+        for (RuleFile option : RuleFile.values()) {
+            selectLangDropdown.addItem(option.name());
         }
         selectLangDropdown.setSelectedIndex(0);
         selectLangDropdown.addActionListener(event -> {
             JComboBox<String> cb = (JComboBox<String>) event.getSource();
-            mLanguageSelected = (String) cb.getSelectedItem();
+            mLanguageSelected = RuleFile.valueOf((String) cb.getSelectedItem());
             populateTable(mLanguageSelected);
         });
     }
 
-    private void populateTable(String language) {
+    private void populateTable(RuleFile language) {
         if (language == null) {
             mRules = RulesManager.INSTANCE.cloneJavaRules();
         } else {
             switch (language) {
-                case "java.json":
+                case JAVA:
                     mRules = RulesManager.INSTANCE.cloneJavaRules();
                     break;
-                case "kotlin.json":
+                case KOTLIN:
                     mRules = RulesManager.INSTANCE.cloneKotlinRules();
                     break;
-                default:
-                    mRules = RulesManager.INSTANCE.cloneJavaRules();
+                case XML:
+                    mRules = RulesManager.INSTANCE.cloneXmlRules();
                     break;
             }
         }
@@ -214,7 +209,7 @@ public class RulesManagerForm extends DialogWrapper {
         editorPanel.repaint();
     }
 
-    private Object[] getRowData(UastRule rule) {
+    private Object[] getRowData(Rule rule) {
         return new Object[]{rule.getId(), rule.getBriefDescription(), "...", "...", rule.getHighlightType(), rule.getEnabled()};
     }
 }
