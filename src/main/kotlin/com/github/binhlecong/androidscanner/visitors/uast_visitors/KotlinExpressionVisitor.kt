@@ -32,6 +32,8 @@ class KotlinExpressionVisitor(
 
         val rules = RulesManager.getKotlinRules()
         for (rule in rules) {
+            if (!rule.enabled) continue
+
             val inspector = rule.inspector
             val highlightType = rule.highlightType
 

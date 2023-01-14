@@ -17,6 +17,8 @@ class XmlAttributeVisitor(
         val rules = RulesManager.getXmlRules()
 
         for (rule in rules) {
+            if (!rule.enabled) continue
+
             val inspector = rule.inspector
             val highlightType = rule.highlightType
 
