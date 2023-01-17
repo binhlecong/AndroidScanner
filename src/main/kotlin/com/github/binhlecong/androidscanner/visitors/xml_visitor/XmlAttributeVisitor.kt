@@ -1,5 +1,6 @@
 package com.github.binhlecong.androidscanner.visitors.xml_visitor
 
+import com.github.binhlecong.androidscanner.inspection_strategies.XmlInspectionStrategy
 import com.github.binhlecong.androidscanner.rules.RulesManager
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
@@ -16,10 +17,12 @@ class XmlAttributeVisitor(
         val rules = RulesManager.getXmlRules()
 
         for (rule in rules) {
+            if (!rule.enabled) continue
+
             val inspector = rule.inspector
             val highlightType = rule.highlightType
 
-            if (inspector.isSecurityIssue(attribute ?: continue)) {
+            if (XmlInspectionStrategy.isSecurityIssue(attribute ?: continue, inspector)) {
                 issues.add(
                     manager.createProblemDescriptor(
                         attribute,

@@ -1,16 +1,16 @@
 package com.github.binhlecong.androidscanner.actions;
 
-import com.github.binhlecong.androidscanner.inspection_strategies.UastInspectionStrategy;
+import com.github.binhlecong.androidscanner.rules.Inspection;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
 public class GroupPatternsTableModelListener implements TableModelListener {
-    private final UastInspectionStrategy mInspectionStrategy;
+    private final Inspection mInspectionStrategy;
 
-    GroupPatternsTableModelListener(UastInspectionStrategy inspectionStrategy) {
-        mInspectionStrategy = inspectionStrategy;
+    GroupPatternsTableModelListener(Inspection inspection) {
+        mInspectionStrategy = inspection;
     }
 
     @Override

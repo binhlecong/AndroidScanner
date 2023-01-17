@@ -1,6 +1,6 @@
 package com.github.binhlecong.androidscanner.actions;
 
-import com.github.binhlecong.androidscanner.rules.UastRule;
+import com.github.binhlecong.androidscanner.rules.Rule;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -8,9 +8,9 @@ import javax.swing.table.TableModel;
 import java.util.ArrayList;
 
 class RulesTableModelListener implements TableModelListener {
-    private final ArrayList<UastRule> mRules;
+    private final ArrayList<Rule> mRules;
 
-    RulesTableModelListener(ArrayList<UastRule> rules) {
+    RulesTableModelListener(ArrayList<Rule> rules) {
         mRules = rules;
     }
 

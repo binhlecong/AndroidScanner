@@ -1,6 +1,6 @@
 package com.github.binhlecong.androidscanner.actions;
 
-import com.github.binhlecong.androidscanner.inspection_strategies.UastInspectionStrategy;
+import com.github.binhlecong.androidscanner.rules.Inspection;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -21,9 +21,9 @@ public class InspectionEditorForm extends JPanel {
     private JButton addPatternButton;
     private JButton deleteArgumentPatternsButton;
 
-    private UastInspectionStrategy mInspectionStrategy = null;
+    private Inspection mInspectionStrategy = null;
 
-    public InspectionEditorForm(UastInspectionStrategy inspection) {
+    public InspectionEditorForm(Inspection inspection) {
         super();
         mInspectionStrategy = inspection;
         populateUI();
@@ -68,39 +68,33 @@ public class InspectionEditorForm extends JPanel {
     }
 
     private void populateAddButton() {
-        addPatternButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                DefaultTableModel tableModel = (DefaultTableModel) patternsTable.getModel();
-                if (tableModel == null) {
-                    return;
-                }
-
-                mInspectionStrategy.getGroupPatterns().add("");
-
-                tableModel.insertRow(tableModel.getRowCount(), new Object[]{""});
-                patternsTable.changeSelection(tableModel.getRowCount() - 1, 0, false, false);
+        addPatternButton.addActionListener(event -> {
+            DefaultTableModel tableModel = (DefaultTableModel) patternsTable.getModel();
+            if (tableModel == null) {
+                return;
             }
+
+            mInspectionStrategy.getGroupPatterns().add("");
+
+            tableModel.insertRow(tableModel.getRowCount(), new Object[]{""});
+            patternsTable.changeSelection(tableModel.getRowCount() - 1, 0, false, false);
         });
     }
 
     private void populateDeleteButton() {
-        deleteArgumentPatternsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                DefaultTableModel tableModel = (DefaultTableModel) patternsTable.getModel();
-                if (tableModel == null) {
-                    return;
-                }
-
-                int row = patternsTable.getSelectedRow();
-                if (row == -1) {
-                    return;
-                }
-
-                mInspectionStrategy.getGroupPatterns().remove(row);
-                tableModel.removeRow(row);
+        deleteArgumentPatternsButton.addActionListener(actionEvent -> {
+            DefaultTableModel tableModel = (DefaultTableModel) patternsTable.getModel();
+            if (tableModel == null) {
+                return;
             }
+
+            int row = patternsTable.getSelectedRow();
+            if (row == -1) {
+                return;
+            }
+
+            mInspectionStrategy.getGroupPatterns().remove(row);
+            tableModel.removeRow(row);
         });
     }
 

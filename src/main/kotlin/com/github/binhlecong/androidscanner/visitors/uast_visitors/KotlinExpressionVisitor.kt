@@ -1,5 +1,6 @@
 package com.github.binhlecong.androidscanner.visitors.uast_visitors
 
+import com.github.binhlecong.androidscanner.inspection_strategies.UastInspectionStrategy
 import com.github.binhlecong.androidscanner.rules.RulesManager
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
@@ -31,10 +32,12 @@ class KotlinExpressionVisitor(
 
         val rules = RulesManager.getKotlinRules()
         for (rule in rules) {
+            if (!rule.enabled) continue
+
             val inspector = rule.inspector
             val highlightType = rule.highlightType
 
-            if (inspector.isSecurityIssue(node)) {
+            if (UastInspectionStrategy.isSecurityIssue(node, inspector)) {
                 issues.add(
                     manager.createProblemDescriptor(
                         sourcePsi,
