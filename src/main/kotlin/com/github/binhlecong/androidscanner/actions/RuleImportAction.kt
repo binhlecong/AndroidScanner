@@ -1,6 +1,7 @@
 package com.github.binhlecong.androidscanner.actions
 
 import com.github.binhlecong.androidscanner.Config
+import com.github.binhlecong.androidscanner.rules.RuleFile
 import com.github.binhlecong.androidscanner.rules.RulesManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -31,6 +32,11 @@ class RuleImportAction : AnAction() {
             return
 
         RulesManager.importCustomRules(firstFile.inputStream)
+
+        val project = event.project ?: return
+        RulesManager.updateRules(RuleFile.JAVA, project)
+        RulesManager.updateRules(RuleFile.KOTLIN, project)
+        RulesManager.updateRules(RuleFile.XML, project)
     }
 
     /**
