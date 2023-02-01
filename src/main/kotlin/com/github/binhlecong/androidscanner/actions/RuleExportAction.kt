@@ -1,10 +1,10 @@
 package com.github.binhlecong.androidscanner.actions
 
+import com.github.binhlecong.androidscanner.rules.RulesManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.PlatformDataKeys
 
-class LibraryScanAction : AnAction() {
+class RuleExportAction : AnAction() {
 
     /**
      * Gives the user feedback when the dynamic action menu is chosen.
@@ -14,8 +14,7 @@ class LibraryScanAction : AnAction() {
      * @param event Event received when the associated menu item is chosen.
      */
     override fun actionPerformed(event: AnActionEvent) {
-        val project = event.getData(PlatformDataKeys.PROJECT) ?: return
-        LibraryScanForm(project).show()
+        RulesManager.exportCustomRules()
     }
 
     /**

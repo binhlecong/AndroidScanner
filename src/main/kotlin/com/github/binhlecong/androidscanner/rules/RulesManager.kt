@@ -5,6 +5,8 @@ import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.openapi.project.Project
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.io.FileInputStream
+import java.io.InputStream
 
 object RulesManager {
     private var JavaRules: Array<Rule>? = null
@@ -107,5 +109,13 @@ object RulesManager {
             return false
         }
         return true
+    }
+
+    fun exportCustomRules() {
+
+    }
+
+    fun importCustomRules(fileInputStream: InputStream) {
+
     }
 }
