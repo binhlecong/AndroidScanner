@@ -1,8 +1,13 @@
 package com.github.binhlecong.androidscanner.actions
 
+import com.github.binhlecong.androidscanner.Config
 import com.github.binhlecong.androidscanner.rules.RulesManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import java.io.File
+import javax.swing.JFileChooser
+import javax.swing.JFrame
+
 
 class RuleExportAction : AnAction() {
 
@@ -14,7 +19,14 @@ class RuleExportAction : AnAction() {
      * @param event Event received when the associated menu item is chosen.
      */
     override fun actionPerformed(event: AnActionEvent) {
-        RulesManager.exportCustomRules()
+        val parentFrame = JFrame()
+        val fileChooser = JFileChooser()
+        fileChooser.dialogTitle = "Export ${Config.PLUGIN_NAME} Rule Data"
+        val userSelection = fileChooser.showSaveDialog(parentFrame)
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            val fileToSave: File = fileChooser.selectedFile
+            RulesManager.exportCustomRules(fileToSave.absolutePath)
+        }
     }
 
     /**

@@ -5,7 +5,6 @@ import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.openapi.project.Project
 import kotlinx.serialization.json.Json
 import java.io.File
-import java.io.FileInputStream
 import java.io.InputStream
 
 object RulesManager {
@@ -17,7 +16,6 @@ object RulesManager {
         if (JavaRules == null) {
             val inputStream = File(Config.PATH + "/${RuleFile.JAVA.fileName}").inputStream()
             val inputString = inputStream.reader().use { it.readText() }
-
             val data = Json.decodeFromString(RuleList.serializer(), inputString.trimIndent().trim())
             JavaRules = data.rules.toTypedArray()
         }
@@ -41,7 +39,6 @@ object RulesManager {
         if (KotlinRules == null) {
             val inputStream = File(Config.PATH + "/${RuleFile.KOTLIN.fileName}").inputStream()
             val inputString = inputStream.reader().use { it.readText() }
-
             val data = Json.decodeFromString(RuleList.serializer(), inputString.trimIndent().trim())
             KotlinRules = data.rules.toTypedArray()
         }
@@ -65,7 +62,6 @@ object RulesManager {
         if (XmlRules == null) {
             val inputStream = File(Config.PATH + "/${RuleFile.XML.fileName}").inputStream()
             val inputString = inputStream.reader().use { it.readText() }
-
             val data = Json.decodeFromString(RuleList.serializer(), inputString.trimIndent().trim())
             XmlRules = data.rules.toTypedArray()
         }
@@ -111,11 +107,31 @@ object RulesManager {
         return true
     }
 
-    fun exportCustomRules() {
+    fun exportCustomRules(path: String) {
+        val javaRulesData = getRuleList(RuleFile.JAVA)
+        val kotlinRulesData = getRuleList(RuleFile.KOTLIN)
+        val xmlRulesData = getRuleList(RuleFile.XML)
+        val ruleBundle = RuleBundle(
+            javaRules = javaRulesData,
+            kotlinRules = kotlinRulesData,
+            xmlRules = xmlRulesData,
+        )
+        val jsonString = Json.encodeToString(RuleBundle.serializer(), ruleBundle)
+        val outputStream = File(path).outputStream()
+        outputStream.write(jsonString.trimIndent().toByteArray())
+    }
 
+    private fun getRuleList(ruleFile: RuleFile): RuleList {
+        val inputStream = File(Config.PATH + "/${ruleFile.fileName}").inputStream()
+        val inputString = inputStream.reader().use { it.readText() }
+        return Json.decodeFromString(RuleList.serializer(), inputString.trimIndent().trim())
     }
 
     fun importCustomRules(fileInputStream: InputStream) {
-
+        val inputString = fileInputStream.reader().use { it.readText() }
+        val ruleBundle = Json.decodeFromString(RuleBundle.serializer(), inputString.trimIndent().trim())
+        saveJavaRules(ArrayList(ruleBundle.javaRules.rules))
+        saveKotlinRules(ArrayList(ruleBundle.kotlinRules.rules))
+        saveXmlRules(ArrayList(ruleBundle.xmlRules.rules))
     }
 }
