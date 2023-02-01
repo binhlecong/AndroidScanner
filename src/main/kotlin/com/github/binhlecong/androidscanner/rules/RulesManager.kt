@@ -26,7 +26,6 @@ object RulesManager {
         val jsonString = Json.encodeToString(RuleList.serializer(), RuleList(rules))
         val outputStream = File(Config.PATH + "/${RuleFile.JAVA.fileName}").outputStream()
         outputStream.write(jsonString.toByteArray())
-        // Todo: apply changes
     }
 
     fun cloneJavaRules(): ArrayList<Rule> {
@@ -51,7 +50,6 @@ object RulesManager {
         val jsonString = Json.encodeToString(RuleList.serializer(), RuleList(rules))
         val outputStream = File(Config.PATH + "/${RuleFile.KOTLIN.fileName}").outputStream()
         outputStream.write(jsonString.toByteArray())
-        // Todo: apply changes
     }
 
     fun cloneKotlinRules(): ArrayList<Rule> {
@@ -76,7 +74,6 @@ object RulesManager {
         val jsonString = Json.encodeToString(RuleList.serializer(), RuleList(rules))
         val outputStream = File(Config.PATH + "/${RuleFile.XML.fileName}").outputStream()
         outputStream.write(jsonString.toByteArray())
-        // Todo: apply changes
     }
 
     fun cloneXmlRules(): ArrayList<Rule> {
@@ -104,6 +101,7 @@ object RulesManager {
                     XmlRules = data.rules.toTypedArray()
                 }
             }
+            // Apply changes after save rule to .json files
             DaemonCodeAnalyzer.getInstance(project).restart()
         } catch (e: Exception) {
             return false
