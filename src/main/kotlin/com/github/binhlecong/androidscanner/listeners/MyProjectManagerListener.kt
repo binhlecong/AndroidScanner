@@ -25,9 +25,9 @@ internal class MyProjectManagerListener : ProjectManagerListener {
         }
 
         for (fileName in RuleFile.values()) {
-            val rulesFile = File(Config.PATH + "/" + fileName.name)
+            val rulesFile = File(Config.PATH + "/" + fileName.fileName)
             if (!rulesFile.exists()) {
-                val inputStream: InputStream = URL(Config.RULES_URL + "/" + fileName).openStream()
+                val inputStream: InputStream = URL(Config.RULES_URL + "/" + fileName.fileName).openStream()
                 IOUtils.copy(inputStream, rulesFile.outputStream())
             }
         }

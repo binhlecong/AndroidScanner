@@ -1,5 +1,6 @@
 package com.github.binhlecong.androidscanner.visitors.xml_visitor
 
+import com.github.binhlecong.androidscanner.Config
 import com.github.binhlecong.androidscanner.inspection_strategies.XmlInspectionStrategy
 import com.github.binhlecong.androidscanner.rules.RulesManager
 import com.intellij.codeInspection.InspectionManager
@@ -26,7 +27,7 @@ class XmlAttributeVisitor(
                 issues.add(
                     manager.createProblemDescriptor(
                         attribute,
-                        attribute::class.simpleName + ": " + rule.briefDescription,
+                        Config.PLUGIN_NAME + ": " + rule.briefDescription,
                         isOnTheFly,
                         rule.fixes.toTypedArray(),
                         ProblemHighlightType.WARNING,
