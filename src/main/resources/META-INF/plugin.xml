@@ -58,20 +58,31 @@
     </extensions>
 
     <actions>
-        <action id="org.intellij.sdk.action.RulesEditorAction"
-                class="com.github.binhlecong.androidscanner.actions.RuleEditorAction"
-                text="9Fix2 Secure Coding"
-                description="Click to edit 9Fix2 inspection rules">
-            <add-to-group group-id="ToolsMenu" anchor="last"/>
-<!--            <keyboard-shortcut first-keystroke="control alt A" second-keystroke="9" keymap="$default"/>-->
-<!--            <mouse-shortcut keystroke="control button3 doubleClick" keymap="$default"/>-->
-        </action>
-<!--        <action id="com.github.binhlecong.androidscanner.actions.LibraryScanAction"-->
-<!--                class="com.github.binhlecong.androidscanner.actions.LibraryScanAction"-->
-<!--                text="SCA Inspection"-->
-<!--                description="AndroidScanner: Inspection project library">-->
-<!--            <add-to-group group-id="CodeMenu" anchor="first"/>-->
-<!--        </action>-->
+        <group id="com.github.binhlecong.androidscanner.action.GroupedActions"
+               text="9Fix2 Secure Coding"
+               popup="true"
+               icon="AllIcons.Actions.Colors">
+            <add-to-group group-id="ToolsMenu"
+                          anchor="last"/>
+
+            <action id="com.github.binhlecong.androidscanner.actions.RuleEditorAction"
+                    class="com.github.binhlecong.androidscanner.actions.RuleEditorAction"
+                    text="Customize Rules"
+                    description="Click to edit 9Fix2 inspection rules">
+            </action>
+
+            <action id="com.github.binhlecong.androidscanner.actions.RuleExportAction"
+                    class="com.github.binhlecong.androidscanner.actions.RuleExportAction"
+                    text="Export Rules"
+                    description="Click to edit 9Fix2 inspection rules">
+            </action>
+
+            <action id="com.github.binhlecong.androidscanner.actions.RuleImportAction"
+                    class="com.github.binhlecong.androidscanner.actions.RuleImportAction"
+                    text="Import Rules"
+                    description="Click to edit 9Fix2 inspection rules">
+            </action>
+        </group>
     </actions>
 
     <applicationListeners>

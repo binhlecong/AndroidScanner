@@ -1,10 +1,16 @@
 package com.github.binhlecong.androidscanner.actions
 
+import com.github.binhlecong.androidscanner.Config
+import com.github.binhlecong.androidscanner.rules.RuleFile
+import com.github.binhlecong.androidscanner.rules.RulesManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.PlatformDataKeys
+import java.io.File
+import javax.swing.JFileChooser
+import javax.swing.JFrame
 
-class LibraryScanAction : AnAction() {
+
+class RuleExportAction : AnAction() {
 
     /**
      * Gives the user feedback when the dynamic action menu is chosen.
@@ -14,8 +20,15 @@ class LibraryScanAction : AnAction() {
      * @param event Event received when the associated menu item is chosen.
      */
     override fun actionPerformed(event: AnActionEvent) {
-        val project = event.getData(PlatformDataKeys.PROJECT) ?: return
-        LibraryScanForm(project).show()
+        val parentFrame = JFrame()
+        val fileChooser = JFileChooser()
+        fileChooser.dialogTitle = "Export ${Config.PLUGIN_NAME} Rule Data"
+        val userSelection = fileChooser.showSaveDialog(parentFrame)
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            val fileToSave: File = fileChooser.selectedFile
+            RulesManager.exportCustomRules(fileToSave.absolutePath)
+        }
     }
 
     /**
