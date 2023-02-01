@@ -1,5 +1,6 @@
 package com.github.binhlecong.androidscanner.fix_strategies
 
+import com.github.binhlecong.androidscanner.Config
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -17,7 +18,7 @@ class ReplaceStrategy(
 ) : LocalQuickFix {
 
     override fun getFamilyName(): String {
-        return fixName
+        return Config.PLUGIN_NAME + ": " + fixName
     }
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {

@@ -1,5 +1,6 @@
 package com.github.binhlecong.androidscanner.visitors.uast_visitors
 
+import com.github.binhlecong.androidscanner.Config
 import com.github.binhlecong.androidscanner.inspection_strategies.UastInspectionStrategy
 import com.github.binhlecong.androidscanner.rules.RulesManager
 import com.intellij.codeInspection.InspectionManager
@@ -41,7 +42,7 @@ class JavaExpressionVisitor(
                 issues.add(
                     manager.createProblemDescriptor(
                         sourcePsi,
-                        node::class.simpleName + ": " + rule.briefDescription,
+                        Config.PLUGIN_NAME + ": " + rule.briefDescription,
                         isOnTheFly,
                         rule.fixes.toTypedArray(),
                         ProblemHighlightType.WARNING,
