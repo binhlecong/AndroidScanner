@@ -1,16 +1,46 @@
 package com.github.binhlecong.androidscanner.listeners
 
-import com.intellij.openapi.components.service
+import com.github.binhlecong.androidscanner.Config
+import com.github.binhlecong.androidscanner.actions.AllowInspectionDialog
+import com.github.binhlecong.androidscanner.rules.RuleFile
+import com.github.binhlecong.androidscanner.services.MyProjectService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManagerListener
-import com.github.binhlecong.androidscanner.services.MyProjectService
+import org.apache.commons.io.IOUtils
+import java.io.File
+import java.io.InputStream
+import java.net.URL
 
 internal class MyProjectManagerListener : ProjectManagerListener {
-
     override fun projectOpened(project: Project) {
-        project.service<MyProjectService>()
+        projectInstance = project
+        Config.PATH = projectInstance!!.basePath.toString() + "/security-rules"
+        val directory = File(Config.PATH)
+        val canMkdir = directory.mkdirs()
+        if (!canMkdir) return
 
-        System.getenv("CI")
-            ?: TODO("Don't forget to remove all non-needed sample code files with their corresponding registration entries in `plugin.xml`.")
+        val isOkExitCode = AllowInspectionDialog(project).showAndGet()
+        if (!isOkExitCode) {
+            return
+        }
+
+        for (fileName in RuleFile.values()) {
+            val rulesFile = File(Config.PATH + "/" + fileName.fileName)
+            if (!rulesFile.exists()) {
+                val inputStream: InputStream = URL(Config.RULES_URL + "/" + fileName.fileName).openStream()
+                IOUtils.copy(inputStream, rulesFile.outputStream())
+            }
+        }
+        project.getService(MyProjectService::class.java)
+    }
+
+    override fun projectClosing(project: Project) {
+        projectInstance = null
+        Config.PATH = ""
+        super.projectClosing(project)
+    }
+
+    companion object {
+        var projectInstance: Project? = null
     }
 }
