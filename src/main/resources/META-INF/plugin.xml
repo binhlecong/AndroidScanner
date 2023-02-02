@@ -10,38 +10,6 @@
     <depends>org.jetbrains.kotlin</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <!--        <applicationService serviceImplementation="com.github.binhlecong.androidscanner.services.MyApplicationService"/>-->
-        <!--        <projectService serviceImplementation="com.github.binhlecong.androidscanner.services.MyProjectService"/>-->
-        <!--        <localInspection language="UAST"-->
-        <!--                         displayName="Constructor param inspection"-->
-        <!--                         groupName="AndroidScanner plugin"-->
-        <!--                         enabledByDefault="true"-->
-        <!--                         level="WARNING"-->
-        <!--                         implementationClass="com.github.binhlecong.androidscanner.inspections.old.ConstructorParamInspection"/>-->
-        <!--        <localInspection language="UAST"-->
-        <!--                         displayName="Constructor inspection"-->
-        <!--                         groupName="AndroidScanner plugin"-->
-        <!--                         enabledByDefault="true"-->
-        <!--                         level="WARNING"-->
-        <!--                         implementationClass="com.github.binhlecong.androidscanner.inspections.old.ConstructorInspection"/>-->
-        <!--        <localInspection language="UAST"-->
-        <!--                         displayName="Method param inspection"-->
-        <!--                         groupName="AndroidScanner plugin"-->
-        <!--                         enabledByDefault="true"-->
-        <!--                         level="WARNING"-->
-        <!--                         implementationClass="com.github.binhlecong.androidscanner.inspections.old.MethodParamInspection"/>-->
-        <!--        <localInspection language="UAST"-->
-        <!--                         displayName="Method inspection"-->
-        <!--                         groupName="AndroidScanner plugin"-->
-        <!--                         enabledByDefault="true"-->
-        <!--                         level="WARNING"-->
-        <!--                         implementationClass="com.github.binhlecong.androidscanner.inspections.old.MethodInspection"/>-->
-        <!--        <localInspection language="XML"-->
-        <!--                         displayName="XML inspection"-->
-        <!--                         groupName="AndroidScanner plugin"-->
-        <!--                         enabledByDefault="true"-->
-        <!--                         level="WARNING"-->
-        <!--                         implementationClass="com.github.binhlecong.androidscanner.inspections.old.XmlAttributeInspection"/>-->
         <localInspection language="UAST"
                          displayName="Java, Kotlin inspection"
                          groupName="AndroidScanner plugin"
@@ -68,19 +36,25 @@
             <action id="com.github.binhlecong.androidscanner.actions.RuleEditorAction"
                     class="com.github.binhlecong.androidscanner.actions.RuleEditorAction"
                     text="Customize Rules"
-                    description="Click to edit 9Fix2 inspection rules">
+                    description="Add, delete, edit inspection rules">
             </action>
 
             <action id="com.github.binhlecong.androidscanner.actions.RuleExportAction"
                     class="com.github.binhlecong.androidscanner.actions.RuleExportAction"
                     text="Export Rules"
-                    description="Click to edit 9Fix2 inspection rules">
+                    description="Create a bundle file to share your custom rules with other users">
             </action>
 
             <action id="com.github.binhlecong.androidscanner.actions.RuleImportAction"
                     class="com.github.binhlecong.androidscanner.actions.RuleImportAction"
                     text="Import Rules"
-                    description="Click to edit 9Fix2 inspection rules">
+                    description="Generate custom rules from a bundle file">
+            </action>
+
+            <action id="com.github.binhlecong.androidscanner.actions.RuleResetAction"
+                    class="com.github.binhlecong.androidscanner.actions.RuleResetAction"
+                    text="Reset Rules"
+                    description="Reset to default rules">
             </action>
         </group>
     </actions>
