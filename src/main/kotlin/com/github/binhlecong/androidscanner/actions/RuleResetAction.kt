@@ -4,6 +4,8 @@ import com.github.binhlecong.androidscanner.Config
 import com.github.binhlecong.androidscanner.listeners.MyProjectManagerListener
 import com.github.binhlecong.androidscanner.rules.RuleFile
 import com.github.binhlecong.androidscanner.rules.RulesManager
+import com.intellij.notification.NotificationGroupManager
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import org.apache.commons.io.IOUtils
@@ -33,6 +35,13 @@ class RuleResetAction : AnAction() {
         RulesManager.updateRules(RuleFile.JAVA, project)
         RulesManager.updateRules(RuleFile.KOTLIN, project)
         RulesManager.updateRules(RuleFile.XML, project)
+        NotificationGroupManager.getInstance()
+            .getNotificationGroup("ArmorDroid Notification Group")
+            .createNotification(
+                "${Config.PLUGIN_NAME}'s rules have been reset to default",
+                NotificationType.INFORMATION
+            )
+            .notify(project);
     }
 
     /**

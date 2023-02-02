@@ -3,10 +3,13 @@ package com.github.binhlecong.androidscanner.actions
 import com.github.binhlecong.androidscanner.Config
 import com.github.binhlecong.androidscanner.rules.RuleFile
 import com.github.binhlecong.androidscanner.rules.RulesManager
+import com.intellij.notification.NotificationGroupManager
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
+
 
 class RuleImportAction : AnAction() {
 
@@ -37,6 +40,14 @@ class RuleImportAction : AnAction() {
         RulesManager.updateRules(RuleFile.JAVA, project)
         RulesManager.updateRules(RuleFile.KOTLIN, project)
         RulesManager.updateRules(RuleFile.XML, project)
+
+        NotificationGroupManager.getInstance()
+            .getNotificationGroup("ArmorDroid Notification Group")
+            .createNotification(
+                "${Config.PLUGIN_NAME} has imported new rules",
+                NotificationType.INFORMATION
+            )
+            .notify(project);
     }
 
     /**

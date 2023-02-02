@@ -23,6 +23,10 @@
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="com.github.binhlecong.androidscanner.inspections.XmlInspection"/>
+
+        <notificationGroup id="ArmorDroid Notification Group"
+                           displayType="BALLOON"
+                           icon="AllIcons.Actions.Colors"/>
     </extensions>
 
     <actions>
