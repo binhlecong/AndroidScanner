@@ -41,7 +41,7 @@ class RuleResetAction : AnAction() {
                 "${Config.PLUGIN_NAME}'s rules have been reset to default",
                 NotificationType.INFORMATION
             )
-            .notify(project);
+            .notify(project)
     }
 
     /**

@@ -30,13 +30,21 @@ class RuleImportAction : AnAction() {
         if (selectedFiles.isEmpty())
             return
 
+        val project = event.project ?: return
         val firstFile = selectedFiles[0]
-        if (firstFile.extension != Config.PLUGIN_FILE_EXT || firstFile.isDirectory)
+        if (firstFile.extension != Config.PLUGIN_FILE_EXT || firstFile.isDirectory) {
+            NotificationGroupManager.getInstance()
+                .getNotificationGroup("ArmorDroid Notification Group")
+                .createNotification(
+                    "${Config.PLUGIN_NAME} failed to import the chosen file",
+                    NotificationType.ERROR
+                )
+                .notify(project)
             return
+        }
 
         RulesManager.importCustomRules(firstFile.inputStream)
 
-        val project = event.project ?: return
         RulesManager.updateRules(RuleFile.JAVA, project)
         RulesManager.updateRules(RuleFile.KOTLIN, project)
         RulesManager.updateRules(RuleFile.XML, project)
@@ -47,7 +55,7 @@ class RuleImportAction : AnAction() {
                 "${Config.PLUGIN_NAME} has imported new rules",
                 NotificationType.INFORMATION
             )
-            .notify(project);
+            .notify(project)
     }
 
     /**
