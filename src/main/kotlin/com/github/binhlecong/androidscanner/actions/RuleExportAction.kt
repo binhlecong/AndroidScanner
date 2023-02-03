@@ -1,10 +1,10 @@
 package com.github.binhlecong.androidscanner.actions
 
 import com.github.binhlecong.androidscanner.Config
-import com.github.binhlecong.androidscanner.rules.RuleFile
 import com.github.binhlecong.androidscanner.rules.RulesManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import java.awt.Desktop
 import java.io.File
 import javax.swing.JFileChooser
 import javax.swing.JFrame
@@ -28,6 +28,7 @@ class RuleExportAction : AnAction() {
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             val fileToSave: File = fileChooser.selectedFile
             RulesManager.exportCustomRules(fileToSave.absolutePath)
+            Desktop.getDesktop().open(fileToSave.parentFile)
         }
     }
 

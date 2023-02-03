@@ -1,17 +1,19 @@
 package com.github.binhlecong.androidscanner.actions
 
 import com.github.binhlecong.androidscanner.Config
+import com.github.binhlecong.androidscanner.listeners.MyProjectManagerListener
 import com.github.binhlecong.androidscanner.rules.RuleFile
 import com.github.binhlecong.androidscanner.rules.RulesManager
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.fileChooser.FileChooser
-import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
+import org.apache.commons.io.IOUtils
+import java.io.File
+import java.io.InputStream
+import java.net.URL
 
-
-class RuleImportAction : AnAction() {
+class RuleResetAction : AnAction() {
 
     /**
      * Gives the user feedback when the dynamic action menu is chosen.
@@ -21,38 +23,22 @@ class RuleImportAction : AnAction() {
      * @param event Event received when the associated menu item is chosen.
      */
     override fun actionPerformed(event: AnActionEvent) {
-        val selectedFiles = FileChooser.chooseFiles(
-            FileChooserDescriptorFactory.createSingleFileDescriptor(Config.PLUGIN_FILE_EXT),
-            event.project,
-            null
-        )
+        Config.PATH = "${MyProjectManagerListener.projectInstance!!.basePath.toString()}/${Config.RULE_DATA_DIR}"
 
-        if (selectedFiles.isEmpty())
-            return
-
-        val project = event.project ?: return
-        val firstFile = selectedFiles[0]
-        if (firstFile.extension != Config.PLUGIN_FILE_EXT || firstFile.isDirectory) {
-            NotificationGroupManager.getInstance()
-                .getNotificationGroup("ArmorDroid Notification Group")
-                .createNotification(
-                    "${Config.PLUGIN_NAME} failed to import the chosen file",
-                    NotificationType.ERROR
-                )
-                .notify(project)
-            return
+        for (fileName in RuleFile.values()) {
+            val rulesFile = File("${Config.PATH}/${fileName.fileName}")
+            val inputStream: InputStream = URL("${Config.DEFAULT_RULE_URL}/${fileName.fileName}").openStream()
+            IOUtils.copy(inputStream, rulesFile.outputStream())
         }
 
-        RulesManager.importCustomRules(firstFile.inputStream)
-
+        val project = event.project ?: return
         RulesManager.updateRules(RuleFile.JAVA, project)
         RulesManager.updateRules(RuleFile.KOTLIN, project)
         RulesManager.updateRules(RuleFile.XML, project)
-
         NotificationGroupManager.getInstance()
             .getNotificationGroup("ArmorDroid Notification Group")
             .createNotification(
-                "${Config.PLUGIN_NAME} has imported new rules",
+                "${Config.PLUGIN_NAME}'s rules have been reset to default",
                 NotificationType.INFORMATION
             )
             .notify(project)
