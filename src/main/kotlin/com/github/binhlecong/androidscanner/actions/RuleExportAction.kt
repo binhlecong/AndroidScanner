@@ -23,10 +23,11 @@ class RuleExportAction : AnAction() {
         val parentFrame = JFrame()
         val fileChooser = JFileChooser()
         fileChooser.dialogTitle = "Export ${Config.PLUGIN_NAME} Rule Data"
+        fileChooser.selectedFile = File("my_custom_rules.${Config.PLUGIN_FILE_EXT}")
         val userSelection = fileChooser.showSaveDialog(parentFrame)
 
         if (userSelection == JFileChooser.APPROVE_OPTION) {
-            val fileToSave: File = fileChooser.selectedFile
+            val fileToSave = fileChooser.selectedFile
             RulesManager.exportCustomRules(fileToSave.absolutePath)
             Desktop.getDesktop().open(fileToSave.parentFile)
         }
