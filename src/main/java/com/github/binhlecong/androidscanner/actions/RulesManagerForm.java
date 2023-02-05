@@ -8,13 +8,11 @@ import com.github.binhlecong.androidscanner.rules.UastRule;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import org.jetbrains.annotations.Nullable;
-import com.github.binhlecong.androidscanner.actions.RuleDetailFormDialog;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -120,7 +118,7 @@ public class RulesManagerForm extends DialogWrapper {
                 ruleDetailDialog.showAndGet(); */
                 /* RuleDetailEditorForm ruleDetailEditorForm = new RuleDetailEditorForm(new javax.swing.JFrame(),true, newRule, mRules);
                 ruleDetailEditorForm.setVisible(true); */
-                Hello dialog = new Hello(mRules, rulesTable);
+                RuleDetailForm dialog = new RuleDetailForm(mRules, rulesTable);
                 dialog.setLocationRelativeTo(new javax.swing.JFrame());
                 dialog.setVisible(true);
             }
@@ -194,7 +192,7 @@ public class RulesManagerForm extends DialogWrapper {
                 int col = rulesTable.columnAtPoint(event.getPoint());
                 if (row < 0 || col < 0) return;
                  if (col >= 0 && col <= 3) {
-                     Hello dialog = new Hello(mRules.get(row), mRules, rulesTable);
+                     RuleDetailForm dialog = new RuleDetailForm(mRules.get(row), mRules, rulesTable, rulesTable.getSelectedRow());
                      dialog.setLocationRelativeTo(new javax.swing.JFrame());
                      dialog.setVisible(true);
                 }
