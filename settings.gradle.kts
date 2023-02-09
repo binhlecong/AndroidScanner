@@ -1,1 +1,1 @@
-rootProject.name = "AndroidScanner"
+rootProject.name = "ArmorDroid"

@@ -1,5 +1,6 @@
 package com.github.binhlecong.androidscanner.actions;
 
+import com.github.binhlecong.androidscanner.Config;
 import com.github.binhlecong.androidscanner.fix_strategies.ReplaceStrategy;
 import com.github.binhlecong.androidscanner.rules.Inspection;
 import com.github.binhlecong.androidscanner.rules.Rule;
@@ -14,8 +15,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -39,7 +38,7 @@ public class RulesManagerForm extends DialogWrapper {
     public RulesManagerForm(@Nullable Project project) {
         super(project);
         mProject = project;
-        setTitle("Rules Manager");
+        setTitle(Config.PLUGIN_NAME + " Manager Console");
         init();
         populateDialog();
     }
@@ -126,7 +125,11 @@ public class RulesManagerForm extends DialogWrapper {
         selectLangDropdown.setSelectedIndex(0);
         selectLangDropdown.addActionListener(event -> {
             JComboBox<String> cb = (JComboBox<String>) event.getSource();
-            mLanguageSelected = RuleFile.valueOf((String) cb.getSelectedItem());
+            Object selectedLangName = cb.getSelectedItem();
+            if (selectedLangName == null) {
+                return;
+            }
+            mLanguageSelected = RuleFile.valueOf((String) selectedLangName);
             populateTable(mLanguageSelected);
         });
     }
@@ -153,7 +156,7 @@ public class RulesManagerForm extends DialogWrapper {
         }
 
         TableModel tableModel = new DefaultTableModel(
-                data, new Object[]{"ID*", "Brief description*", "Inspection*", "Fixes", "Highlight type", "Enabled"}
+                data, new Object[]{"ID*", "Brief Description*", "Inspection*", "Fixes", "Highlight Level", "Enabled"}
         ) {
             @Override
             public Class<?> getColumnClass(int columnIndex) {

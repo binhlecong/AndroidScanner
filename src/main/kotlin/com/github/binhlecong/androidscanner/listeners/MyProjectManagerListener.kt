@@ -14,20 +14,20 @@ import java.net.URL
 internal class MyProjectManagerListener : ProjectManagerListener {
     override fun projectOpened(project: Project) {
         projectInstance = project
-        Config.PATH = projectInstance!!.basePath.toString() + "/security-rules"
+        Config.PATH = "${projectInstance!!.basePath.toString()}/${Config.RULE_DATA_DIR}"
         val directory = File(Config.PATH)
         val canMkdir = directory.mkdirs()
         if (!canMkdir) return
 
-        val isOkExitCode = AllowInspectionDialog(project).showAndGet()
-        if (!isOkExitCode) {
+        val isPluginAllowed = AllowInspectionDialog(project).showAndGet()
+        if (!isPluginAllowed) {
             return
         }
 
         for (fileName in RuleFile.values()) {
-            val rulesFile = File(Config.PATH + "/" + fileName.fileName)
+            val rulesFile = File("${Config.PATH}/${fileName.fileName}")
             if (!rulesFile.exists()) {
-                val inputStream: InputStream = URL(Config.RULES_URL + "/" + fileName.fileName).openStream()
+                val inputStream: InputStream = URL("${Config.DEFAULT_RULE_URL}/${fileName.fileName}").openStream()
                 IOUtils.copy(inputStream, rulesFile.outputStream())
             }
         }

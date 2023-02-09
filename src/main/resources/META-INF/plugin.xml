@@ -1,7 +1,7 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <id>com.github.binhlecong.androidscanner</id>
-    <name>AndroidScanner</name>
+    <name>ArmorDroid</name>
     <vendor>binhlecong</vendor>
 
     <depends>com.intellij.modules.platform</depends>
@@ -10,38 +10,6 @@
     <depends>org.jetbrains.kotlin</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <!--        <applicationService serviceImplementation="com.github.binhlecong.androidscanner.services.MyApplicationService"/>-->
-        <!--        <projectService serviceImplementation="com.github.binhlecong.androidscanner.services.MyProjectService"/>-->
-        <!--        <localInspection language="UAST"-->
-        <!--                         displayName="Constructor param inspection"-->
-        <!--                         groupName="AndroidScanner plugin"-->
-        <!--                         enabledByDefault="true"-->
-        <!--                         level="WARNING"-->
-        <!--                         implementationClass="com.github.binhlecong.androidscanner.inspections.old.ConstructorParamInspection"/>-->
-        <!--        <localInspection language="UAST"-->
-        <!--                         displayName="Constructor inspection"-->
-        <!--                         groupName="AndroidScanner plugin"-->
-        <!--                         enabledByDefault="true"-->
-        <!--                         level="WARNING"-->
-        <!--                         implementationClass="com.github.binhlecong.androidscanner.inspections.old.ConstructorInspection"/>-->
-        <!--        <localInspection language="UAST"-->
-        <!--                         displayName="Method param inspection"-->
-        <!--                         groupName="AndroidScanner plugin"-->
-        <!--                         enabledByDefault="true"-->
-        <!--                         level="WARNING"-->
-        <!--                         implementationClass="com.github.binhlecong.androidscanner.inspections.old.MethodParamInspection"/>-->
-        <!--        <localInspection language="UAST"-->
-        <!--                         displayName="Method inspection"-->
-        <!--                         groupName="AndroidScanner plugin"-->
-        <!--                         enabledByDefault="true"-->
-        <!--                         level="WARNING"-->
-        <!--                         implementationClass="com.github.binhlecong.androidscanner.inspections.old.MethodInspection"/>-->
-        <!--        <localInspection language="XML"-->
-        <!--                         displayName="XML inspection"-->
-        <!--                         groupName="AndroidScanner plugin"-->
-        <!--                         enabledByDefault="true"-->
-        <!--                         level="WARNING"-->
-        <!--                         implementationClass="com.github.binhlecong.androidscanner.inspections.old.XmlAttributeInspection"/>-->
         <localInspection language="UAST"
                          displayName="Java, Kotlin inspection"
                          groupName="AndroidScanner plugin"
@@ -55,23 +23,44 @@
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="com.github.binhlecong.androidscanner.inspections.XmlInspection"/>
+
+        <notificationGroup id="ArmorDroid Notification Group"
+                           displayType="BALLOON"
+                           icon="MyIcons.PluginIcon"/>
     </extensions>
 
     <actions>
-        <action id="org.intellij.sdk.action.RulesEditorAction"
-                class="com.github.binhlecong.androidscanner.actions.RuleEditorAction"
-                text="9Fix2 Secure Coding"
-                description="Click to edit 9Fix2 inspection rules">
-            <add-to-group group-id="ToolsMenu" anchor="last"/>
-<!--            <keyboard-shortcut first-keystroke="control alt A" second-keystroke="9" keymap="$default"/>-->
-<!--            <mouse-shortcut keystroke="control button3 doubleClick" keymap="$default"/>-->
-        </action>
-<!--        <action id="com.github.binhlecong.androidscanner.actions.LibraryScanAction"-->
-<!--                class="com.github.binhlecong.androidscanner.actions.LibraryScanAction"-->
-<!--                text="SCA Inspection"-->
-<!--                description="AndroidScanner: Inspection project library">-->
-<!--            <add-to-group group-id="CodeMenu" anchor="first"/>-->
-<!--        </action>-->
+        <group id="com.github.binhlecong.androidscanner.action.GroupedActions"
+               text="ArmorDroid Secure Coding"
+               popup="true"
+               icon="MyIcons.PluginIcon">
+            <add-to-group group-id="ToolsMenu"
+                          anchor="last"/>
+
+            <action id="com.github.binhlecong.androidscanner.actions.RuleEditorAction"
+                    class="com.github.binhlecong.androidscanner.actions.RuleEditorAction"
+                    text="Customize Rules"
+                    description="Add, delete, edit inspection rules">
+            </action>
+
+            <action id="com.github.binhlecong.androidscanner.actions.RuleExportAction"
+                    class="com.github.binhlecong.androidscanner.actions.RuleExportAction"
+                    text="Export Rules"
+                    description="Create a bundle file to share your custom rules with other users">
+            </action>
+
+            <action id="com.github.binhlecong.androidscanner.actions.RuleImportAction"
+                    class="com.github.binhlecong.androidscanner.actions.RuleImportAction"
+                    text="Import Rules"
+                    description="Generate custom rules from a bundle file">
+            </action>
+
+            <action id="com.github.binhlecong.androidscanner.actions.RuleResetAction"
+                    class="com.github.binhlecong.androidscanner.actions.RuleResetAction"
+                    text="Reset Rules"
+                    description="Reset to default rules">
+            </action>
+        </group>
     </actions>
 
     <applicationListeners>
