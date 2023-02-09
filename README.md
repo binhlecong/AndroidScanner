@@ -1,4 +1,4 @@
-# AndroidScanner
+# ArmorDroid
 
 ![Build](https://github.com/binhlecong/AndroidScanner/workflows/Build/badge.svg)
 [![Version](https://img.shields.io/jetbrains/plugin/v/PLUGIN_ID.svg)](https://plugins.jetbrains.com/plugin/PLUGIN_ID)
@@ -15,11 +15,17 @@
 - [ ] Click the <kbd>Watch</kbd> button on the top of the [IntelliJ Platform Plugin Template][template] to be notified about releases containing new features and fixes.
 
 <!-- Plugin description -->
-This Fancy IntelliJ Platform Plugin is going to be your implementation of the brilliant ideas that you have.
+ArmorDroid is a highly customizable AndroidStudio plugin to scan and fix vulnerable code as you type.
 
-This specific section is a source for the [plugin.xml](/src/main/resources/META-INF/plugin.xml) file which will be extracted by the [Gradle](/build.gradle.kts) during the build process.
+Supported languages: Java, Kotlin, XML
 
-To keep everything working, do not remove `<!-- ... -->` sections. 
+Features:
+
+- Detect and provide quick fixes for vulnerable code as you type.
+- Enable disable rule
+- Customize rules according to your project. No need to restart after change rule.
+- Share custom rule among team members by exporting and importing rule bundle file.
+- Reset rule
 <!-- Plugin description end -->
 
 ## Installation
