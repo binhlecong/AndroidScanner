@@ -27,6 +27,11 @@
         <notificationGroup id="ArmorDroid Notification Group"
                            displayType="BALLOON"
                            icon="MyIcons.PluginIcon"/>
+
+        <toolWindow factoryClass="com.github.binhlecong.androidscanner.actions.ArmorDroidToolWindowFactory"
+                    id="ArmorDroid"
+                    icon="MyIcons.PluginIcon"
+                    anchor="bottom"/>
     </extensions>
 
     <actions>
