@@ -65,6 +65,12 @@
                     text="Reset Rules"
                     description="Reset to default rules">
             </action>
+
+            <action id="com.github.binhlecong.androidscanner.actions.ProjectInspectionAction"
+                    class="com.github.binhlecong.androidscanner.actions.ProjectInspectionAction"
+                    text="Inspect Whole Project"
+                    description="Inspect part of or the entire source code">
+            </action>
         </group>
     </actions>
 
