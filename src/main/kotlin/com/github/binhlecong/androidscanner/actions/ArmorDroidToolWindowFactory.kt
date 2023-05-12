@@ -13,7 +13,7 @@ import java.awt.event.ActionEvent
 import java.util.*
 import javax.swing.*
 
-class ArmorDroidToolWindowFactory : ToolWindowFactory, DumbAware {
+class ArmorDroidToolWindowFactory : ToolWindowFactory {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val toolWindowContent = ArmorDroidToolWindowContent(toolWindow)
         val content: Content =
@@ -52,16 +52,16 @@ class ArmorDroidToolWindowFactory : ToolWindowFactory, DumbAware {
 
         private fun createControlsPanel(toolWindow: ToolWindow): JPanel {
             val controlsPanel = JPanel()
-            val refreshDateAndTimeButton = JButton("Refresh")
+            val refreshDateAndTimeButton = JButton("Inspect project")
             refreshDateAndTimeButton.addActionListener { e: ActionEvent? -> updateCurrentDateTime() }
             controlsPanel.add(refreshDateAndTimeButton)
-            val hideToolWindowButton = JButton("Hide")
-            hideToolWindowButton.addActionListener { e: ActionEvent? ->
-                toolWindow.hide(
-                    null
-                )
-            }
-            controlsPanel.add(hideToolWindowButton)
+//            val hideToolWindowButton = JButton("Hide")
+//            hideToolWindowButton.addActionListener { e: ActionEvent? ->
+//                toolWindow.hide(
+//                    null
+//                )
+//            }
+//            controlsPanel.add(hideToolWindowButton)
             return controlsPanel
         }
 

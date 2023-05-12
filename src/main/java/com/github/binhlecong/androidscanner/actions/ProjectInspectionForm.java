@@ -1,22 +1,20 @@
 package com.github.binhlecong.androidscanner.actions;
 
 import com.github.binhlecong.androidscanner.Config;
+import com.github.binhlecong.androidscanner.inspections.UastInspection;
+import com.github.binhlecong.androidscanner.inspections.XmlInspection;
+import com.intellij.codeInspection.InspectionManager;
+import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.psi.search.FilenameIndex;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.util.PsiUtilCore;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class ProjectInspectionForm extends DialogWrapper {
     private JPanel rootPanel;
@@ -57,78 +55,80 @@ public class ProjectInspectionForm extends DialogWrapper {
         if (projectPath == null || projectPath.isEmpty()) {
             return;
         }
-//        PsiManager psiManager = PsiManager.getInstance(mProject);
-//        Collection<VirtualFile> virtualFiles = FilenameIndex.getAllFilesByExt(mProject, "java", GlobalSearchScope.);
-//        List<PsiFile> psiFiles = PsiUtilCore.toPsiFiles(psiManager, virtualFiles);
-//        JOptionPane.showMessageDialog(null, "java files: " + mProject.getBasePath() + " " + psiFiles.size() + " " + virtualFiles.size(), "test", JOptionPane.INFORMATION_MESSAGE);
+
         try {
+            new FileWriter(logFile, false).close();
+
             writeStringToFile(projectPath, logFile);
             writeStringToFile("\n\n", logFile);
             visitFilesForFolder(new File(projectPath));
-            writeStringToFile("\nend", logFile);
+            writeStringToFile("\n-- END --", logFile);
             JOptionPane.showMessageDialog(null, "done", projectPath, JOptionPane.INFORMATION_MESSAGE);
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     private void visitFilesForFolder(final File folder) {
-        try {
-            writeStringToFile(folder.getAbsolutePath(), logFile);
-            writeStringToFile("  >>>  ", logFile);
-            writeStringToFile(Integer.toString(folder.listFiles().length), logFile);
-            writeStringToFile("  >>>  ", logFile);
-            for (final File fileEntry : folder.listFiles()) {
-                if (fileEntry.isDirectory()) {
-                    visitFilesForFolder(fileEntry);
-                } else {
-                    String fileName = fileEntry.getName();
-                    if (fileName.endsWith(".java") || fileName.endsWith(".kt") || fileName.endsWith(".xml")) {
-                        try {
-                            writeStringToFile("  --  ", logFile);
-                            writeStringToFile(fileEntry.getAbsolutePath(), logFile);
-                            writeStringToFile("  >>  ", logFile);
-                        } catch (FileNotFoundException e) {
-                            throw new RuntimeException(e);
+        for (final File fileEntry : folder.listFiles()) {
+            if (fileEntry.isDirectory()) {
+                visitFilesForFolder(fileEntry);
+            } else {
+                String fileName = fileEntry.getName();
+                if (fileName.endsWith(".java") || fileName.endsWith(".kt") || fileName.endsWith(".xml")) {
+                    try {
+                        writeStringToFile(" - ", logFile);
+                        writeStringToFile(fileEntry.getAbsolutePath(), logFile);
+                        writeStringToFile("\n", logFile);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    try {
+                        VirtualFile virtualFile = VirtualFileManager.getInstance().findFileByUrl("file://" + fileEntry.getAbsolutePath());
+                        //writeStringToFile("    - ", logFile);
+                        if (virtualFile == null) {
+                            //writeStringToFile("non vir", logFile);
+                            continue;
+                        }
+//                        else {
+//                            writeStringToFile("has vir", logFile);
+//                        }
+                        //writeStringToFile("  /  ", logFile);
+                        PsiFile psiFile = PsiManager.getInstance(mProject).findFile(virtualFile);
+                        if (psiFile == null) {
+                            //writeStringToFile("non psi", logFile);
+                            continue;
                         }
 
-
-
-//                        Collection<VirtualFile> virtualFiles = FilenameIndex.getVirtualFilesByName(
-//                                fileEntry.getAbsolutePath(),
-//                                GlobalSearchScope.allScope(mProject));
-//                        PsiManager psiManager = PsiManager.getInstance(mProject);
-//                        List<PsiFile> psiFiles = PsiUtilCore.toPsiFiles(psiManager, virtualFiles);
-
-
-                        try {
-//                            writeStringToFile(Integer.toString(virtualFiles.size()), logFile);
-//                            writeStringToFile(" >>> ", logFile);
-//                            writeStringToFile(Integer.toString(psiFiles.size()), logFile);
-//                            writeStringToFile("\n", logFile);
-                            VirtualFile virtualFile = VirtualFileManager.getInstance().findFileByUrl("file://" + fileEntry.getAbsolutePath());
-                            if (virtualFile == null) {
-                                writeStringToFile("non vir", logFile);
-                                continue;
-                            } else {
-                                writeStringToFile("has vir", logFile);
-                            }
-                            writeStringToFile("  --  ", logFile);
-                            PsiFile psiFile = PsiManager.getInstance(mProject).findFile(virtualFile);
-                            if (psiFile == null) {
-                                writeStringToFile("non psi", logFile);
-                            } else {
-                                writeStringToFile("has psi", logFile);
-                            }
-                            writeStringToFile("\n", logFile);
-                        } catch (FileNotFoundException e) {
-                            throw new RuntimeException(e);
+                        ProblemDescriptor[] issues = null;
+                        switch (psiFile.getClass().getSimpleName()) {
+                            case "XmlFileImpl":
+                                XmlInspection xmlInspection = new XmlInspection();
+                                issues = xmlInspection.checkFile(psiFile, InspectionManager.getInstance(mProject), false);
+                                break;
+                            case "PsiJavaFileImpl":
+                                UastInspection uastInspection = new UastInspection();
+                                issues = uastInspection.checkFile(psiFile, InspectionManager.getInstance(mProject), false);
+                                break;
                         }
+                        writeStringToFile("    + ", logFile);
+                        writeStringToFile(issues != null ? Integer.toString(issues.length) : "none issues", logFile);
+                        writeStringToFile("\n", logFile);
+
+//                        else {
+//                            writeStringToFile("has psi", logFile);
+//                        }
+//                        writeStringToFile("\n", logFile);
+//
+//                        writeStringToFile("    - ", logFile);
+//                        writeStringToFile(psiFile.getClass().getSimpleName(), logFile);
+//                        writeStringToFile("\n", logFile);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
                     }
                 }
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 
