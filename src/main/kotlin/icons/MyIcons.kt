@@ -14,4 +14,7 @@ object MyIcons {
 
     @JvmField
     val WarningIcon = IconLoader.getIcon("/icons/Warning Icon 12x12.svg", javaClass)
+
+    @JvmField
+    val DeleteIcon = IconLoader.getIcon("/icons/Delete Icon 16x16.svg", javaClass)
 }

@@ -1,0 +1,369 @@
+{
+  "rules": [
+    {
+      "id": "CipherGetInstance",
+      "brief_description": "Default ECB mode should not be used",
+      "inspector": {
+        "pattern": "Cipher.getInstance\\((.*?)\\)",
+        "group_patterns": [
+          "(.*AES[^\\/].*)"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Improve security by using AES/GCM/NoPadding",
+          "patterns": [
+            "(AES)"
+          ],
+          "strings": [
+            "AES/GCM/NoPadding"
+          ]
+        }
+      ],
+      "highlight_type": "WARNING",
+      "enabled": true
+    },
+    {
+      "id": "CipherGetInstance",
+      "brief_description": "Default ECB mode should not be used",
+      "inspector": {
+        "pattern": "Cipher.getInstance\\((.*?)\\)",
+        "group_patterns": [
+          "(.*AES\\/CBC\\/PKCS5Padding.*)"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Improve security by using AES/GCM/NoPadding",
+          "patterns": [
+            "(AES\\/CBC\\/PKCS5Padding)"
+          ],
+          "strings": [
+            "AES/GCM/NoPadding"
+          ]
+        }
+      ],
+      "highlight_type": "WARNING",
+      "enabled": true
+    },
+    {
+      "id": "CipherGetInstance",
+      "brief_description": "Default ECB mode should not be used",
+      "inspector": {
+        "pattern": "Cipher.getInstance\\((.*?)\\)",
+        "group_patterns": [
+          "(.*AES\\/EBC\\/NoPadding.*)"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Improve security by using AES/GCM/NoPadding",
+          "patterns": [
+            "(AES\\/EBC\\/NoPadding)"
+          ],
+          "strings": [
+            "AES/GCM/NoPadding"
+          ]
+        }
+      ],
+      "highlight_type": "WARNING",
+      "enabled": true
+    },
+    {
+      "id": "SensitiveDataLoggingW",
+      "brief_description": "Sensitive data may be logged",
+      "inspector": {
+        "pattern": "Log.w\\((.*?)\\)",
+        "group_patterns": [
+          "(.*pass.*)|(.*pw.*)"
+        ]
+      },
+      "fixes": [],
+      "highlight_type": "WARNING",
+      "enabled": true
+    },
+    {
+      "id": "SensitiveDataLoggingD",
+      "brief_description": "Sensitive data may be logged",
+      "inspector": {
+        "pattern": "Log.d\\((.*?)\\)",
+        "group_patterns": [
+          "(.*pass.*)|(.*pw.*)"
+        ]
+      },
+      "fixes": [],
+      "highlight_type": "WARNING",
+      "enabled": true
+    },
+    {
+      "id": "SensitiveDataLoggingE",
+      "brief_description": "Sensitive data may be logged",
+      "inspector": {
+        "pattern": "Log.e\\((.*?)\\)",
+        "group_patterns": [
+          "(.*pass.*)|(.*pw.*)"
+        ]
+      },
+      "fixes": [],
+      "highlight_type": "WARNING",
+      "enabled": true
+    },
+    {
+      "id": "SensitiveDataLoggingI",
+      "brief_description": "Sensitive data may be logged",
+      "inspector": {
+        "pattern": "Log.i\\((.*?)\\)",
+        "group_patterns": [
+          "(.*pass.*)|(.*pw.*)"
+        ]
+      },
+      "fixes": [],
+      "highlight_type": "WARNING",
+      "enabled": true
+    },
+    {
+      "id": "SensitiveDataLoggingV",
+      "brief_description": "Sensitive data may be logged",
+      "inspector": {
+        "pattern": "Log.v\\((.*?)\\)",
+        "group_patterns": [
+          "(.*pass.*)|(.*pw.*)"
+        ]
+      },
+      "fixes": [],
+      "highlight_type": "WARNING",
+      "enabled": true
+    },
+    {
+      "id": "KeyPairInit",
+      "brief_description": "Cryptographic keys should be robust",
+      "inspector": {
+        "pattern": "KeyPairGenerator.initialize\\((.*?)\\)",
+        "group_patterns": [
+          "(1024)"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Improve security",
+          "patterns": [
+            "(1024)"
+          ],
+          "strings": [
+            "2048"
+          ]
+        }
+      ],
+      "highlight_type": "WARNING",
+      "enabled": true
+    },
+    {
+      "id": "KeyInit",
+      "brief_description": "Cryptographic keys should be robust",
+      "inspector": {
+        "pattern": "KeyGenerator.init\\((.*?)\\)",
+        "group_patterns": [
+          "(64)"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Improve security",
+          "patterns": [
+            "(64)"
+          ],
+          "strings": [
+            "128"
+          ]
+        }
+      ],
+      "highlight_type": "WARNING",
+      "enabled": true
+    },
+    {
+      "id": "ECGenParameterSpec",
+      "brief_description": "Cryptographic keys should be robust",
+      "inspector": {
+        "pattern": "ECGenParameterSpec\\((.*?)\\)",
+        "group_patterns": [
+          "(secp112r1)"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Improve security",
+          "patterns": [
+            "(secp112r1)"
+          ],
+          "strings": [
+            "secp224k1"
+          ]
+        }
+      ],
+      "highlight_type": "WARNING",
+      "enabled": true
+    },
+    {
+      "id": "DriverManagerGetConnection",
+      "brief_description": "A secure password should be used when connecting to a database",
+      "inspector": {
+        "pattern": "DriverManager.getConnect\\((.*?),(.*?),(.*?)\\)",
+        "group_patterns": [
+          null,
+          null,
+          "()"
+        ]
+      },
+      "fixes": [],
+      "highlight_type": "WARNING",
+      "enabled": true
+    },
+    {
+      "id": "PasswordEncoder",
+      "brief_description": "Passwords should not be stored in plain-text or with a fast hashing algorithm",
+      "inspector": {
+        "pattern": "StandardPasswordEncoder\\((.*?)\\)",
+        "group_patterns": []
+      },
+      "fixes": [
+        {
+          "name": "Improve security",
+          "patterns": [
+            "(StandardPasswordEncoder)"
+          ],
+          "strings": [
+            "BCryptPasswordEncoder"
+          ]
+        }
+      ],
+      "highlight_type": "WARNING",
+      "enabled": true
+    },
+    {
+      "id": "SecureRandomSeed",
+      "brief_description": "\"SecureRandom\" seeds should not be predictable",
+      "inspector": {
+        "pattern": "SecureRandom\\((.*?)\\)",
+        "group_patterns": [
+          "(.*)"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Improve security",
+          "patterns": [
+            "(SecureRandom.*)"
+          ],
+          "strings": [
+            "SecureRandom()"
+          ]
+        }
+      ],
+      "highlight_type": "WARNING",
+      "enabled": true
+    },
+    {
+      "id": "SSLContext",
+      "brief_description": "Weak SSL/TLS protocols should not be used",
+      "inspector": {
+        "pattern": "SSLContext.getInstance\\((.*?)\\)",
+        "group_patterns": [
+          "(.*SSLv3.*)"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Improve security by using TLSv1.2",
+          "patterns": [
+            "(.*SSLv3.*)"
+          ],
+          "strings": [
+            "TLSv1.2"
+          ]
+        }
+      ],
+      "highlight_type": "WARNING",
+      "enabled": true
+    },
+    {
+      "id": "NullCipher",
+      "brief_description": "NullCipher should not be used",
+      "inspector": {
+        "pattern": "NullCipher.getInstance()",
+        "group_patterns": []
+      },
+      "fixes": [],
+      "highlight_type": "WARNING",
+      "enabled": true
+    },
+    {
+      "id": "MessageDigest",
+      "brief_description": "SHA-1 and Message-Digest hash algorithms should not be used in secure contexts",
+      "inspector": {
+        "pattern": "MessageDigest.getInstance\\((.*?)\\)",
+        "group_patterns": [
+          "\"SHA1\""
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Improve security by using SHA256",
+          "patterns": [
+            "SHA1"
+          ],
+          "strings": [
+            "SHA-256"
+          ]
+        }
+      ],
+      "highlight_type": "WARNING",
+      "enabled": true
+    },
+    {
+      "id": "CommandInjectionPotential",
+      "brief_description": "Potential Command Injection",
+      "inspector": {
+        "pattern": "Runtime.exec\\((.*?)\\)",
+        "group_patterns": [
+          "^.*\\+.*$"
+        ]
+      },
+      "fixes": [],
+      "highlight_type": "WARNING",
+      "enabled": true
+    },
+    {
+      "id": "UntrustedServletContentType (HttpServletRequestWrapper)",
+      "brief_description": "Untrusted Content-Type header",
+      "inspector": {
+        "pattern": "HttpServletRequestWrapper.getContentType\\((.*?)\\)",
+        "group_patterns": []
+      },
+      "fixes": [],
+      "highlight_type": "WARNING",
+      "enabled": true
+    },
+    {
+      "id": "UntrustedServletContentType",
+      "brief_description": "Untrusted Content-Type header",
+      "inspector": {
+        "pattern": "HttpServletRequest.getContentType\\((.*?)\\)",
+        "group_patterns": []
+      },
+      "fixes": [],
+      "highlight_type": "WARNING",
+      "enabled": true
+    },
+    {
+      "id": "UntrustedServletServerName",
+      "brief_description": "Untrusted Hostname header",
+      "inspector": {
+        "pattern": "HttpServletRequest.getServerName\\((.*?)\\)",
+        "group_patterns": []
+      },
+      "fixes": [],
+      "highlight_type": "WARNING",
+      "enabled": true
+    }
+  ]
+}
