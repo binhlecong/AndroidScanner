@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Stack;
 
 public class ProjectInspectionForm extends DialogWrapper {
     private JPanel rootPanel;
@@ -79,9 +81,12 @@ public class ProjectInspectionForm extends DialogWrapper {
                     inspectProject(mProject.getBasePath(), fileExt);
                     break;
                 default:
-                    JOptionPane.showMessageDialog(null, "Fail to select custom scope", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Fail to select custom scope", Config.PLUGIN_NAME, JOptionPane.ERROR_MESSAGE);
                     break;
             }
+        } else {
+            JOptionPane.showMessageDialog(null, "At least one file type must be selected", Config.PLUGIN_NAME, JOptionPane.WARNING_MESSAGE);
+            return;
         }
         super.doOKAction();
     }
@@ -100,7 +105,7 @@ public class ProjectInspectionForm extends DialogWrapper {
             for (String extension : extensions)
                 output.append(extension).append(" ");
             output.append("\n\n");
-            visitFilesForFolder(new File(basePath), extensions, output);
+            visitFiles(new File(basePath), extensions, output);
             output.close();
             JOptionPane.showMessageDialog(null, "Done", Config.PLUGIN_NAME, JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception e) {
@@ -109,24 +114,28 @@ public class ProjectInspectionForm extends DialogWrapper {
         }
     }
 
-    private void visitFilesForFolder(final File folder, ArrayList<String> extensions, Writer output) {
-        for (final File fileEntry : folder.listFiles()) {
-            if (fileEntry.isDirectory()) {
-                visitFilesForFolder(fileEntry, extensions, output);
+
+    private void visitFiles(final File folder, ArrayList<String> extensions, Writer output) {
+        Stack<File> fileStack = new Stack<>();
+        fileStack.add(folder);
+        while (!fileStack.isEmpty()) {
+            File file = fileStack.pop();
+            if (file.isDirectory()) {
+                Collections.addAll(fileStack, file.listFiles());
             } else {
-                String fileName = fileEntry.getName();
+                String fileName = file.getName();
                 for (String extension : extensions) {
                     if (fileName.endsWith(extension)) {
                         try {
                             output.append("- ");
-                            output.append(fileEntry.getAbsolutePath());
+                            output.append(file.getAbsolutePath());
                             output.append("\n");
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
 
                         try {
-                            VirtualFile virtualFile = VirtualFileManager.getInstance().findFileByUrl("file://" + fileEntry.getAbsolutePath());
+                            VirtualFile virtualFile = VirtualFileManager.getInstance().findFileByUrl("file://" + file.getAbsolutePath());
                             if (virtualFile == null) {
                                 continue;
                             }
@@ -163,3 +172,57 @@ public class ProjectInspectionForm extends DialogWrapper {
         }
     }
 }
+
+//    private void visitFilesForFolder(final File folder, ArrayList<String> extensions, Writer output) {
+//        for (final File fileEntry : folder.listFiles()) {
+//            if (fileEntry.isDirectory()) {
+//                visitFilesForFolder(fileEntry, extensions, output);
+//            } else {
+//                String fileName = fileEntry.getName();
+//                for (String extension : extensions) {
+//                    if (fileName.endsWith(extension)) {
+//                        try {
+//                            output.append("- ");
+//                            output.append(fileEntry.getAbsolutePath());
+//                            output.append("\n");
+//                        } catch (Exception e) {
+//                            throw new RuntimeException(e);
+//                        }
+//
+//                        try {
+//                            VirtualFile virtualFile = VirtualFileManager.getInstance().findFileByUrl("file://" + fileEntry.getAbsolutePath());
+//                            if (virtualFile == null) {
+//                                continue;
+//                            }
+//
+//                            PsiFile psiFile = PsiManager.getInstance(mProject).findFile(virtualFile);
+//                            if (psiFile == null) {
+//                                continue;
+//                            }
+//
+//                            ProblemDescriptor[] issues = null;
+//                            switch (psiFile.getClass().getSimpleName()) {
+//                                case "XmlFileImpl":
+//                                    XmlInspection xmlInspection = new XmlInspection();
+//                                    issues = xmlInspection.checkFile(psiFile, InspectionManager.getInstance(mProject), false);
+//                                    break;
+//                                case "PsiJavaFileImpl":
+//                                    UastInspection uastInspection = new UastInspection();
+//                                    issues = uastInspection.checkFile(psiFile, InspectionManager.getInstance(mProject), false);
+//                                    break;
+//                            }
+//
+//                            for (ProblemDescriptor issue : issues) {
+//                                output.append("  + ");
+//                                output.append(issue.getDescriptionTemplate());
+//                                output.append("\n");
+//                            }
+//                        } catch (Exception e) {
+//                            throw new RuntimeException(e);
+//                        }
+//                        break;
+//                    }
+//                }
+//            }
+//        }
+//    }
