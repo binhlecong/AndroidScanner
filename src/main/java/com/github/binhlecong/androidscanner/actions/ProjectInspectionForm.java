@@ -14,16 +14,22 @@ import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
+import java.util.ArrayList;
 
 public class ProjectInspectionForm extends DialogWrapper {
     private JPanel rootPanel;
-    private JRadioButton wholeProjectRadioButton;
-    private JRadioButton customScopeRadioButton;
-
+    private JComboBox<String> scopeOptionsComboBox;
+    private JCheckBox javaCheckBox;
+    private JCheckBox ktCheckBox;
+    private JCheckBox xmlCheckBox;
+    private final String[] scopeOptions = {"All", "Project Source Files", "Project Test Files", "Opening Files"};
     final private Project mProject;
 
-    final private String logFile = "E:\\log.txt";
+    final private String logFile = "E:\\armordroid_report.txt";
 
     public ProjectInspectionForm(@Nullable Project project) {
         super(project);
@@ -34,9 +40,14 @@ public class ProjectInspectionForm extends DialogWrapper {
     }
 
     private void populateDialog() {
-        ButtonGroup buttonGroup = new ButtonGroup();
-        buttonGroup.add(wholeProjectRadioButton);
-        buttonGroup.add(customScopeRadioButton);
+        for (String option : scopeOptions) {
+            scopeOptionsComboBox.addItem(option);
+        }
+        scopeOptionsComboBox.setSelectedIndex(0);
+
+        javaCheckBox.setSelected(true);
+        ktCheckBox.setSelected(true);
+        xmlCheckBox.setSelected(true);
     }
 
     @Override
@@ -46,96 +57,109 @@ public class ProjectInspectionForm extends DialogWrapper {
 
     @Override
     protected void doOKAction() {
-        inspectProject();
+        ArrayList<String> fileExt = new ArrayList<>();
+        if (javaCheckBox.isSelected()) fileExt.add(".java");
+        if (ktCheckBox.isSelected()) fileExt.add(".kt");
+        if (xmlCheckBox.isSelected()) fileExt.add(".xml");
+        if (!fileExt.isEmpty()) {
+            int selectedIndex = scopeOptionsComboBox.getSelectedIndex();
+            switch (selectedIndex) {
+                case 0:
+                    inspectProject(mProject.getBasePath(), fileExt);
+                    break;
+                case 1:
+                    String sourcePath = mProject.getBasePath() + "/app/src/main";
+                    inspectProject(sourcePath, fileExt);
+                    break;
+                case 2:
+                    String testPath = mProject.getBasePath() + "/app/src/test";
+                    inspectProject(testPath, fileExt);
+                    break;
+                case 3:
+                    inspectProject(mProject.getBasePath(), fileExt);
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(null, "Fail to select custom scope", "Error", JOptionPane.ERROR_MESSAGE);
+                    break;
+            }
+        }
         super.doOKAction();
     }
 
-    private void inspectProject() {
-        String projectPath = mProject.getBasePath();
-        if (projectPath == null || projectPath.isEmpty()) {
+    private void inspectProject(String basePath, ArrayList<String> extensions) {
+        if (basePath == null || basePath.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Fail to access project folder", Config.PLUGIN_NAME, JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         try {
             new FileWriter(logFile, false).close();
-
-            writeStringToFile(projectPath, logFile);
-            writeStringToFile("\n\n", logFile);
-            visitFilesForFolder(new File(projectPath));
-            writeStringToFile("\n-- END --", logFile);
-            JOptionPane.showMessageDialog(null, "done", projectPath, JOptionPane.INFORMATION_MESSAGE);
+            Writer output = new BufferedWriter(new FileWriter(logFile, true));
+            output.append("Location:\n");
+            output.append(" ").append(basePath).append("\n");
+            for (String extension : extensions)
+                output.append(extension).append(" ");
+            output.append("\n\n");
+            visitFilesForFolder(new File(basePath), extensions, output);
+            output.close();
+            JOptionPane.showMessageDialog(null, "Done", Config.PLUGIN_NAME, JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), Config.PLUGIN_NAME, JOptionPane.ERROR_MESSAGE);
             throw new RuntimeException(e);
         }
     }
 
-    private void visitFilesForFolder(final File folder) {
+    private void visitFilesForFolder(final File folder, ArrayList<String> extensions, Writer output) {
         for (final File fileEntry : folder.listFiles()) {
             if (fileEntry.isDirectory()) {
-                visitFilesForFolder(fileEntry);
+                visitFilesForFolder(fileEntry, extensions, output);
             } else {
                 String fileName = fileEntry.getName();
-                if (fileName.endsWith(".java") || fileName.endsWith(".kt") || fileName.endsWith(".xml")) {
-                    try {
-                        writeStringToFile(" - ", logFile);
-                        writeStringToFile(fileEntry.getAbsolutePath(), logFile);
-                        writeStringToFile("\n", logFile);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    try {
-                        VirtualFile virtualFile = VirtualFileManager.getInstance().findFileByUrl("file://" + fileEntry.getAbsolutePath());
-                        //writeStringToFile("    - ", logFile);
-                        if (virtualFile == null) {
-                            //writeStringToFile("non vir", logFile);
-                            continue;
-                        }
-//                        else {
-//                            writeStringToFile("has vir", logFile);
-//                        }
-                        //writeStringToFile("  /  ", logFile);
-                        PsiFile psiFile = PsiManager.getInstance(mProject).findFile(virtualFile);
-                        if (psiFile == null) {
-                            //writeStringToFile("non psi", logFile);
-                            continue;
+                for (String extension : extensions) {
+                    if (fileName.endsWith(extension)) {
+                        try {
+                            output.append("- ");
+                            output.append(fileEntry.getAbsolutePath());
+                            output.append("\n");
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
                         }
 
-                        ProblemDescriptor[] issues = null;
-                        switch (psiFile.getClass().getSimpleName()) {
-                            case "XmlFileImpl":
-                                XmlInspection xmlInspection = new XmlInspection();
-                                issues = xmlInspection.checkFile(psiFile, InspectionManager.getInstance(mProject), false);
-                                break;
-                            case "PsiJavaFileImpl":
-                                UastInspection uastInspection = new UastInspection();
-                                issues = uastInspection.checkFile(psiFile, InspectionManager.getInstance(mProject), false);
-                                break;
-                        }
-                        writeStringToFile("    + ", logFile);
-                        writeStringToFile(issues != null ? Integer.toString(issues.length) : "none issues", logFile);
-                        writeStringToFile("\n", logFile);
+                        try {
+                            VirtualFile virtualFile = VirtualFileManager.getInstance().findFileByUrl("file://" + fileEntry.getAbsolutePath());
+                            if (virtualFile == null) {
+                                continue;
+                            }
 
-//                        else {
-//                            writeStringToFile("has psi", logFile);
-//                        }
-//                        writeStringToFile("\n", logFile);
-//
-//                        writeStringToFile("    - ", logFile);
-//                        writeStringToFile(psiFile.getClass().getSimpleName(), logFile);
-//                        writeStringToFile("\n", logFile);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
+                            PsiFile psiFile = PsiManager.getInstance(mProject).findFile(virtualFile);
+                            if (psiFile == null) {
+                                continue;
+                            }
+
+                            ProblemDescriptor[] issues = null;
+                            switch (psiFile.getClass().getSimpleName()) {
+                                case "XmlFileImpl":
+                                    XmlInspection xmlInspection = new XmlInspection();
+                                    issues = xmlInspection.checkFile(psiFile, InspectionManager.getInstance(mProject), false);
+                                    break;
+                                case "PsiJavaFileImpl":
+                                    UastInspection uastInspection = new UastInspection();
+                                    issues = uastInspection.checkFile(psiFile, InspectionManager.getInstance(mProject), false);
+                                    break;
+                            }
+
+                            for (ProblemDescriptor issue : issues) {
+                                output.append("  + ");
+                                output.append(issue.getDescriptionTemplate());
+                                output.append("\n");
+                            }
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                        break;
                     }
                 }
             }
         }
-    }
-
-    public void writeStringToFile(String str, String fileName) throws IOException {
-        Writer output;
-        output = new BufferedWriter(new FileWriter(fileName, true));
-        output.append(str);
-        output.close();
     }
 }
