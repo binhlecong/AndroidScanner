@@ -31,7 +31,7 @@ public class ProjectInspectionForm extends DialogWrapper {
     private final String[] scopeOptions = {"All", "Project Source Files", "Project Test Files", "Opening Files"};
     final private Project mProject;
 
-    final private String logFile = "E:\\armordroid_report.txt";
+    final static public String logFile = Config.Companion.getPATH() + "/armordroid_report.txt";
 
     public ProjectInspectionForm(@Nullable Project project) {
         super(project);
