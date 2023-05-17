@@ -100,12 +100,17 @@ public class ProjectInspectionForm extends DialogWrapper {
         try {
             new FileWriter(logFile, false).close();
             Writer output = new BufferedWriter(new FileWriter(logFile, true));
-            output.append("Location:\n");
-            output.append(" ").append(basePath).append("\n");
+            output.append("<html>");
+            output.append("<b>Location:</b>\n");
+            output.append(" ").append(basePath);
+
+            output.append("<ul>");
             for (String extension : extensions)
-                output.append(extension).append(" ");
-            output.append("\n\n");
+                output.append("<li>").append(extension).append("</li>");
+            output.append("</ul>");
+
             visitFiles(new File(basePath), extensions, output);
+            output.append("</html>");
             output.close();
             JOptionPane.showMessageDialog(null, "Done", Config.PLUGIN_NAME, JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception e) {
@@ -114,26 +119,32 @@ public class ProjectInspectionForm extends DialogWrapper {
         }
     }
 
-
+    //<ul>
+//       <li>HTML</li>
+//       <li>CSS</li>
+//       <li>JavaScript</li>
+//       <li>MySQL</li>
+//       <li>PHP</li>
+//    </ul>
     private void visitFiles(final File folder, ArrayList<String> extensions, Writer output) {
         Stack<File> fileStack = new Stack<>();
         fileStack.add(folder);
+        try {
+            output.append("<ul>");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         while (!fileStack.isEmpty()) {
             File file = fileStack.pop();
             if (file.isDirectory()) {
-                Collections.addAll(fileStack, file.listFiles());
+                if (file.listFiles() != null) {
+                    Collections.addAll(fileStack, file.listFiles());
+                }
             } else {
                 String fileName = file.getName();
                 for (String extension : extensions) {
                     if (fileName.endsWith(extension)) {
-                        try {
-                            output.append("- ");
-                            output.append(file.getAbsolutePath());
-                            output.append("\n");
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-
                         try {
                             VirtualFile virtualFile = VirtualFileManager.getInstance().findFileByUrl("file://" + file.getAbsolutePath());
                             if (virtualFile == null) {
@@ -157,11 +168,18 @@ public class ProjectInspectionForm extends DialogWrapper {
                                     break;
                             }
 
+                            if (issues == null || issues.length == 0) continue;
+
+                            output.append("<li>");
+                            output.append(file.getAbsolutePath());
+                            output.append("<ul>");
                             for (ProblemDescriptor issue : issues) {
-                                output.append("  + ");
+                                output.append("<li>");
                                 output.append(issue.getDescriptionTemplate());
-                                output.append("\n");
+                                output.append("</li>");
                             }
+                            output.append("</ul>");
+                            output.append("</li>");
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
@@ -169,6 +187,12 @@ public class ProjectInspectionForm extends DialogWrapper {
                     }
                 }
             }
+        }
+
+        try {
+            output.append("</ul>");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }
