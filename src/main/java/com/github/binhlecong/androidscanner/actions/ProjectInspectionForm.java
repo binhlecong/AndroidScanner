@@ -101,8 +101,7 @@ public class ProjectInspectionForm extends DialogWrapper {
             new FileWriter(logFile, false).close();
             Writer output = new BufferedWriter(new FileWriter(logFile, true));
             output.append("<html>");
-            output.append("<b>Location:</b>\n");
-            output.append(" ").append(basePath);
+            output.append("<b>Location:</b> ").append(basePath);
 
             output.append("<ul>");
             for (String extension : extensions)
@@ -119,22 +118,11 @@ public class ProjectInspectionForm extends DialogWrapper {
         }
     }
 
-    //<ul>
-//       <li>HTML</li>
-//       <li>CSS</li>
-//       <li>JavaScript</li>
-//       <li>MySQL</li>
-//       <li>PHP</li>
-//    </ul>
-    private void visitFiles(final File folder, ArrayList<String> extensions, Writer output) {
+    private void visitFiles(final File folder, ArrayList<String> extensions, Writer output) throws Exception {
         Stack<File> fileStack = new Stack<>();
         fileStack.add(folder);
-        try {
-            output.append("<ul>");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
 
+        output.append("<ul>");
         while (!fileStack.isEmpty()) {
             File file = fileStack.pop();
             if (file.isDirectory()) {
@@ -145,55 +133,46 @@ public class ProjectInspectionForm extends DialogWrapper {
                 String fileName = file.getName();
                 for (String extension : extensions) {
                     if (fileName.endsWith(extension)) {
-                        try {
-                            VirtualFile virtualFile = VirtualFileManager.getInstance().findFileByUrl("file://" + file.getAbsolutePath());
-                            if (virtualFile == null) {
-                                continue;
-                            }
 
-                            PsiFile psiFile = PsiManager.getInstance(mProject).findFile(virtualFile);
-                            if (psiFile == null) {
-                                continue;
-                            }
-
-                            ProblemDescriptor[] issues = null;
-                            switch (psiFile.getClass().getSimpleName()) {
-                                case "XmlFileImpl":
-                                    XmlInspection xmlInspection = new XmlInspection();
-                                    issues = xmlInspection.checkFile(psiFile, InspectionManager.getInstance(mProject), false);
-                                    break;
-                                case "PsiJavaFileImpl":
-                                    UastInspection uastInspection = new UastInspection();
-                                    issues = uastInspection.checkFile(psiFile, InspectionManager.getInstance(mProject), false);
-                                    break;
-                            }
-
-                            if (issues == null || issues.length == 0) continue;
-
-                            output.append("<li>");
-                            output.append(file.getAbsolutePath());
-                            output.append("<ul>");
-                            for (ProblemDescriptor issue : issues) {
-                                output.append("<li>");
-                                output.append(issue.getDescriptionTemplate());
-                                output.append("</li>");
-                            }
-                            output.append("</ul>");
-                            output.append("</li>");
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
+                        VirtualFile virtualFile = VirtualFileManager.getInstance().findFileByUrl("file://" + file.getAbsolutePath());
+                        if (virtualFile == null) {
+                            continue;
                         }
+
+                        PsiFile psiFile = PsiManager.getInstance(mProject).findFile(virtualFile);
+                        if (psiFile == null) {
+                            continue;
+                        }
+
+                        ProblemDescriptor[] issues = null;
+                        switch (psiFile.getClass().getSimpleName()) {
+                            case "XmlFileImpl":
+                                XmlInspection xmlInspection = new XmlInspection();
+                                issues = xmlInspection.checkFile(psiFile, InspectionManager.getInstance(mProject), false);
+                                break;
+                            case "PsiJavaFileImpl":
+                                UastInspection uastInspection = new UastInspection();
+                                issues = uastInspection.checkFile(psiFile, InspectionManager.getInstance(mProject), false);
+                                break;
+                        }
+
+                        if (issues == null || issues.length == 0) continue;
+
+                        output.append("<li>").append(file.getName()).append(" ")
+                                .append("<span style=\"color:#7a7a7a;\">").append(file.getAbsolutePath()).append(" ")
+                                .append("<i>").append(Integer.toString(issues.length)).append(" ")
+                                .append(issues.length == 1 ? "problem" : "problems").append("</i></span>").append("<ul>");
+                        for (ProblemDescriptor issue : issues) {
+                            output.append("<li>").append(issue.getDescriptionTemplate()).append("<i style=\"color:#7a7a7a;\"> line ")
+                                    .append(Integer.toString(issue.getLineNumber())).append("</i>").append("</li>");
+                        }
+                        output.append("</ul>").append("</li>");
                         break;
                     }
                 }
             }
         }
-
-        try {
-            output.append("</ul>");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        output.append("</ul>");
     }
 }
 

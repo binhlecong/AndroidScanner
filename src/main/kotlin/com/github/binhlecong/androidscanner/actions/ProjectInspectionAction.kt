@@ -3,10 +3,7 @@ package com.github.binhlecong.androidscanner.actions
 import com.github.binhlecong.androidscanner.Config
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.wm.RegisterToolWindowTask
-import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
-import icons.MyIcons
 import java.io.File
 import javax.swing.JOptionPane
 import javax.swing.JPanel
@@ -24,20 +21,15 @@ class ProjectInspectionAction : AnAction() {
             return
         }
         if (e.project != null) {
-            ToolWindowManager.getInstance(e.project!!).registerToolWindow(
-                RegisterToolWindowTask(
-                    id = "ArmorDroid",
-                    anchor = ToolWindowAnchor.BOTTOM,
-                    component = createResultPanel(resultString),
-                    sideTool = false,
-                    canCloseContent = true,
-                    canWorkInDumbMode = false,
-                    shouldBeAvailable = true,
-                    contentFactory = null,
-                    icon = MyIcons.PluginIcon,
-                    stripeTitle = null,
-                )
-            ).show()
+            val contentManager =
+                ToolWindowManager.getInstance(e.project!!).getToolWindow("ArmorDroid")?.contentManager ?: return
+            val content = contentManager.factory.createContent(
+                createResultPanel(resultString),
+                "Full project inspection",
+                false,
+            )
+            contentManager.addContent(content)
+
         }
     }
 
