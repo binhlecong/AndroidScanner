@@ -10,6 +10,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import org.jetbrains.annotations.Nullable;
 
+import javax.imageio.ImageIO;
+import java.io.File;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
@@ -17,7 +19,13 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import static icons.MyIcons.DeleteIcon;
+import static javax.swing.JOptionPane.QUESTION_MESSAGE;
+import static javax.swing.JOptionPane.YES_NO_OPTION;
 
 public class NewRulesManagerForm extends DialogWrapper {
     private JComboBox<String> selectLangDropdown;
@@ -26,9 +34,6 @@ public class NewRulesManagerForm extends DialogWrapper {
     private JTable rulesTable;
     private JButton addRuleButton;
     private JPanel rootPanel;
-    private JPanel editorPanel;
-    private JButton deleteRuleButton;
-
     private RuleFile mLanguageSelected = RuleFile.JAVA;
     private ArrayList<Rule> mRules = null;
 
@@ -68,52 +73,15 @@ public class NewRulesManagerForm extends DialogWrapper {
 
     private void populateDialog() {
         populateDropdownList();
-        populateTable(mLanguageSelected);
+        populateTable();
         populateAddButton();
-        populateDeleteButton();
-    }
-
-    private void populateDeleteButton() {
-        deleteRuleButton.addActionListener(actionEvent -> {
-            DefaultTableModel tableModel = (DefaultTableModel) rulesTable.getModel();
-            if (tableModel == null) {
-                return;
-            }
-
-            int row = rulesTable.getSelectedRow();
-            if (row == -1) {
-                return;
-            }
-
-            mRules.remove(row);
-            tableModel.removeRow(row);
-        });
     }
 
     private void populateAddButton() {
         addRuleButton.addActionListener(event -> {
-            DefaultTableModel tableModel = (DefaultTableModel) rulesTable.getModel();
-            if (tableModel == null) {
-                return;
-            }
-
-            Rule newRule = new Rule(
-                    "",
-                    "",
-                    new Inspection("", new ArrayList<String>(0)),
-                    new ArrayList<ReplaceStrategy>(),
-                    "WARNING",
-                    true);
-            mRules.add(newRule);
-
-            Object[] newRowData = getRowData(newRule);
-            tableModel.insertRow(tableModel.getRowCount(), newRowData);
-            rulesTable.changeSelection(tableModel.getRowCount() - 1, 0, false, false);
-
-            JPanel inspectionEditorForm = new InspectionEditorForm(
-                    new Inspection("", new ArrayList<String>())
-            ).getRootPanel();
-            populateEditor(inspectionEditorForm);
+            RuleDetailForm dialog = new RuleDetailForm(mProject, mLanguageSelected, mRules, rulesTable);
+            dialog.setLocationRelativeTo(new javax.swing.JFrame());
+            dialog.setVisible(true);
         });
     }
 
@@ -129,15 +97,15 @@ public class NewRulesManagerForm extends DialogWrapper {
                 return;
             }
             mLanguageSelected = RuleFile.valueOf((String) selectedLangName);
-            populateTable(mLanguageSelected);
+            populateTable();
         });
     }
 
-    private void populateTable(RuleFile language) {
-        if (language == null) {
+    private void populateTable() {
+        if (mLanguageSelected == null) {
             mRules = RulesManager.INSTANCE.cloneJavaRules();
         } else {
-            switch (language) {
+            switch (mLanguageSelected) {
                 case JAVA:
                     mRules = RulesManager.INSTANCE.cloneJavaRules();
                     break;
@@ -155,7 +123,7 @@ public class NewRulesManagerForm extends DialogWrapper {
         }
 
         TableModel tableModel = new DefaultTableModel(
-                data, new Object[]{"ID*", "Brief Description*", "Highlight Level", "Enabled", "Delete"}
+                data, new Object[]{"ID*", "Brief Description*", "Highlight Level", "Enabled", ""}
         ) {
             @Override
             public Class<?> getColumnClass(int columnIndex) {
@@ -163,8 +131,13 @@ public class NewRulesManagerForm extends DialogWrapper {
                 if (columnIndex == 3) {
                     return Boolean.class;
                 }
+                if (columnIndex == 4) {
+                    return ImageIcon.class;
+                }
                 return super.getColumnClass(columnIndex);
             }
+
+
 
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -180,8 +153,6 @@ public class NewRulesManagerForm extends DialogWrapper {
         columnsModel.getColumn(2).setMaxWidth(100);
         columnsModel.getColumn(3).setMaxWidth(100);
         columnsModel.getColumn(4).setMaxWidth(100);
-        columnsModel.getColumn(4).setCellEditor(new ButtonCell());
-        // ImageIcon icon = new ImageIcon(NewRulesManagerForm.class.getResource('/src/main/resources/icons/trash-filled.png'))
 
         rulesTable.addMouseListener(new MouseAdapter() {
             @Override
@@ -190,25 +161,30 @@ public class NewRulesManagerForm extends DialogWrapper {
                 int col = rulesTable.columnAtPoint(event.getPoint());
                 if (row < 0 || col < 0) return;
                 if (col >= 0 && col < 3) {
-                    RuleDetailForm dialog = new RuleDetailForm(mRules.get(row), mRules, rulesTable, rulesTable.getSelectedRow());
+                    RuleDetailForm dialog = new RuleDetailForm(mProject, mRules.get(row), mLanguageSelected, mRules, rulesTable, rulesTable.getSelectedRow());
                     dialog.setLocationRelativeTo(new javax.swing.JFrame());
                     dialog.setVisible(true);
+                }
+                if (col == 4) {
+                    int confirmMessage = JOptionPane.showInternalConfirmDialog(null, "Do you want to delete this rule?", "Confirm delete rule", YES_NO_OPTION, QUESTION_MESSAGE);
+                    if (confirmMessage == 0) {
+                        DefaultTableModel tableModel = (DefaultTableModel) rulesTable.getModel();
+                        if (tableModel == null) {
+                            return;
+                        }
+
+                        if (row == -1) {
+                            return;
+                        }
+
+                        mRules.remove(row);
+                        tableModel.removeRow(row);
+                    }
                 }
             }
         });
     }
-
-    private void populateEditor(Component component) {
-        editorPanel.setLayout(new java.awt.BorderLayout());
-        editorPanel.removeAll();
-        if (component != null) {
-            editorPanel.add(component);
-        }
-        editorPanel.validate();
-        editorPanel.repaint();
-    }
-
     private Object[] getRowData(Rule rule) {
-        return new Object[]{rule.getId(), rule.getBriefDescription(), rule.getHighlightType(), rule.getEnabled()};
+        return new Object[]{rule.getId(), rule.getBriefDescription(), rule.getHighlightType(), rule.getEnabled(), DeleteIcon};
     }
 }

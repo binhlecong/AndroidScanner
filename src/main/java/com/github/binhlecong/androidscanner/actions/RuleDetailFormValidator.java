@@ -5,23 +5,27 @@ import javax.swing.*;
 public class RuleDetailFormValidator extends InputVerifier {
     @Override
     public boolean verify(JComponent input) {
-        String text = null;
 
         if (input instanceof JTextField) {
-            text = ((JTextField) input).getText();
+            String text = ((JTextField) input).getText().trim();
+            if (text.isEmpty())
+                return false;
+            if (text.equals(""))
+                return false;
         } else if (input instanceof JComboBox) {
-            text = ((JComboBox) input).getSelectedItem().toString();
+            String text = ((JComboBox) input).getSelectedItem().toString();
+            if (text.isEmpty())
+                return false;
+            if (text.equals(""))
+                return false;
         }
-
-        if (text == null || text == "")
-            return false;
         return true;
     }
 
     @Override
     public boolean shouldYieldFocus(JComponent input) {
         boolean valid = verify(input);
-        if (!valid) {
+        if (valid) {
             JOptionPane.showMessageDialog(null, "Invalid data");
         }
 
@@ -31,7 +35,7 @@ public class RuleDetailFormValidator extends InputVerifier {
     @Override
     public boolean shouldYieldFocus(JComponent source, JComponent input) {
         boolean valid = verify(input);
-        if (!valid) {
+        if (valid) {
             JOptionPane.showMessageDialog(null, "Invalid data");
         }
 
