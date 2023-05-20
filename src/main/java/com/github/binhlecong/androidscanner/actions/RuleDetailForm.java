@@ -5,6 +5,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.github.binhlecong.androidscanner.fix_strategies.ReplaceStrategy;
 import com.github.binhlecong.androidscanner.rules.Inspection;
@@ -35,7 +36,7 @@ public class RuleDetailForm extends JDialog {
     private RuleFile mLanguage;
     final private Project mProject;
 
-    public RuleDetailForm(Project project, Rule rule, RuleFile language, ArrayList<Rule> rules, JTable rulesTable, int index) {
+    public RuleDetailForm(Project project, Rule rule, RuleFile language, ArrayList<Rule> rules, JTable rulesTable, int index, JLabel countRuleLabel) {
         setContentPane(contentPane);
         setModal(true);
         setSize(1000, 700);
@@ -52,7 +53,7 @@ public class RuleDetailForm extends JDialog {
         populateInspectionEditor(inspectionEditorForm);
         JPanel fixesEditorForm = new FixesEditorForm(this.mRule.getFixes()).getRootPanel();
         populateFixesEditor(fixesEditorForm);
-        populateDeleteButton(language, rulesTable);
+        populateDeleteButton(language, rulesTable, countRuleLabel);
         this.mRules = rules;
         this.mProject = project;
 
@@ -96,7 +97,7 @@ public class RuleDetailForm extends JDialog {
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
-    public RuleDetailForm(Project project, RuleFile language, ArrayList<Rule> rules, JTable rulesTable) {
+    public RuleDetailForm(Project project, RuleFile language, ArrayList<Rule> rules, JTable rulesTable, JLabel countRuleLabel) {
         setContentPane(contentPane);
         setModal(true);
         setSize(1000, 700);
@@ -128,10 +129,16 @@ public class RuleDetailForm extends JDialog {
                 if (validId == false) {
                     JOptionPane.showMessageDialog(null, "Invalid ID");
                 } else {
-                    boolean validDesc = verifyInput(briefDescTextField);
-                    if (validDesc == false) {
-                        JOptionPane.showMessageDialog(null, "Invalid brief description");
-                    } else onOKAddRule(rulesTable);
+                    boolean uniqueId = verifyUnique(idTextField);
+                    if (uniqueId == false) {
+                        JOptionPane.showMessageDialog(null, "ID is not unique");
+                    } else {
+                        boolean validDesc = verifyInput(briefDescTextField);
+                        if (validDesc == false) {
+                            JOptionPane.showMessageDialog(null, "Invalid brief description");
+                        } else onOKAddRule(rulesTable, countRuleLabel);
+                    }
+
                 }
             }
         });
@@ -188,16 +195,21 @@ public class RuleDetailForm extends JDialog {
         dispose();
     }
 
-    private void onOKAddRule(JTable rulesTable) {
+    private void onOKAddRule(JTable rulesTable, JLabel countRuleLabel) {
         // add your code here
-        this.mRules.add(this.mRule);
+
         DefaultTableModel tableModel = (DefaultTableModel) rulesTable.getModel();
         if (tableModel == null) {
             return;
         }
+        this.mRule.setId(idTextField.getText());
+        this.mRule.setBriefDescription(briefDescTextField.getText());
+        this.mRule.setHighlightType(highlightTypeComboBox.getSelectedItem().toString());
+        this.mRule.setEnabled(enabledCheckbox.getModel().isSelected());
         Object[] newRowData = getRowData(this.mRule);
         tableModel.insertRow(tableModel.getRowCount(), newRowData);
         rulesTable.changeSelection(tableModel.getRowCount() - 1, 0, false, false);
+        this.mRules.add(this.mRule);
         switch (mLanguage) {
             case JAVA:
                 RulesManager.INSTANCE.saveJavaRules(this.mRules);
@@ -212,6 +224,9 @@ public class RuleDetailForm extends JDialog {
                 break;
         }
         RulesManager.INSTANCE.updateRules(mLanguage, mProject);
+        if (mRules.size() == 1)
+            countRuleLabel.setText(mRules.size() + " rule found");
+        else countRuleLabel.setText(mRules.size() + " rules found");
         dispose();
     }
 
@@ -239,7 +254,7 @@ public class RuleDetailForm extends JDialog {
         fixesEditorPanel.repaint();
     }
 
-    private void populateDeleteButton(RuleFile language, JTable rulesTable) {
+    private void populateDeleteButton(RuleFile language, JTable rulesTable, JLabel countRuleLabel) {
         deleteRuleButton.addActionListener(actionEvent -> {
             int confirmMessage = JOptionPane.showInternalConfirmDialog(null, "Do you want to delete this rule?", "Confirm delete rule", YES_NO_OPTION, QUESTION_MESSAGE);
             if (confirmMessage == 0) {
@@ -268,6 +283,9 @@ public class RuleDetailForm extends JDialog {
                         break;
                 }
                 RulesManager.INSTANCE.updateRules(language, mProject);
+                if (mRules.size() == 1)
+                    countRuleLabel.setText(mRules.size() + " rule found");
+                else countRuleLabel.setText(mRules.size() + " rules found");
                 dispose();
             }
         });
@@ -285,7 +303,12 @@ public class RuleDetailForm extends JDialog {
     }
 
     private boolean verifyUnique(JComponent input){
-
+        if (input instanceof JTextField) {
+            String text = ((JTextField) input).getText();
+            Rule findRule = this.mRules.stream().filter(rule -> rule.getId().equals(text)).findFirst().orElse(null);
+            if (findRule == null)
+                return false;
+        }
         return true;
     }
     private Object[] getRowData(Rule rule) {

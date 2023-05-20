@@ -1,104 +1,40 @@
 package com.github.binhlecong.androidscanner.actions;
 
-import com.github.binhlecong.androidscanner.Config;
-import com.github.binhlecong.androidscanner.fix_strategies.ReplaceStrategy;
-import com.github.binhlecong.androidscanner.rules.Inspection;
 import com.github.binhlecong.androidscanner.rules.Rule;
 import com.github.binhlecong.androidscanner.rules.RuleFile;
 import com.github.binhlecong.androidscanner.rules.RulesManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import org.jetbrains.annotations.Nullable;
 
-import javax.imageio.ImageIO;
-import java.io.File;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
-import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import static icons.MyIcons.DeleteIcon;
 import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 
-public class NewRulesManagerForm extends DialogWrapper {
-    private JComboBox<String> selectLangDropdown;
-    private JLabel selectLangLabel;
+public class RulesTableForm extends JPanel {
     private JScrollPane rulesScrollView;
     private JTable rulesTable;
-    private JButton addRuleButton;
     private JPanel rootPanel;
+    private JButton addRuleButton;
+    private JLabel countRuleLabel;
+
     private RuleFile mLanguageSelected = RuleFile.JAVA;
+
     private ArrayList<Rule> mRules = null;
 
     final private Project mProject;
 
-    public NewRulesManagerForm(@Nullable Project project) {
-        super(project);
-        mProject = project;
-        setTitle(Config.PLUGIN_NAME + " Manager Console");
-        init();
-        populateDialog();
-    }
-
-    @Override
-    protected @Nullable JComponent createCenterPanel() {
-        return rootPanel;
-    }
-
-    @Override
-    protected void doOKAction() {
-        switch (mLanguageSelected) {
-            case JAVA:
-                RulesManager.INSTANCE.saveJavaRules(mRules);
-                break;
-            case KOTLIN:
-                RulesManager.INSTANCE.saveKotlinRules(mRules);
-                break;
-            case XML:
-                RulesManager.INSTANCE.saveXmlRules(mRules);
-                break;
-            default:
-                break;
-        }
-        RulesManager.INSTANCE.updateRules(mLanguageSelected, mProject);
-        super.doOKAction();
-    }
-
-    private void populateDialog() {
-        populateDropdownList();
+    public RulesTableForm(Project project, RuleFile language){
+        this.mProject = project;
+        this.mLanguageSelected = language;
         populateTable();
         populateAddButton();
-    }
-
-    private void populateAddButton() {
-        addRuleButton.addActionListener(event -> {
-            RuleDetailForm dialog = new RuleDetailForm(mProject, mLanguageSelected, mRules, rulesTable);
-            dialog.setLocationRelativeTo(new javax.swing.JFrame());
-            dialog.setVisible(true);
-        });
-    }
-
-    private void populateDropdownList() {
-        for (RuleFile option : RuleFile.values()) {
-            selectLangDropdown.addItem(option.name());
-        }
-        selectLangDropdown.setSelectedIndex(0);
-        selectLangDropdown.addActionListener(event -> {
-            JComboBox<String> cb = (JComboBox<String>) event.getSource();
-            Object selectedLangName = cb.getSelectedItem();
-            if (selectedLangName == null) {
-                return;
-            }
-            mLanguageSelected = RuleFile.valueOf((String) selectedLangName);
-            populateTable();
-        });
     }
 
     private void populateTable() {
@@ -117,6 +53,9 @@ public class NewRulesManagerForm extends DialogWrapper {
                     break;
             }
         }
+        if (mRules.size() == 1)
+            countRuleLabel.setText(mRules.size() + " rule found");
+        else countRuleLabel.setText(mRules.size() + " rules found");
         Object[][] data = new Object[mRules.size()][];
         for (int i = 0; i < mRules.size(); i++) {
             data[i] = getRowData(mRules.get(i));
@@ -161,7 +100,7 @@ public class NewRulesManagerForm extends DialogWrapper {
                 int col = rulesTable.columnAtPoint(event.getPoint());
                 if (row < 0 || col < 0) return;
                 if (col >= 0 && col < 3) {
-                    RuleDetailForm dialog = new RuleDetailForm(mProject, mRules.get(row), mLanguageSelected, mRules, rulesTable, rulesTable.getSelectedRow());
+                    RuleDetailForm dialog = new RuleDetailForm(mProject, mRules.get(row), mLanguageSelected, mRules, rulesTable, rulesTable.getSelectedRow(), countRuleLabel);
                     dialog.setLocationRelativeTo(new javax.swing.JFrame());
                     dialog.setVisible(true);
                 }
@@ -179,12 +118,41 @@ public class NewRulesManagerForm extends DialogWrapper {
 
                         mRules.remove(row);
                         tableModel.removeRow(row);
+                        if (mRules.size() == 1)
+                            countRuleLabel.setText(mRules.size() + " rule found");
+                        else countRuleLabel.setText(mRules.size() + " rules found");
+                        switch (mLanguageSelected) {
+                            case JAVA:
+                                RulesManager.INSTANCE.saveJavaRules(mRules);
+                                break;
+                            case KOTLIN:
+                                RulesManager.INSTANCE.saveKotlinRules(mRules);
+                                break;
+                            case XML:
+                                RulesManager.INSTANCE.saveXmlRules(mRules);
+                                break;
+                            default:
+                                break;
+                        }
+                        RulesManager.INSTANCE.updateRules(mLanguageSelected, mProject);
                     }
                 }
             }
         });
     }
+
+    private void populateAddButton() {
+        addRuleButton.addActionListener(event -> {
+            RuleDetailForm dialog = new RuleDetailForm(mProject, mLanguageSelected, mRules, rulesTable, countRuleLabel);
+            dialog.setLocationRelativeTo(new javax.swing.JFrame());
+            dialog.setVisible(true);
+        });
+    }
     private Object[] getRowData(Rule rule) {
         return new Object[]{rule.getId(), rule.getBriefDescription(), rule.getHighlightType(), rule.getEnabled(), DeleteIcon};
+    }
+
+    public JPanel getRootPanel() {
+        return rootPanel;
     }
 }
