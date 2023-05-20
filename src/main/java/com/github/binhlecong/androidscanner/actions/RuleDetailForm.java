@@ -60,15 +60,20 @@ public class RuleDetailForm extends JDialog {
         buttonOK.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 boolean validId = verifyInput(idTextField);
-                if (validId == false){
+                if (validId == false) {
                     JOptionPane.showMessageDialog(null, "Invalid ID");
                 } else {
-                    boolean validDesc = verifyInput(briefDescTextField);
-                    if (validDesc == false){
-                        JOptionPane.showMessageDialog(null, "Invalid brief description");
+                    boolean uniqueId = verifyUnique(idTextField);
+                    if (uniqueId == false) {
+                        JOptionPane.showMessageDialog(null, "ID is not unique");
                     } else {
-                        int confirmMessage = JOptionPane.showInternalConfirmDialog(null, "Do you want to save changes?", "Confirm edit rule", OK_CANCEL_OPTION, QUESTION_MESSAGE);
-                        if (confirmMessage == 0) onOKEditRule(rulesTable, index);
+                        boolean validDesc = verifyInput(briefDescTextField);
+                        if (validDesc == false) {
+                            JOptionPane.showMessageDialog(null, "Invalid brief description");
+                        } else {
+                            int confirmMessage = JOptionPane.showInternalConfirmDialog(null, "Do you want to save changes?", "Confirm edit rule", OK_CANCEL_OPTION, QUESTION_MESSAGE);
+                            if (confirmMessage == 0) onOKEditRule(rulesTable, index);
+                        }
                     }
                 }
 
@@ -306,7 +311,7 @@ public class RuleDetailForm extends JDialog {
         if (input instanceof JTextField) {
             String text = ((JTextField) input).getText();
             Rule findRule = this.mRules.stream().filter(rule -> rule.getId().equals(text)).findFirst().orElse(null);
-            if (findRule == null)
+            if (findRule != null)
                 return false;
         }
         return true;
