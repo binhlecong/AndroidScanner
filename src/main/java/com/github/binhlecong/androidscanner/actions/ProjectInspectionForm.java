@@ -29,13 +29,17 @@ public class ProjectInspectionForm extends DialogWrapper {
     private JCheckBox ktCheckBox;
     private JCheckBox xmlCheckBox;
     private final String[] scopeOptions = {"All", "Project Source Files", "Project Test Files", "Opening Files"};
-    final private Project mProject;
+    final private ProjectInspector mProjectInspector;
 
     final static public String logFile = Config.Companion.getPATH() + "/armordroid_report.txt";
 
-    public ProjectInspectionForm(@Nullable Project project) {
+    public interface ProjectInspector {
+        void inspect(int scopeType, ArrayList<String> fileTypes);
+    }
+
+    public ProjectInspectionForm(@Nullable Project project, ProjectInspector projectInspector) {
         super(project);
-        mProject = project;
+        mProjectInspector = projectInspector;
         setTitle(Config.PLUGIN_NAME + " Inspect Project");
         init();
         populateDialog();
@@ -65,114 +69,12 @@ public class ProjectInspectionForm extends DialogWrapper {
         if (xmlCheckBox.isSelected()) fileExt.add(".xml");
         if (!fileExt.isEmpty()) {
             int selectedIndex = scopeOptionsComboBox.getSelectedIndex();
-            switch (selectedIndex) {
-                case 0:
-                    inspectProject(mProject.getBasePath(), fileExt);
-                    break;
-                case 1:
-                    String sourcePath = mProject.getBasePath() + "/app/src/main";
-                    inspectProject(sourcePath, fileExt);
-                    break;
-                case 2:
-                    String testPath = mProject.getBasePath() + "/app/src/test";
-                    inspectProject(testPath, fileExt);
-                    break;
-                case 3:
-                    inspectProject(mProject.getBasePath(), fileExt);
-                    break;
-                default:
-                    JOptionPane.showMessageDialog(null, "Fail to select custom scope", Config.PLUGIN_NAME, JOptionPane.ERROR_MESSAGE);
-                    break;
-            }
+            mProjectInspector.inspect(selectedIndex, fileExt);
         } else {
             JOptionPane.showMessageDialog(null, "At least one file type must be selected", Config.PLUGIN_NAME, JOptionPane.WARNING_MESSAGE);
             return;
         }
         super.doOKAction();
-    }
-
-    private void inspectProject(String basePath, ArrayList<String> extensions) {
-        if (basePath == null || basePath.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Fail to access project folder", Config.PLUGIN_NAME, JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        try {
-            new FileWriter(logFile, false).close();
-            Writer output = new BufferedWriter(new FileWriter(logFile, true));
-            output.append("<html>");
-            output.append("<b>Location:</b> ").append(basePath);
-
-            output.append("<ul>");
-            for (String extension : extensions)
-                output.append("<li>").append(extension).append("</li>");
-            output.append("</ul>");
-
-            visitFiles(new File(basePath), extensions, output);
-            output.append("</html>");
-            output.close();
-            JOptionPane.showMessageDialog(null, "Done", Config.PLUGIN_NAME, JOptionPane.INFORMATION_MESSAGE);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e.getMessage(), Config.PLUGIN_NAME, JOptionPane.ERROR_MESSAGE);
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void visitFiles(final File folder, ArrayList<String> extensions, Writer output) throws Exception {
-        Stack<File> fileStack = new Stack<>();
-        fileStack.add(folder);
-
-        output.append("<ul>");
-        while (!fileStack.isEmpty()) {
-            File file = fileStack.pop();
-            if (file.isDirectory()) {
-                if (file.listFiles() != null) {
-                    Collections.addAll(fileStack, file.listFiles());
-                }
-            } else {
-                String fileName = file.getName();
-                for (String extension : extensions) {
-                    if (fileName.endsWith(extension)) {
-
-                        VirtualFile virtualFile = VirtualFileManager.getInstance().findFileByUrl("file://" + file.getAbsolutePath());
-                        if (virtualFile == null) {
-                            continue;
-                        }
-
-                        PsiFile psiFile = PsiManager.getInstance(mProject).findFile(virtualFile);
-                        if (psiFile == null) {
-                            continue;
-                        }
-
-                        ProblemDescriptor[] issues = null;
-                        switch (psiFile.getClass().getSimpleName()) {
-                            case "XmlFileImpl":
-                                XmlInspection xmlInspection = new XmlInspection();
-                                issues = xmlInspection.checkFile(psiFile, InspectionManager.getInstance(mProject), false);
-                                break;
-                            case "PsiJavaFileImpl":
-                                UastInspection uastInspection = new UastInspection();
-                                issues = uastInspection.checkFile(psiFile, InspectionManager.getInstance(mProject), false);
-                                break;
-                        }
-
-                        if (issues == null || issues.length == 0) continue;
-
-                        output.append("<li>").append(file.getName()).append(" ")
-                                .append("<span style=\"color:#7a7a7a;\">").append(file.getAbsolutePath()).append(" ")
-                                .append("<i>").append(Integer.toString(issues.length)).append(" ")
-                                .append(issues.length == 1 ? "problem" : "problems").append("</i></span>").append("<ul>");
-                        for (ProblemDescriptor issue : issues) {
-                            output.append("<li>").append(issue.getDescriptionTemplate()).append("<i style=\"color:#7a7a7a;\"> line ")
-                                    .append(Integer.toString(issue.getLineNumber())).append("</i>").append("</li>");
-                        }
-                        output.append("</ul>").append("</li>");
-                        break;
-                    }
-                }
-            }
-        }
-        output.append("</ul>");
     }
 }
 
