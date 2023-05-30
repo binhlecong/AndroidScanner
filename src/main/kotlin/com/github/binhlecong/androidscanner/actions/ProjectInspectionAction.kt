@@ -7,15 +7,20 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import java.io.File
 import java.io.FileWriter
 import java.util.*
 import javax.swing.JOptionPane
 import javax.swing.JPanel
+import kotlin.streams.toList
+
 
 class ProjectInspectionAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
@@ -24,10 +29,10 @@ class ProjectInspectionAction : AnAction() {
         ProjectInspectionForm(project, ProjectInspectionForm.ProjectInspector { scopeType: Int, fileTypes ->
             var basePath: String? = null
             when (scopeType) {
-                0 -> basePath = project.getBasePath()!!
-                1 -> basePath = project.getBasePath() + "/app/src/main"
-                2 -> basePath = project.getBasePath() + "/app/src/test"
-                3 -> basePath = project.getBasePath()!!
+                0 -> basePath = project.basePath!!
+                1 -> basePath = project.basePath + "/app/src/main"
+                2 -> basePath = project.basePath + "/app/src/test"
+                3 -> basePath = project.basePath!!
             }
 
             if (basePath.isNullOrEmpty()) {
@@ -48,6 +53,7 @@ class ProjectInspectionAction : AnAction() {
                             getDisplayName(scopeType, project.name),
                             false,
                         )
+                        //content.isCloseable = true
                         contentManager.addContent(content)
                     } else {
                         throw RuntimeException("contentManager is null")
@@ -142,5 +148,12 @@ class ProjectInspectionAction : AnAction() {
             }
         }
         output.append("</ul>")
+    }
+
+    fun findOpenedEditorAsPsiFiles(project: Project?): List<PsiFile?> {
+        val editorManager = FileEditorManager.getInstance(project!!)
+        return Arrays.stream(editorManager.openFiles)
+            .map { file: VirtualFile? -> PsiManager.getInstance(project).findFile(file!!) }
+            .filter(Objects::nonNull).toList()
     }
 }
