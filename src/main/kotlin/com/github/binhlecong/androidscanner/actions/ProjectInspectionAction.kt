@@ -15,7 +15,6 @@ import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import java.io.File
-import java.io.FileWriter
 import java.util.*
 import javax.swing.JOptionPane
 import javax.swing.JPanel
@@ -23,47 +22,86 @@ import kotlin.streams.toList
 
 
 class ProjectInspectionAction : AnAction() {
+
+    class FileAndIssues(val file: PsiFile, val issues: Array<ProblemDescriptor>)
+
     override fun actionPerformed(e: AnActionEvent) {
         if (e.project == null) return
-        val project = e.project!!
-        ProjectInspectionForm(project, ProjectInspectionForm.ProjectInspector { scopeType: Int, fileTypes ->
-            var basePath: String? = null
-            when (scopeType) {
-                0 -> basePath = project.basePath!!
-                1 -> basePath = project.basePath + "/app/src/main"
-                2 -> basePath = project.basePath + "/app/src/test"
-                3 -> basePath = project.basePath!!
-            }
-
-            if (basePath.isNullOrEmpty()) {
-                JOptionPane.showMessageDialog(
-                    null,
-                    "Fail to access project folder",
-                    Config.PLUGIN_NAME,
-                    JOptionPane.ERROR_MESSAGE
-                )
-            } else {
-                try {
-                    val resultString: String = inspectProject(project, basePath, fileTypes)
-                    val contentManager =
-                        ToolWindowManager.getInstance(project).getToolWindow("ArmorDroid")?.contentManager
-                    if (contentManager != null) {
-                        val content = contentManager.factory.createContent(
-                            createResultPanel(resultString),
-                            getDisplayName(scopeType, project.name),
-                            false,
-                        )
-                        //content.isCloseable = true
-                        contentManager.addContent(content)
-                    } else {
-                        throw RuntimeException("contentManager is null")
+        try {
+            val project = e.project!!
+            ProjectInspectionForm(project, ProjectInspectionForm.ProjectInspector { scopeType: Int, fileTypes ->
+                var inspectionResult: ArrayList<FileAndIssues>? = null
+                when (scopeType) {
+                    0 -> {
+                        val basePath = project.basePath!!
+                        val allFiles = findFilesInDirAndSubdir(project, File(basePath), fileTypes)
+                        inspectionResult = inspectFiles(allFiles, project)
                     }
-                } catch (e: java.lang.Exception) {
-                    JOptionPane.showMessageDialog(null, e.message, Config.PLUGIN_NAME, JOptionPane.ERROR_MESSAGE)
-                    throw RuntimeException(e)
+
+                    1 -> {
+                        val basePath = project.basePath + "/app/src/main"
+                        val allFiles = findFilesInDirAndSubdir(project, File(basePath), fileTypes)
+                        inspectionResult = inspectFiles(allFiles, project)
+                    }
+
+                    2 -> {
+                        val basePath = project.basePath + "/app/src/test"
+                        val allFiles = findFilesInDirAndSubdir(project, File(basePath), fileTypes)
+                        inspectionResult = inspectFiles(allFiles, project)
+                    }
+
+                    3 -> {
+                        val openedFiles = findOpenedEditorAsPsiFiles(project, fileTypes)
+                        inspectionResult = inspectFiles(openedFiles, project)
+                    }
+                }
+
+                if (inspectionResult == null) {
+                    throw RuntimeException("contentManager is null")
+                }
+
+                JOptionPane.showMessageDialog(null, "Done", Config.PLUGIN_NAME, JOptionPane.INFORMATION_MESSAGE)
+                val contentManager =
+                    ToolWindowManager.getInstance(project).getToolWindow(Config.PLUGIN_NAME)?.contentManager
+                if (contentManager != null) {
+                    val content = contentManager.factory.createContent(
+                        createResultPanel(inspectionResult, project),
+                        getDisplayName(scopeType, project.name),
+                        false,
+                    )
+                    //content.isCloseable = true
+                    contentManager.addContent(content)
+                } else {
+                    throw RuntimeException("contentManager is null")
+                }
+            }).show()
+        } catch (e: Exception) {
+            JOptionPane.showMessageDialog(null, e.message, Config.PLUGIN_NAME, JOptionPane.ERROR_MESSAGE)
+            throw RuntimeException(e)
+        }
+    }
+
+    private fun inspectFiles(psiFiles: List<PsiFile?>, project: Project): ArrayList<FileAndIssues> {
+        val inspectionResult = ArrayList<FileAndIssues>()
+        for (psiFile in psiFiles) {
+            var issues: Array<ProblemDescriptor>? = null
+            if (psiFile == null) continue
+            val inspectionManager = InspectionManager.getInstance(project)
+            when (psiFile.javaClass.simpleName) {
+                "XmlFileImpl" -> {
+                    val xmlInspection = XmlInspection()
+                    issues = xmlInspection.checkFile(psiFile, inspectionManager, false)
+                }
+
+                "PsiJavaFileImpl" -> {
+                    val uastInspection = UastInspection()
+                    issues = uastInspection.checkFile(psiFile, inspectionManager, false)
                 }
             }
-        }).show()
+            if (issues.isNullOrEmpty()) continue
+            inspectionResult.add(FileAndIssues(psiFile, issues))
+        }
+        return inspectionResult
     }
 
     private fun getDisplayName(scopeType: Int, projectName: String): String {
@@ -78,32 +116,14 @@ class ProjectInspectionAction : AnAction() {
         return nameBuilder.toString()
     }
 
-    private fun createResultPanel(result: String): JPanel {
-        return ProjInspectionResultForm(result).rootPanel
+    private fun createResultPanel(fileNIssues: ArrayList<FileAndIssues>, project: Project): JPanel {
+        return ProjInspectionResultForm(fileNIssues, project).rootPanel
     }
 
-    private fun inspectProject(project: Project, basePath: String, extensions: ArrayList<String>): String {
-        try {
-            FileWriter(ProjectInspectionForm.logFile, false).close()
-            val output: StringBuilder = StringBuilder()
-            output.append("<html><b>Location:</b> $basePath")
-            output.append("<p>Selected file types:<ul>")
-            for (extension in extensions) output.append("<li>$extension</li>")
-            output.append("</ul></p>")
-
-            visitFiles(project, File(basePath), extensions, output)
-            output.append("</html>")
-            JOptionPane.showMessageDialog(null, "Done", Config.PLUGIN_NAME, JOptionPane.INFORMATION_MESSAGE)
-            return output.toString()
-        } catch (e: java.lang.Exception) {
-            throw RuntimeException(e)
-        }
-    }
-
-    private fun visitFiles(project: Project, folder: File, extensions: ArrayList<String>, output: StringBuilder) {
+    private fun findFilesInDirAndSubdir(project: Project, folder: File, extensions: ArrayList<String>): List<PsiFile?> {
+        val psiFiles = ArrayList<PsiFile?>()
         val fileStack = Stack<File>()
         fileStack.add(folder)
-        output.append("<ul>")
         while (!fileStack.isEmpty()) {
             val file = fileStack.pop()
             if (file.isDirectory) {
@@ -117,43 +137,59 @@ class ProjectInspectionAction : AnAction() {
                         val virtualFile = VirtualFileManager.getInstance().findFileByUrl("file://" + file.absolutePath)
                             ?: continue
                         val psiFile = PsiManager.getInstance(project).findFile(virtualFile) ?: continue
-                        var issues: Array<ProblemDescriptor>? = null
-                        when (psiFile.javaClass.simpleName) {
-                            "XmlFileImpl" -> {
-                                val xmlInspection = XmlInspection()
-                                issues =
-                                    xmlInspection.checkFile(psiFile, InspectionManager.getInstance(project), false)
-                            }
-
-                            "PsiJavaFileImpl" -> {
-                                val uastInspection = UastInspection()
-                                issues =
-                                    uastInspection.checkFile(psiFile, InspectionManager.getInstance(project), false)
-                            }
-                        }
-                        if (issues.isNullOrEmpty()) continue
-                        output.append("<li>${file.name} ")
-                            .append("<span style=\"color:#7a7a7a;\">${file.absolutePath} ")
-                            .append("<i>${issues.size} ${if (issues.size == 1) "problem" else "problems"}</i></span>")
-                            .append("<ul>")
-                        for (issue in issues) {
-                            output.append("<li>${issue.descriptionTemplate}")
-                                .append("<i style=\"color:#7a7a7a;\"> line ")
-                                .append(issue.lineNumber.toString()).append("</i></li>")
-                        }
-                        output.append("</ul></li>")
+                        psiFiles.add(psiFile)
                         break
                     }
                 }
             }
         }
-        output.append("</ul>")
+        return psiFiles.toList()
     }
 
-    fun findOpenedEditorAsPsiFiles(project: Project?): List<PsiFile?> {
-        val editorManager = FileEditorManager.getInstance(project!!)
+    private fun findOpenedEditorAsPsiFiles(project: Project, fileTypes: ArrayList<String>): List<PsiFile?> {
+        val editorManager = FileEditorManager.getInstance(project)
         return Arrays.stream(editorManager.openFiles)
             .map { file: VirtualFile? -> PsiManager.getInstance(project).findFile(file!!) }
-            .filter(Objects::nonNull).toList()
+            .filter(Objects::nonNull).filter {
+                isSelectedFileType(it, fileTypes)
+            }.toList()
+    }
+
+    private fun isSelectedFileType(psiFile: PsiFile?, fileTypes: ArrayList<String>): Boolean {
+        if (psiFile == null) return false
+        for (fileType in fileTypes) {
+            if (psiFile.name.endsWith(fileType)) return true
+        }
+        return false
+    }
+
+    private fun issuesToHtml(
+        inspectionResult: ArrayList<FileAndIssues>,
+        scope: String,
+        extensions: ArrayList<String>
+    ): String {
+        val output: StringBuilder = StringBuilder()
+        output.append("<html><b>Location:</b> $scope")
+        output.append("<p>Selected file types:<ul>")
+        for (extension in extensions) output.append("<li>$extension</li>")
+        output.append("</ul></p>")
+        output.append("<ul>")
+        for (fileNIssues in inspectionResult) {
+            val psiFile = fileNIssues.file
+            val issues = fileNIssues.issues
+            output.append("<li>${psiFile.name} ")
+                .append("<span style=\"color:#7a7a7a;\">${psiFile.containingDirectory.name} ")
+                .append("<i>${issues.size} ${if (issues.size == 1) "problem" else "problems"}</i></span>")
+                .append("<ul>")
+            for (issue in issues) {
+                output.append("<li>${issue.descriptionTemplate}")
+                    .append("<i style=\"color:#7a7a7a;\"> line ")
+                    .append(issue.lineNumber.toString()).append("</i></li>")
+            }
+            output.append("</ul></li>")
+        }
+        output.append("</ul>")
+        output.append("</html>")
+        return output.toString()
     }
 }
