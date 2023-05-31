@@ -2,8 +2,10 @@ package com.github.binhlecong.androidscanner.actions;
 
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
+import com.intellij.util.ui.JBUI;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
@@ -25,32 +27,43 @@ public class ProjInspectionResultForm extends JPanel {
         issuesPanel.setLayout(boxLayout);
 
         for (ProjectInspectionAction.FileAndIssues fileAndIssues : inspectionResult) {
-            StringBuilder builder = new StringBuilder();
             PsiFile psiFile = fileAndIssues.getFile();
             ProblemDescriptor[] issues = fileAndIssues.getIssues();
-            builder.append("<html>");
-            builder.append(psiFile.getName())
-                    .append(" <span style=\"color:#7a7a7a;\">")
-                    .append(psiFile.getContainingDirectory())
-                    .append("<i> ").append(issues.length).append(issues.length == 1 ? " problem" : " problems").append("</i>")
-                    .append("</span>")
-                    .append("<ul>");
-            for (ProblemDescriptor issue : issues) {
-                builder.append("<li>").append(issue.getDescriptionTemplate())
-                        .append("<i style=\"color:#7a7a7a;\"> line ")
-                        .append(issue.getLineNumber()).append("</i></li>");
-            }
-            builder.append("</ul>");
-            builder.append("</html>");
-            JLabel issueLabel = new JLabel(builder.toString());
-            issueLabel.addMouseListener(new MouseAdapter() {
+
+            String fileBuilder = "<html>" + psiFile.getName() + "<span style=\"color:#7a7a7a;\">" +
+                    psiFile.getContainingDirectory() + "<i> " + issues.length +
+                    (issues.length == 1 ? " problem" : " problems") + "</i>" +
+                    "</span><html>";
+            JLabel fileLabel = new JLabel(fileBuilder);
+            fileLabel.setBorder(JBUI.Borders.empty(5, 10, 2, 0));
+            fileLabel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     super.mouseClicked(e);
                     FileEditorManager.getInstance(project).openFile(psiFile.getVirtualFile(), true);
                 }
             });
-            issuesPanel.add(issueLabel);
+            issuesPanel.add(fileLabel);
+
+            for (ProblemDescriptor issue : issues) {
+                String issueBuilder = "<html>&emsp;" + issue.getDescriptionTemplate() +
+                        "<i style=\"color:#7a7a7a;\"> line " +
+                        (issue.getLineNumber() + 1) + "</i></html>";
+                JLabel issueLabel = new JLabel(issueBuilder);
+                issueLabel.setBorder(JBUI.Borders.empty(2, 10, 2, 0));
+                issueLabel.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        super.mouseClicked(e);
+                        FileEditorManager.getInstance(project).openEditor(
+                                new OpenFileDescriptor(project,
+                                        psiFile.getVirtualFile(),
+                                        issue.getTextRangeInElement().getStartOffset()),
+                                false);
+                    }
+                });
+                issuesPanel.add(issueLabel);
+            }
         }
     }
 }

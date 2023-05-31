@@ -162,34 +162,4 @@ class ProjectInspectionAction : AnAction() {
         }
         return false
     }
-
-    private fun issuesToHtml(
-        inspectionResult: ArrayList<FileAndIssues>,
-        scope: String,
-        extensions: ArrayList<String>
-    ): String {
-        val output: StringBuilder = StringBuilder()
-        output.append("<html><b>Location:</b> $scope")
-        output.append("<p>Selected file types:<ul>")
-        for (extension in extensions) output.append("<li>$extension</li>")
-        output.append("</ul></p>")
-        output.append("<ul>")
-        for (fileNIssues in inspectionResult) {
-            val psiFile = fileNIssues.file
-            val issues = fileNIssues.issues
-            output.append("<li>${psiFile.name} ")
-                .append("<span style=\"color:#7a7a7a;\">${psiFile.containingDirectory.name} ")
-                .append("<i>${issues.size} ${if (issues.size == 1) "problem" else "problems"}</i></span>")
-                .append("<ul>")
-            for (issue in issues) {
-                output.append("<li>${issue.descriptionTemplate}")
-                    .append("<i style=\"color:#7a7a7a;\"> line ")
-                    .append(issue.lineNumber.toString()).append("</i></li>")
-            }
-            output.append("</ul></li>")
-        }
-        output.append("</ul>")
-        output.append("</html>")
-        return output.toString()
-    }
 }
