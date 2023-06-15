@@ -64,15 +64,17 @@ public class RuleDetailForm extends JDialog {
                     JOptionPane.showMessageDialog(null, "Invalid ID");
                 } else {
                     boolean uniqueId = verifyUnique(idTextField);
-                    if (uniqueId == false) {
+                    if (uniqueId == false && !idTextField.getText().equals(rule.getId())) {
                         JOptionPane.showMessageDialog(null, "ID is not unique");
                     } else {
                         boolean validDesc = verifyInput(briefDescTextField);
                         if (validDesc == false) {
                             JOptionPane.showMessageDialog(null, "Invalid brief description");
                         } else {
-                            int confirmMessage = JOptionPane.showInternalConfirmDialog(null, "Do you want to save changes?", "Confirm edit rule", OK_CANCEL_OPTION, QUESTION_MESSAGE);
-                            if (confirmMessage == 0) onOKEditRule(rulesTable, index);
+                            if (!idTextField.getText().equals(rule.getId())) {
+                                int confirmMessage = JOptionPane.showInternalConfirmDialog(null, "Do you want to save changes?", "Confirm edit rule", OK_CANCEL_OPTION, QUESTION_MESSAGE);
+                                if (confirmMessage == 0) onOKEditRule(rulesTable, index);
+                            } else dispose();
                         }
                     }
                 }
@@ -82,8 +84,11 @@ public class RuleDetailForm extends JDialog {
 
         buttonCancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                int confirmMessage = JOptionPane.showInternalConfirmDialog(null, "Do you want to cancel?", "Cancel edit rule", OK_CANCEL_OPTION, QUESTION_MESSAGE);
-                if (confirmMessage == 0) onCancel();
+                if (!idTextField.getText().equals(rule.getId())) {
+                    int confirmMessage = JOptionPane.showInternalConfirmDialog(null, "Do you want to cancel?", "Cancel edit rule", OK_CANCEL_OPTION, QUESTION_MESSAGE);
+                    if (confirmMessage == 0) onCancel();
+                } else dispose();
+
             }
         });
 
