@@ -68,7 +68,7 @@
 
             <action id="com.github.binhlecong.androidscanner.actions.ProjectInspectionAction"
                     class="com.github.binhlecong.androidscanner.actions.ProjectInspectionAction"
-                    text="Inspect Whole Project"
+                    text="Inspect Project"
                     description="Inspect part of or the entire source code">
             </action>
         </group>
