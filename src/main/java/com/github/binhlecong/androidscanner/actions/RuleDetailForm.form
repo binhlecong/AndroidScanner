@@ -124,6 +124,7 @@
                   <model>
                     <item value="WARNING"/>
                     <item value="ERROR"/>
+                    <item value="INFO"/>
                   </model>
                 </properties>
               </component>
