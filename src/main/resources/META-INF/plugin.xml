@@ -27,6 +27,11 @@
         <notificationGroup id="ArmorDroid Notification Group"
                            displayType="BALLOON"
                            icon="MyIcons.PluginIcon"/>
+
+        <toolWindow factoryClass="com.github.binhlecong.androidscanner.actions.ArmorDroidToolWindowFactory"
+                    id="ArmorDroid"
+                    icon="MyIcons.PluginIcon"
+                    anchor="bottom"/>
     </extensions>
 
     <actions>
@@ -59,6 +64,12 @@
                     class="com.github.binhlecong.androidscanner.actions.RuleResetAction"
                     text="Reset Rules"
                     description="Reset to default rules">
+            </action>
+
+            <action id="com.github.binhlecong.androidscanner.actions.ProjectInspectionAction"
+                    class="com.github.binhlecong.androidscanner.actions.ProjectInspectionAction"
+                    text="Inspect Whole Project"
+                    description="Inspect part of or the entire source code">
             </action>
         </group>
     </actions>
