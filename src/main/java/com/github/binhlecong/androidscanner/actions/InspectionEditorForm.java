@@ -6,10 +6,17 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
+
+import static icons.MyIcons.DeleteIcon;
+import static javax.swing.JOptionPane.QUESTION_MESSAGE;
+import static javax.swing.JOptionPane.YES_NO_OPTION;
 
 public class InspectionEditorForm extends JPanel {
     private JPanel rootPanel;
@@ -28,7 +35,6 @@ public class InspectionEditorForm extends JPanel {
         mInspectionStrategy = inspection;
         populateUI();
         populateAddButton();
-        populateDeleteButton();
     }
 
     private void populateUI() {
@@ -58,13 +64,57 @@ public class InspectionEditorForm extends JPanel {
         int n = groupPatterns.size();
         Object[][] data = new Object[n][];
         for (int i = 0; i < n; i++) {
-            data[i] = new Object[]{groupPatterns.get(i)};
+            data[i] = new Object[]{groupPatterns.get(i), DeleteIcon};
         }
         TableModel tableModel = new DefaultTableModel(
-                data, new Object[]{"Group patterns"}
-        );
+                data, new Object[]{"Group patterns", ""}
+        ){
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                // Display the "Enable" column as checkbox
+                if (columnIndex == 1) {
+                    return ImageIcon.class;
+                }
+                return super.getColumnClass(columnIndex);
+            }
+
+
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 0;
+            }
+        };
         tableModel.addTableModelListener(new GroupPatternsTableModelListener(mInspectionStrategy));
         patternsTable.setModel(tableModel);
+        TableColumnModel columnsModel = patternsTable.getColumnModel();
+        columnsModel.getColumn(1).setMaxWidth(100);
+
+        patternsTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent event) {
+                int row = patternsTable.rowAtPoint(event.getPoint());
+                int col = patternsTable.columnAtPoint(event.getPoint());
+                if (row < 0 || col < 0) return;
+                if (col == 1) {
+                    int confirmMessage = JOptionPane.showInternalConfirmDialog(null, "Do you want to delete this argument pattern?", "Confirm delete argument pattern", YES_NO_OPTION, QUESTION_MESSAGE);
+                    if (confirmMessage == 0){
+                        DefaultTableModel tableModel = (DefaultTableModel) patternsTable.getModel();
+                        if (tableModel == null) {
+                            return;
+                        }
+
+                        if (row == -1) {
+                            return;
+                        }
+
+                        mInspectionStrategy.getGroupPatterns().remove(row);
+                        tableModel.removeRow(row);
+                    }
+                }
+
+            }
+        });
     }
 
     private void populateAddButton() {
@@ -76,25 +126,8 @@ public class InspectionEditorForm extends JPanel {
 
             mInspectionStrategy.getGroupPatterns().add("");
 
-            tableModel.insertRow(tableModel.getRowCount(), new Object[]{""});
+            tableModel.insertRow(tableModel.getRowCount(), new Object[]{"", DeleteIcon});
             patternsTable.changeSelection(tableModel.getRowCount() - 1, 0, false, false);
-        });
-    }
-
-    private void populateDeleteButton() {
-        deleteArgumentPatternsButton.addActionListener(actionEvent -> {
-            DefaultTableModel tableModel = (DefaultTableModel) patternsTable.getModel();
-            if (tableModel == null) {
-                return;
-            }
-
-            int row = patternsTable.getSelectedRow();
-            if (row == -1) {
-                return;
-            }
-
-            mInspectionStrategy.getGroupPatterns().remove(row);
-            tableModel.removeRow(row);
         });
     }
 

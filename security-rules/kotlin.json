@@ -1,0 +1,480 @@
+{
+  "rules": [
+    {
+      "id": "WeakEncryptionAlgorithms ",
+      "brief_description": "Use cipher algorithms intensively tested and promoted by the cryptographic community; with a block size inferior than 128 bits.",
+      "inspector": {
+        "pattern": "Cipher.getInstance\\((.*?)\\)",
+        "group_patterns": [
+          "(.*AES[^\\/].*)"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Improve security by using AES/GCM/NoPadding",
+          "patterns": [
+            "(.*AES[^\\/].*)"
+          ],
+          "strings": [
+            "AES/GCM/NoPadding"
+          ]
+        }
+      ],
+      "enabled": true,
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "WeakEncryptionAlgorithms ",
+      "brief_description": "Use cipher algorithms intensively tested and promoted by the cryptographic community; with a block size inferior than 128 bits.",
+      "inspector": {
+        "pattern": "Cipher.getInstance\\((.*?)\\)",
+        "group_patterns": [
+          "(.*DES[^\\/].*)"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Improve security by using AES/GCM/NoPadding",
+          "patterns": [
+            "(.*DES[^\\/].*)"
+          ],
+          "strings": [
+            "AES/GCM/NoPadding"
+          ]
+        }
+      ],
+      "enabled": true,
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "WeakEncryptionAlgorithms ",
+      "brief_description": "Use cipher algorithms intensively tested and promoted by the cryptographic community; with a block size inferior than 128 bits.",
+      "inspector": {
+        "pattern": "Cipher.getInstance\\((.*?)\\)",
+        "group_patterns": [
+          "(.*RC2[^\\/].*)"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Improve security by using AES/GCM/NoPadding",
+          "patterns": [
+            "(.*RC2[^\\/].*)"
+          ],
+          "strings": [
+            "AES/GCM/NoPadding"
+          ]
+        }
+      ],
+      "enabled": true,
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "WeakEncryptionAlgorithms ",
+      "brief_description": "Use cipher algorithms intensively tested and promoted by the cryptographic community; with a block size inferior than 128 bits.",
+      "inspector": {
+        "pattern": "Cipher.getInstance\\((.*?)\\)",
+        "group_patterns": [
+          "(.*RC4[^\\/].*)"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Improve security by using AES/GCM/NoPadding",
+          "patterns": [
+            "(.*RC4[^\\/].*)"
+          ],
+          "strings": [
+            "AES/GCM/NoPadding"
+          ]
+        }
+      ],
+      "enabled": true,
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "WeakEncryptionAlgorithms ",
+      "brief_description": "Use cipher algorithms intensively tested and promoted by the cryptographic community; with a block size inferior than 128 bits.",
+      "inspector": {
+        "pattern": "Cipher.getInstance\\((.*?)\\)",
+        "group_patterns": [
+          "(.*Blowfish[^\\/].*)"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Improve security by using AES/GCM/NoPadding",
+          "patterns": [
+            "(.*Blowfish[^\\/].*)"
+          ],
+          "strings": [
+            "AES/GCM/NoPadding"
+          ]
+        }
+      ],
+      "enabled": true,
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "RSAWrongModeandPaddingScheme",
+      "brief_description": "(RSA Encryption Algorithms) Encryption operation mode and the padding scheme should be chosen appropriately",
+      "inspector": {
+        "pattern": "Cipher.getInstance\\((.*?)\\)",
+        "group_patterns": [
+          "RSA/None/NoPadding"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Use OAEP padding scheme",
+          "patterns": [
+            "RSA/None/NoPadding"
+          ],
+          "strings": [
+            "RSA/None/OAEPWITHSHA-256ANDMGF1PADDING"
+          ]
+        }
+      ],
+      "enabled": true,
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "InadequateCryptoraphicKeyPairLength",
+      "brief_description": "Require a sufficient key size",
+      "inspector": {
+        "pattern": "KeyPairGenerator.getInstance('RSA').initialize\\((.*?)\\)",
+        "group_patterns": [
+          "1024"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Use OAEP padding scheme",
+          "patterns": [
+            "1024"
+          ],
+          "strings": [
+            "2048"
+          ]
+        }
+      ],
+      "enabled": true,
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "InadequateECGenParameterSpec",
+      "brief_description": "Cryptographic keys should be rubust",
+      "inspector": {
+        "pattern": "ECGenParameterSpec\\((.*?)\\)",
+        "group_patterns": [
+          "secp112r1"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "n ≥ 224 for ECDH and ECMQV ( secp224k1 is compliant (n >= 224))",
+          "patterns": [
+            "secp112r1"
+          ],
+          "strings": [
+            "secp256r1"
+          ]
+        }
+      ],
+      "enabled": true,
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "InadequateCryptographicKeyLength",
+      "brief_description": "Require a sufficient key size",
+      "inspector": {
+        "pattern": "KeyGenerator.getInstance('AES').init\\((.*?)\\)",
+        "group_patterns": [
+          "64"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Key length ≥ 128 bits",
+          "patterns": [
+            "64"
+          ],
+          "strings": [
+            "128"
+          ]
+        }
+      ],
+      "enabled": true,
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "WeakHashingAlgorithms",
+      "brief_description": "Using weak hashing algorithms is security-sensitive",
+      "inspector": {
+        "pattern": "MessageDigest.getInstance\\((.*?)\\)",
+        "group_patterns": [
+          "(.*SHA1[^\\/].*)"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Safer alternatives, such as SHA-256, SHA-512, SHA-3 are recommended, and for password hashing",
+          "patterns": [
+            "(.*SHA1[^\\/].*)"
+          ],
+          "strings": [
+            "SHA-512"
+          ]
+        },
+        {
+          "name": "Safer alternatives, such as SHA-256, SHA-512, SHA-3 are recommended, and for password hashing",
+          "patterns": [
+            "(.*SHA1[^\\/].*)"
+          ],
+          "strings": [
+            "SHA-256"
+          ]
+        },
+        {
+          "name": "Safer alternatives, such as SHA-256, SHA-512, SHA-3 are recommended, and for password hashing",
+          "patterns": [
+            "(.*SHA1[^\\/].*)"
+          ],
+          "strings": [
+            "SHA-3"
+          ]
+        }
+      ],
+      "enabled": true,
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "PseudorandomNumberGenerators(PRNGs)",
+      "brief_description": "Using pseudorandom number generators (PRNGs) is security-sensitive",
+      "inspector": {
+        "pattern": "Random()",
+        "group_patterns": []
+      },
+      "fixes": [
+        {
+          "name": "Use a secure random number generator (Using SecureRandom())",
+          "patterns": [
+            "Random()"
+          ],
+          "strings": [
+            "SecureRandom()"
+          ]
+        }
+      ],
+      "enabled": true,
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "WeakSSL/TLSProtocolsGetInstance",
+      "brief_description": "Weak SSL/TLS protocols should not be used",
+      "inspector": {
+        "pattern": "SSLContext.getInstance\\((.*?)\\)",
+        "group_patterns": [
+          "TLSv1.1"
+        ]
+      },
+      "fixes": [
+        {
+          "name": " Enforce TLS 1.2 as the minimum protocol version and to disallow older versions like TLS 1.0",
+          "patterns": [
+            "TLSv1.1"
+          ],
+          "strings": [
+            "TLSv1.2"
+          ]
+        }
+      ],
+      "enabled": true,
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "WeakSSL/TLSProtocolsTLSVersions",
+      "brief_description": "Weak SSL/TLS protocols should not be used",
+      "inspector": {
+        "pattern": "SSLContext.tlsVersions\\((.*?)\\)",
+        "group_patterns": [
+          "TlsVersion.TLS_1_1"
+        ]
+      },
+      "fixes": [
+        {
+          "name": " Enforce TLS 1.2 as the minimum protocol version and to disallow older versions like TLS 1.0",
+          "patterns": [
+            "TlsVersion.TLS_1_1"
+          ],
+          "strings": [
+            "TlsVersion.TLS_1_2"
+          ]
+        }
+      ],
+      "enabled": true,
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "AccessingAndroidExternalStorage",
+      "brief_description": "Accessing Android external storage is security-sensitive",
+      "inspector": {
+        "pattern": "Context.getExternalFilesDir\\((.*?)\\)",
+        "group_patterns": [
+          "null"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Use internal storage by getFilesDir",
+          "patterns": [
+            "getExternalFilesDir"
+          ],
+          "strings": [
+            "getFilesDir"
+          ]
+        }
+      ],
+      "enabled": true,
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "ReceivingIntents",
+      "brief_description": "Receiving intents is security-sensitive",
+      "inspector": {
+        "pattern": "Context.registerReceiver\\((.*?)\\)",
+        "group_patterns": [
+          "null"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Restrict the access to received intents",
+          "patterns": [
+            "null"
+          ],
+          "strings": [
+            "broadcastPermission"
+          ]
+        }
+      ],
+      "enabled": true,
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "BroadcastingIntents",
+      "brief_description": "Broadcasting intents is security-sensitive",
+      "inspector": {
+        "pattern": "Context.sendBroadcast\\((.*?)\\)",
+        "group_patterns": [
+          "null"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Restrict the access to broadcasted intents.",
+          "patterns": [
+            "null"
+          ],
+          "strings": [
+            "broadcastPermission"
+          ]
+        }
+      ],
+      "enabled": true,
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "EnablingFileAccessforWebViews",
+      "brief_description": "Enabling file access for WebViews is security-sensitive",
+      "inspector": {
+        "pattern": "Webview.getSettings().setAllowContentAccess\\((.*?)\\)",
+        "group_patterns": [
+          "true"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Disable access to local files for WebViews unless it is necessary",
+          "patterns": [
+            "true"
+          ],
+          "strings": [
+            "false"
+          ]
+        }
+      ],
+      "enabled": true,
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "EnablingFileAccessforWebViews",
+      "brief_description": "Enabling file access for WebViews is security-sensitive",
+      "inspector": {
+        "pattern": "Webview.getSettings().setAllowContentAccess\\((.*?)\\)",
+        "group_patterns": [
+          "true"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Disable access to local files for WebViews unless it is necessary",
+          "patterns": [
+            "true"
+          ],
+          "strings": [
+            "false"
+          ]
+        }
+      ],
+      "enabled": true,
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "EnablingJavaScriptSupportforWebViews",
+      "brief_description": "Enabling JavaScript support for WebViews is security-sensitive",
+      "inspector": {
+        "pattern": "Webview.getSettings().setJavaScriptenabled\\((.*?)\\)",
+        "group_patterns": [
+          "true"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Disable JavaScript support for WebViews unless it is necessary to execute JavaScript code",
+          "patterns": [
+            "true"
+          ],
+          "strings": [
+            "false"
+          ]
+        }
+      ],
+      "enabled": true,
+      "highlight_type": "WARNING"
+    },
+    {
+      "id": "DebugFeaturesActivated",
+      "brief_description": "Delivering code in production with debug features activated is security-sensitive",
+      "inspector": {
+        "pattern": "Webview.setWebContentsDebuggingenabled\\((.*?)\\)",
+        "group_patterns": [
+          "true"
+        ]
+      },
+      "fixes": [
+        {
+          "name": "Do not enable debug features on production servers or applications distributed to end users.",
+          "patterns": [
+            "true"
+          ],
+          "strings": [
+            "false"
+          ]
+        }
+      ],
+      "enabled": true,
+      "highlight_type": "WARNING"
+    }
+  ]
+}
